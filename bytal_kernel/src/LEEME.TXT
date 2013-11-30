@@ -1,0 +1,21 @@
+** por compatibilidad se omiten tildes **
+
+Este codigo forma parte del trabajo practico 3 de la materia Organizacion del
+Computador II de la FCEN.
+
+Los pasos para compilar son:
+
+1. Descomprimir el archivo 'diskette.img.bz2', que contiene una imagen de
+    diskette vacia.
+
+    $ bzip2 -dk diskette.img.bz2
+
+2. Ejecutar 'make' desde una consola en la carpeta actual.
+
+    $ make
+
+3. Ejecutar 'bochs' desde una consola en la carpeta actual.
+
+    $ bochs -q
+
+4. Disfrutar de su kernel corriendo!!
