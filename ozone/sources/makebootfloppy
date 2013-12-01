@@ -1,0 +1,12 @@
+#!/bin/bash -v
+	dd if=/dev/zero of=../bootfloppy bs=1024 count=1440
+	ln -f -s ../bootfloppy dev_fd0
+	echo dev_fd0 > bootfloppy.tmp
+	echo EXIT >> bootfloppy.tmp
+	echo set load_script make_bootfloppy.ldr >> bootfloppy.tmp
+	echo exit >> bootfloppy.tmp
+	export TTYNAME=bootfloppy.tmp
+	../linux/oz_loader_linux
+#	rm -f bootfloppy.tmp
+	rm -f dev_fd0
+	gzip -c ../bootfloppy > ../bootfloppy.gz

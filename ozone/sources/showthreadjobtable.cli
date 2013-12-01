@@ -1,0 +1,37 @@
+	create symbol -string user_handle 'oz_h_info ("", "user_first")'
+user_loop:
+	create symbol -string job_handle 'oz_h_info (user_handle, "job_first")'
+job_loop:
+	create symbol -string process_handle 'oz_h_info (job_handle, "process_first")'
+process_loop:
+	create symbol -string thread_handle 'oz_h_info (process_handle, "thread_first")'
+thread_loop:
+	if {oz_h_info (thread_handle, "thread_id") == oz_arg_1} goto foundit
+	create symbol -string next_thread 'oz_h_info (thread_handle, "thread_next")'
+	close handle {thread_handle}
+	create symbol -string thread_handle next_thread
+	if {thread_handle != ""} goto thread_loop
+	create symbol -string next_process 'oz_h_info (process_handle, "process_next")'
+	close handle {process_handle}
+	create symbol -string process_handle next_process
+	if {process_handle != ""} goto process_loop
+	create symbol -string next_job 'oz_h_info (job_handle, "job_next")'
+	close handle {job_handle}
+	create symbol -string job_handle next_job
+	if {job_handle != ""} goto job_loop
+	create symbol -string next_user 'oz_h_info (user_handle, "user_next")'
+	close handle {user_handle}
+	create symbol -string user_handle next_user
+	if {user_handle != ""} goto user_loop
+	echo "Thread-id {oz_arg_1} not found"
+	exit
+foundit:
+	close handle {thread_handle}
+	close handle {process_handle}
+	close handle {user_handle}
+	create symbol -string job_table 'oz_h_info (job_handle, "job_lognamtbl")'
+	create logical name OZ_PROCESS_DIRECTORY%itsjobtable -object {job_table}
+	close handle {job_handle}
+	close handle {job_table}
+	show logical table OZ_PROCESS_DIRECTORY%itsjobtable
+	delete logical name OZ_PROCESS_DIRECTORY%itsjobtable

@@ -1,0 +1,5 @@
+init testdisk oz_dfs testdisk
+mount testdisk oz_dfs
+copy fs_linux:../../glibc/includes/ testdisk.oz_dfs:/glibc_includes/
+dismount testdisk.oz_dfs
+barf

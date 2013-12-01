@@ -1,0 +1,5 @@
+echo {oz_verify (1)}
+kimage load oz_dev_fat.oz
+mount -readonly ide_pm oz_fat
+mount -readonly ide_pm oz_dpt
+cat ide_pm.oz_fat:/mrieker/ATTACH.TXT

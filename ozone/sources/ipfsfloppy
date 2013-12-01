@@ -1,0 +1,11 @@
+#!/bin/bash -v
+	dd if=/dev/zero of=../ipfsfloppy bs=1024 count=384
+	ln -f -s ../ipfsfloppy dev_fd0
+	echo dev_fd0 > ipfsfloppy.tmp
+	echo EXIT >> ipfsfloppy.tmp
+	echo set load_script make_ipfsfloppy.ldr >> ipfsfloppy.tmp
+	echo exit >> ipfsfloppy.tmp
+	export TTYNAME=ipfsfloppy.tmp
+	../linux/oz_loader_linux
+#	rm -f ipfsfloppy.tmp
+	rm -f dev_fd0

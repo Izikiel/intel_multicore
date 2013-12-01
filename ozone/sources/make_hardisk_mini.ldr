@@ -1,0 +1,28 @@
+init dev_hda3 oz_dfs dev_hda3
+mount dev_hda3 oz_dfs
+mkdir dev_hda3.oz_dfs:/ozone/
+copy fs_linux:../binaries/             dev_hda3.oz_dfs:/ozone/binaries/
+copy fs_linux:../startup/              dev_hda3.oz_dfs:/ozone/startup/
+ rename dev_hda3.oz_dfs:/ozone/binaries/oz_kernel_smp_486.oz;1 /ozone/binaries/oz_kernel_486.oz;
+dir dev_hda3.oz_dfs:/ozone/binaries/
+dir dev_hda3.oz_dfs:/ozone/startup/
+set load_device ide_pm.3
+set load_fstemplate oz_dfs
+set load_directory /ozone/binaries/
+set load_script ../startup/hardiskstartup.ldr
+set kernel_image oz_kernel_486.oz
+set startup_input ../startup/hardiskstartup.cli
+set startup_output console:
+set startup_error console:
+set startup_image oz_cli.oz
+set startup_params StartupParams
+set kernel_stack_size 12288
+set def_user_stack_size 1048576
+set nonpaged_pool_size 8388608
+set system_pages 4096
+set tz_offset_rtc 0
+set uniprocessor 0
+writeboot dev_hda3.oz_dfs:/ozone/binaries/oz_loader_486.bb
+show
+dismount dev_hda3.oz_dfs
+barf

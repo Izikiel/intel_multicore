@@ -1,0 +1,23 @@
+init dev_fd0 oz_dfs gccfloppy			! format the filesystem on the floppy
+mount dev_fd0 oz_dfs				! mount floppy
+copy fs_linux:../binaries/oz_loader_486.bb             dev_fd0.oz_dfs:/oz_loader_486.bb
+gzip fs_linux:../binaries/oz_kernel_486.oz             dev_fd0.oz_dfs:/oz_kernel_486.oz.gz
+gzip fs_linux:../binaries/oz_cli.oz                    dev_fd0.oz_dfs:/oz_cli.oz.gz
+gzip fs_linux:../binaries/oz_util_dir.oz               dev_fd0.oz_dfs:/oz_util_dir.oz.gz
+gzip fs_linux:../../gcc/sources/gcc-2.95.3/gcc/cc1.oz  dev_fd0.oz_dfs:/cc1.oz.gz
+gzip fs_linux:../../gcc/sources/gcc-2.95.3/gcc/cpp0.oz dev_fd0.oz_dfs:/cpp0.oz.gz
+gzip fs_linux:../../gcc/sources/gcc-2.95.3/gcc/gcc.oz  dev_fd0.oz_dfs:/gcc.oz.gz
+copy fs_linux:../startup/gccfloppy.ldr                 dev_fd0.oz_dfs:/gccfloppy.ldr
+copy fs_linux:../startup/gccfloppy.cli                 dev_fd0.oz_dfs:/gccfloppy.cli
+copy fs_linux:testgcc.c                                dev_fd0.oz_dfs:/testgcc.c
+dir dev_fd0.oz_dfs:/				! display what we put there
+volume dev_fd0.oz_dfs				! show how much space is left
+set load_device ide_pm			! this is what disk the 'load_script' is on when floppy boots
+set load_directory /				! this is what directory the 'load_script' is in when floppy boots
+set load_fstemplate oz_dfs			! this is the filesystem that 'load_device' is formatted with
+set load_script gccfloppy.ldr			! this is the loader script to execute when floppy boots
+set monochrome 1				! just use white for all text output
+set memory_megabytes 24				! set phys mem = 24Meg so the ramdisk will fit starting there
+writeboot dev_fd0.oz_dfs:/oz_loader_486.bb	! write floppy's bootblock with the above parameters
+dismount dev_fd0.oz_dfs				! flush all floppy data out to floppy
+barf						! exit back to Linux

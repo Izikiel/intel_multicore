@@ -1,0 +1,51 @@
+init hd100meg_img oz_dfs hd100meg_img
+mount hd100meg_img oz_dfs
+
+mkdir hd100meg_img.oz_dfs:/bin86/
+mkdir hd100meg_img.oz_dfs:/binutils/
+mkdir hd100meg_img.oz_dfs:/gcc/
+mkdir hd100meg_img.oz_dfs:/glibc/
+mkdir hd100meg_img.oz_dfs:/ozone/
+
+copy fs_linux:../../bin86/binaries/    hd100meg_img.oz_dfs:/bin86/binaries/
+copy fs_linux:../../binutils/binaries/ hd100meg_img.oz_dfs:/binutils/binaries/
+copy fs_linux:../../gcc/binaries/      hd100meg_img.oz_dfs:/gcc/binaries/
+copy fs_linux:../../gcc/includes/      hd100meg_img.oz_dfs:/gcc/includes/
+copy fs_linux:../../gcc/libraries/     hd100meg_img.oz_dfs:/gcc/libraries/
+copy fs_linux:../../glibc/includes/    hd100meg_img.oz_dfs:/glibc/includes/
+copy fs_linux:../sources/              hd100meg_img.oz_dfs:/ozone/sources/
+copy fs_linux:../includes/             hd100meg_img.oz_dfs:/ozone/includes/
+copy fs_linux:../objects/              hd100meg_img.oz_dfs:/ozone/objects/
+copy fs_linux:../libraries/            hd100meg_img.oz_dfs:/ozone/libraries/
+copy fs_linux:../tests/                hd100meg_img.oz_dfs:/ozone/tests/
+
+copy fs_linux:../binaries/ hd100meg_img.oz_dfs:/ozone/binaries/
+copy fs_linux:../startup/  hd100meg_img.oz_dfs:/ozone/startup/
+
+rename hd100meg_img.oz_dfs:/ozone/binaries/oz_kernel_smp_486.oz hd100meg_img.oz_dfs:/ozone/binaries/oz_kernel_486.oz
+
+dir hd100meg_img.oz_dfs:/ozone/binaries/
+dir hd100meg_img.oz_dfs:/ozone/startup/
+
+set load_device ide_pm
+set load_fstemplate oz_dfs
+set load_directory /ozone/binaries/
+set load_script ../startup/hardiskstartup.ldr
+set kernel_image oz_kernel_486.oz
+set startup_input ../startup/hardiskstartup.cli
+set startup_output console:
+set startup_error console:
+set startup_image oz_cli.oz
+set startup_params StartupParams
+set kernel_stack_size 12288
+set def_user_stack_size 1048576
+set nonpaged_pool_size 4194304
+set system_pages 4096
+set tz_offset_rtc -18000
+set uniprocessor 0
+set debug_init 0
+set monochrome 0
+show
+writeboot hd100meg_img.oz_dfs:/ozone/binaries/oz_loader_486.bb
+dismount hd100meg_img.oz_dfs
+barf

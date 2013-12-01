@@ -1,0 +1,2 @@
+gcc -I. -I../includes/ -g -DOZ_HW_TYPE_486 -S -o ../objects/{oz_arg_1}.s {oz_arg_1}.c
+as -a=../objects/{oz_arg_1}.l -o ../objects/{oz_arg_1}.o ../objects/{oz_arg_1}.s

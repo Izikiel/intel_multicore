@@ -1,0 +1,54 @@
+init dev_fd0 oz_dfs smpfloppy			! format the filesystem on the floppy
+mount dev_fd0 oz_dfs				! mount floppy
+copy fs_linux:../binaries/oz_loader_486.bb       dev_fd0.oz_dfs:/oz_loader_486.bb
+gzip fs_linux:../binaries/dumppmem.oz            dev_fd0.oz_dfs:/dumppmem.oz.gz
+gzip fs_linux:../binaries/dumpppt.oz             dev_fd0.oz_dfs:/dumpppt.oz.gz
+gzip fs_linux:../binaries/dumpppt_knl.oz         dev_fd0.oz_dfs:/dumpppt_knl.oz.gz
+gzip fs_linux:../binaries/dumprtcram.oz          dev_fd0.oz_dfs:/dumprtcram.oz.gz
+gzip fs_linux:../binaries/oz_kernel_smp_486.oz   dev_fd0.oz_dfs:/oz_kernel_486.oz.gz
+gzip fs_linux:../binaries/oz_cli.oz              dev_fd0.oz_dfs:/oz_cli.oz.gz
+gzip fs_linux:../binaries/oz_dev_fat.oz          dev_fd0.oz_dfs:/oz_dev_fat.oz.gz
+gzip fs_linux:../binaries/oz_util_cat.oz         dev_fd0.oz_dfs:/oz_util_cat.oz.gz
+gzip fs_linux:../binaries/oz_util_copy.oz        dev_fd0.oz_dfs:/oz_util_copy.oz.gz
+gzip fs_linux:../binaries/oz_util_credir.oz      dev_fd0.oz_dfs:/oz_util_credir.oz.gz
+gzip fs_linux:../binaries/oz_util_dd.oz          dev_fd0.oz_dfs:/oz_util_dd.oz.gz
+gzip fs_linux:../binaries/oz_util_delete.oz      dev_fd0.oz_dfs:/oz_util_delete.oz.gz
+gzip fs_linux:../binaries/oz_util_dir.oz         dev_fd0.oz_dfs:/oz_util_dir.oz.gz
+gzip fs_linux:../binaries/oz_util_dismount.oz    dev_fd0.oz_dfs:/oz_util_dismount.oz.gz
+gzip fs_linux:../binaries/oz_util_dump.oz        dev_fd0.oz_dfs:/oz_util_dump.oz.gz
+gzip fs_linux:../binaries/oz_util_ftpd.oz        dev_fd0.oz_dfs:/oz_util_ftpd.oz.gz
+gzip fs_linux:../binaries/oz_util_gzip.oz        dev_fd0.oz_dfs:/oz_util_gzip.oz.gz
+gzip fs_linux:../binaries/oz_util_init.oz        dev_fd0.oz_dfs:/oz_util_init.oz.gz
+gzip fs_linux:../binaries/oz_util_ip.oz          dev_fd0.oz_dfs:/oz_util_ip.oz.gz
+gzip fs_linux:../binaries/oz_util_kimage.oz      dev_fd0.oz_dfs:/oz_util_kimage.oz.gz
+gzip fs_linux:../binaries/oz_util_logon.oz       dev_fd0.oz_dfs:/oz_util_logon.oz.gz
+gzip fs_linux:../binaries/oz_util_mount.oz       dev_fd0.oz_dfs:/oz_util_mount.oz.gz
+gzip fs_linux:../binaries/oz_util_prochandles.oz dev_fd0.oz_dfs:/oz_util_prochandles.oz.gz
+gzip fs_linux:../binaries/oz_knl_prochandles.oz  dev_fd0.oz_dfs:/oz_knl_prochandles.oz.gz
+gzip fs_linux:../binaries/oz_util_scsi.oz        dev_fd0.oz_dfs:/oz_util_scsi.oz.gz
+gzip fs_linux:../binaries/oz_util_shutdown.oz    dev_fd0.oz_dfs:/oz_util_shutdown.oz.gz
+gzip fs_linux:../binaries/oz_util_telnet.oz      dev_fd0.oz_dfs:/oz_util_telnet.oz.gz
+gzip fs_linux:../binaries/oz_util_telnetd.oz     dev_fd0.oz_dfs:/oz_util_telnetd.oz.gz
+gzip fs_linux:../binaries/oz_util_top.oz         dev_fd0.oz_dfs:/oz_util_top.oz.gz
+gzip fs_linux:../binaries/oz_util_verify.oz      dev_fd0.oz_dfs:/oz_util_verify.oz.gz
+gzip fs_linux:../binaries/oz_util_writeboot.oz   dev_fd0.oz_dfs:/oz_util_writeboot.oz.gz
+gzip fs_linux:../binaries/pokephys.oz            dev_fd0.oz_dfs:/pokephys.oz.gz
+copy fs_linux:../startup/bootfloppy.ldr          dev_fd0.oz_dfs:/bootfloppy.ldr
+copy fs_linux:../startup/bootfloppy.cli          dev_fd0.oz_dfs:/bootfloppy.cli
+gzip fs_linux:../binaries/edt.oz                 dev_fd0.oz_dfs:/edt.oz.gz
+gzip fs_linux:../edt/edt.hlp                     dev_fd0.oz_dfs:/edt.hlp.gz
+gzip fs_linux:../timezones/EST5EDT               dev_fd0.oz_dfs:/EST5EDT.gz
+copy fs_linux:filldisk.cli                       dev_fd0.oz_dfs:/filldisk.cli
+dir dev_fd0.oz_dfs:/				! display what we put there
+volume dev_fd0.oz_dfs				! show how much space is left
+set load_device floppy.p0			! tell loader what device we're booting from
+##set load_device ''				! make loader auto-detect boot device
+set load_directory /				! this is what directory the 'load_script' is in when floppy boots
+set load_fstemplate oz_dfs			! this is the filesystem that 'load_device' is formatted with
+set load_script bootfloppy.ldr			! this is the loader script to execute when floppy boots
+set monochrome 0				! just use white for all text output
+set memory_megabytes 24				! set phys mem = 24Meg so the ramdisk will fit starting there
+writeboot dev_fd0.oz_dfs:/oz_loader_486.bb	! write floppy's bootblock with the above parameters
+show						! show what we wrote, including signature
+dismount dev_fd0.oz_dfs				! flush all floppy data out to floppy
+barf						! exit back to Linux

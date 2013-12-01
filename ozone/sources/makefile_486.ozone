@@ -1,0 +1,1953 @@
+##+++2003-03-01
+##    Copyright (C) 2001,2002,2003  Mike Rieker, Beverly, MA USA
+##
+##    This program is free software; you can redistribute it and/or modify
+##    it under the terms of the GNU General Public License as published by
+##    the Free Software Foundation; version 2 of the License.
+##
+##    This program is distributed in the hope that it will be useful,
+##    but WITHOUT ANY WARRANTY; without even the implied warranty of
+##    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##    GNU General Public License for more details.
+##
+##    You should have received a copy of the GNU General Public License
+##    along with this program; if not, write to the Free Software
+##    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+##---2003-03-01
+
+BIN = ../binaries/
+INC = ../includes/
+LIB = ../libraries/
+OBJ = ../objects/
+SRC = 
+STR = ../startup/
+TST = ../tests/
+
+# Objects for the 486 kernel
+
+KNL486_OBJS = \
+	$(OBJ)oz_kernel_486.o		\
+	$(OBJ)oz_hw_process_486.o	\
+	$(OBJ)oz_hw_tod_486.o		\
+	$(OBJ)oz_hw486_setuseriopl.o	\
+	$(OBJ)oz_sys_condhand_486.o	\
+	$(OBJ)oz_common_486.o		\
+	$(OBJ)oz_idt_init_486.o		\
+	$(OBJ)oz_common_486_c.o
+
+KNLSMP486_OBJS = \
+	$(OBJ)oz_hw_smproc_486.o
+
+KNLUNI486_OBJS = \
+	$(OBJ)oz_hw_uniproc_486.o
+
+# Device driver objects for the 486 Kernel
+
+DEV_KNL486_OBJS = \
+	$(OBJ)oz_dev_cdfs.o		\
+	$(OBJ)oz_dev_conclass.o		\
+	$(OBJ)oz_dev_conpseudo.o	\
+	$(OBJ)oz_dev_console_486.o	\
+	$(OBJ)oz_dev_dectulip.o		\
+	$(OBJ)oz_dev_disk.o		\
+	$(OBJ)oz_dev_dfs.o		\
+	$(OBJ)oz_dev_dpar.o		\
+	$(OBJ)oz_dev_dpt.o		\
+	$(OBJ)oz_dev_etherloop.o	\
+	$(OBJ)oz_dev_floppy_486.o	\
+	$(OBJ)oz_dev_ide8038i.o		\
+	$(OBJ)oz_knl_dev_inits_486.o	\
+	$(OBJ)oz_dev_ip.o		\
+	$(OBJ)oz_dev_ip_fs.o		\
+	$(OBJ)oz_dev_ip_gencksm.o	\
+	$(OBJ)oz_dev_ipdns.o		\
+	$(OBJ)oz_dev_isa_486.o		\
+	$(OBJ)oz_dev_lio.o		\
+	$(OBJ)oz_dev_mutex.o		\
+	$(OBJ)oz_dev_pci_486.o		\
+	$(OBJ)oz_dev_pipe.o		\
+	$(OBJ)oz_dev_ps2mouse_486.o	\
+	$(OBJ)oz_dev_ramdisk.o		\
+	$(OBJ)oz_dev_rtl8139_486.o	\
+	$(OBJ)oz_dev_scsi.o		\
+	$(OBJ)oz_dev_scsi_disk.o	\
+	$(OBJ)oz_dev_timer.o		\
+	$(OBJ)oz_dev_vdfs.o		\
+	$(OBJ)oz_dev_vgavideo_486.o
+
+##	$(OBJ)oz_dev_lsil875_486.o	\
+
+# Device driver objects for the 486 Loader
+
+DEV_LDR486_OBJS = \
+	$(OBJ)oz_dev_cdfs.o		\
+	$(OBJ)oz_dev_conclass.o		\
+	$(OBJ)oz_dev_console_486.o	\
+	$(OBJ)oz_dev_dectulip.o		\
+	$(OBJ)oz_dev_disk.o		\
+	$(OBJ)oz_dev_dfs.o		\
+	$(OBJ)oz_dev_dpar.o		\
+	$(OBJ)oz_dev_dpt.o		\
+	$(OBJ)oz_dev_etherloop.o	\
+	$(OBJ)oz_dev_floppy_486.o	\
+	$(OBJ)oz_dev_ide8038i.o		\
+	$(OBJ)oz_ldr_dev_inits_486.o	\
+	$(OBJ)oz_dev_ip.o		\
+	$(OBJ)oz_dev_ip_fs.o		\
+	$(OBJ)oz_dev_ip_gencksm.o	\
+	$(OBJ)oz_dev_ipdns.o		\
+	$(OBJ)oz_dev_isa_486.o		\
+	$(OBJ)oz_dev_lio.o		\
+	$(OBJ)oz_dev_pci_486.o		\
+	$(OBJ)oz_dev_ramdisk.o		\
+	$(OBJ)oz_dev_rtl8139_486.o	\
+	$(OBJ)oz_dev_scsi.o		\
+	$(OBJ)oz_dev_scsi_disk.o	\
+	$(OBJ)oz_dev_timer.o		\
+	$(OBJ)oz_dev_vdfs.o		\
+	$(OBJ)oz_dev_vgavideo_486.o
+
+###	$(OBJ)oz_dev_lsil875_486.o	\
+
+# Objects from the kernel that go into the loader's expander
+
+LEX_KNL_OBJS = \
+	$(OBJ)oz_idt_init_486.o		\
+	$(OBJ)oz_knl_crtl_486.o
+
+# Objects from the kernel that go into the loader
+
+LDR_KNL_OBJS = \
+	$(OBJ)oz_common_486.o		\
+	$(OBJ)oz_idt_init_486.o		\
+	$(OBJ)oz_hw_tod_486.o		\
+	$(OBJ)oz_hw_uniproc_486.o	\
+	$(OBJ)oz_common_486_c.o		\
+	$(OBJ)oz_sys_vxprintf_fp.o	\
+	$(OBJ)oz_sys_xprintf.o		\
+	\
+	$(OBJ)oz_hw_bootblock_486.o	\
+	$(OBJ)oz_hw_random_486.o	\
+	$(OBJ)oz_knl_cache.o		\
+	$(OBJ)oz_knl_crash.o		\
+	$(OBJ)oz_knl_crtl_486.o		\
+	$(OBJ)oz_knl_dcache.o		\
+	$(OBJ)oz_knl_debug.o		\
+	$(OBJ)oz_knl_devio.o		\
+	$(OBJ)oz_knl_event.o		\
+	$(OBJ)oz_knl_handle.o		\
+	$(OBJ)oz_knl_image.o		\
+	$(OBJ)oz_knl_image_elf32.o	\
+	$(OBJ)oz_knl_image_oz.o		\
+	$(OBJ)oz_knl_log.o		\
+	$(OBJ)oz_knl_logname.o		\
+	$(OBJ)oz_knl_lowipl.o		\
+	$(OBJ)oz_knl_kmalloc.o		\
+	$(OBJ)oz_knl_malloc.o		\
+	$(OBJ)oz_knl_misc.o		\
+	$(OBJ)oz_knl_printinstr.o	\
+	$(OBJ)oz_knl_printk.o		\
+	$(OBJ)oz_knl_printkaddr.o	\
+	$(OBJ)oz_knl_sdata.o		\
+	$(OBJ)oz_knl_security.o		\
+	$(OBJ)oz_knl_shuthand.o		\
+	$(OBJ)oz_sys_copyright.o	\
+	$(OBJ)oz_sys_cipher.o		\
+	$(OBJ)oz_sys_dateconv.o		\
+	$(OBJ)oz_sys_debug.o		\
+	$(OBJ)oz_sys_disassemble_486.o	\
+	$(OBJ)oz_sys_hash.o		\
+	$(OBJ)oz_sys_recio.o		\
+	\
+	$(OBJ)oz_dev_knlcons.o		\
+	$(OBJ)oz_hw_bootscan_486.o	\
+	$(OBJ)oz_ldr_dev_inits_486.o	\
+	$(OBJ)oz_ldr_loader.o		\
+	$(OBJ)oz_ldr_misc.o		\
+	$(OBJ)oz_ldr_params.o		\
+	$(OBJ)oz_ldr_pdata.o		\
+	$(OBJ)oz_ldr_phymem.o		\
+	$(OBJ)oz_ldr_section.o		\
+	$(OBJ)oz_ldr_thread.o		\
+	$(OBJ)oz_ldr_thread_486.o	\
+	$(OBJ)gzip.o
+
+LDR_OBJS = $(OBJ)oz_loader_486.o $(OBJ)oz_loader_486_c.o $(OBJ)oz_ldr_systempdata_486.o $(LDR_KNL_OBJS) $(LIB)oz_dev_ldr486.a
+
+# Objects that go into the kernel library
+
+KNL_OBJS = \
+	$(OBJ)oz_hw_bootblock_486.o	\
+	$(OBJ)oz_hw_random_486.o	\
+	$(OBJ)oz_hw486_thread.o		\
+	$(OBJ)oz_knl_ast.o		\
+	$(OBJ)oz_knl_boot.o		\
+	$(OBJ)oz_knl_cache.o		\
+	$(OBJ)oz_knl_crash.o		\
+	$(OBJ)oz_knl_crtl_486.o		\
+	$(OBJ)oz_knl_dcache.o		\
+	$(OBJ)oz_knl_debug.o		\
+	$(OBJ)oz_knl_dev_inits_486.o	\
+	$(OBJ)oz_knl_devio.o		\
+	$(OBJ)oz_knl_diag.o		\
+	$(OBJ)oz_knl_event.o		\
+	$(OBJ)oz_knl_handle.o		\
+	$(OBJ)oz_knl_idno.o		\
+	$(OBJ)oz_knl_image.o		\
+	$(OBJ)oz_knl_image_elf32.o	\
+	$(OBJ)oz_knl_image_oz.o		\
+	$(OBJ)oz_knl_kmalloc.o		\
+	$(OBJ)oz_knl_log.o		\
+	$(OBJ)oz_knl_logon.o		\
+	$(OBJ)oz_knl_logname.o		\
+	$(OBJ)oz_knl_lowipl.o		\
+	$(OBJ)oz_knl_malloc.o		\
+	$(OBJ)oz_knl_misc.o		\
+	$(OBJ)oz_knl_pagefile.o		\
+	$(OBJ)oz_knl_phymem.o		\
+	$(OBJ)oz_knl_printinstr.o	\
+	$(OBJ)oz_knl_printk.o		\
+	$(OBJ)oz_knl_printkaddr.o	\
+	$(OBJ)oz_knl_process.o		\
+	$(OBJ)oz_knl_quota.o		\
+	$(OBJ)oz_knl_sdata.o		\
+	$(OBJ)oz_knl_section.o		\
+	$(OBJ)oz_knl_security.o		\
+	$(OBJ)oz_knl_shuthand.o		\
+	$(OBJ)oz_knl_spte.o		\
+	$(OBJ)oz_knl_startup.o		\
+	$(OBJ)oz_knl_thread.o		\
+	$(OBJ)oz_knl_threadlock.o	\
+	$(OBJ)oz_knl_user_become.o	\
+	$(OBJ)oz_knl_userjob.o
+
+# Object that go into the system library
+
+SYS_OBJS = \
+	$(OBJ)oz_sys_callknl.o		\
+	$(OBJ)oz_sys_cipher.o		\
+	$(OBJ)oz_sys_condhand.o		\
+	$(OBJ)oz_sys_copyright.o	\
+	$(OBJ)oz_sys_dateconv.o		\
+	$(OBJ)oz_sys_debug.o		\
+	$(OBJ)oz_sys_disassemble_486.o	\
+	$(OBJ)oz_sys_event.o		\
+	$(OBJ)oz_sys_exhand.o		\
+	$(OBJ)oz_sys_fork.o		\
+	$(OBJ)oz_sys_gethostipaddr.o	\
+	$(OBJ)oz_sys_handle.o		\
+	$(OBJ)oz_sys_handle_getinfo.o	\
+	$(OBJ)oz_sys_hash.o		\
+	$(OBJ)oz_sys_image.o		\
+	$(OBJ)oz_sys_io.o		\
+	$(OBJ)oz_sys_io_fs.o		\
+	$(OBJ)oz_sys_io_fs_printf.o	\
+	$(OBJ)oz_sys_logname.o		\
+	$(OBJ)oz_sys_misc.o		\
+	$(OBJ)oz_sys_password.o		\
+	$(OBJ)oz_sys_pdata.o		\
+	$(OBJ)oz_sys_process.o		\
+	$(OBJ)oz_sys_recio.o		\
+	$(OBJ)oz_sys_section.o		\
+	$(OBJ)oz_sys_spawn.o		\
+	$(OBJ)oz_sys_syscall.o		\
+	$(OBJ)oz_sys_thread.o		\
+	$(OBJ)oz_sys_threadlock.o	\
+	$(OBJ)oz_sys_tzconv.o		\
+	$(OBJ)oz_sys_userjob.o		\
+	$(OBJ)oz_sys_vxprintf_fp.o	\
+	$(OBJ)oz_sys_xscanf.o		\
+	$(OBJ)oz_sys_xprintf.o		\
+	$(OBJ)oz_usr_debug.o
+
+# C Runtime library objects
+
+CRTL_OBJS = \
+	$(OBJ)oz_crtl_dirio.o		\
+	$(OBJ)oz_crtl_dummy.o		\
+	$(OBJ)oz_crtl_fd.o		\
+	$(OBJ)oz_crtl_fio.o		\
+	$(OBJ)oz_crtl_io.o		\
+	$(OBJ)oz_crtl_malloc.o		\
+	$(OBJ)oz_crtl_misc.o		\
+	$(OBJ)oz_crtl_misc_fp.o		\
+	$(OBJ)oz_crtl_netio.o		\
+	$(OBJ)oz_crtl_perror.o		\
+	$(OBJ)oz_crtl_pipeio.o		\
+	$(OBJ)oz_crtl_signal.o		\
+	$(OBJ)oz_crtl_time.o		\
+	$(OBJ)oz_usr_profile.o
+
+GLIBC_OBJS = \
+	$(OBJ)oz_glibc__strerror.o	\
+	$(OBJ)oz_glibc_C-ctype.o	\
+	$(OBJ)oz_glibc_C_name.o		\
+	$(OBJ)oz_glibc_bsearch.o	\
+	$(OBJ)oz_glibc_ctype-info.o	\
+	$(OBJ)oz_glibc_errlist.o	\
+	$(OBJ)oz_glibc_fnmatch.o	\
+	$(OBJ)oz_glibc_qsort.o		\
+	$(OBJ)oz_glibc_strerror.o
+
+# What to link to a user-mode C program using standard Unix-like runtime library
+
+CRTL_LINK = \
+	$(OBJ)oz_crtl_start.o		\
+	$(LIB)oz_crtl.a
+
+UTIL_LINK = \
+	$(OBJ)oz_util_start.o		\
+	$(OBJ)oz_util_filesel.o		\
+	$(LIB)oz_crtl.a
+
+# GNU C library source directory and how to get back from there
+
+GLIBC_DIR = ../../glibc/sources/glibc-2.0.6/
+GLIBC_RTN = ../../../ozone/sources/
+
+# Compilation options
+
+OZINCL  = -I. -I$(INC) $(INCL)
+CCFLAGS = -g -O2 -D_OZONE -DOZ_HW_TYPE_486 ## -W -Wreturn-type -Wunused -Wstrict-prototypes -Wmissing-prototypes
+OZCC    = $(OZGCC) $(OZINCL) $(CCFLAGS) -c -o
+LDDRO   = ld -d -r -o
+
+# ------------------------------------------------------------------------
+#
+#  What to build by default (everything)
+#
+
+default: \
+	$(INC)oz_hw486_syscall.h \
+	$(INC)stdio.h	\
+	libraries	\
+	kernelimages	\
+	utilities	\
+	testprograms	\
+	driverimages
+
+# ------------------------------------------------------------------------
+#
+#  oz_hw486_syscall.h is generated from a C program
+#
+
+$(INC)oz_hw486_syscall.h: $(SRC)oz_hw486_syscall_h_gen.c
+	cc $(OZINCL) -DOZ_HW_TYPE_486 -o $(OBJ)oz_hw486_syscall_h_gen $(SRC)oz_hw486_syscall_h_gen.c
+	$(OBJ)oz_hw486_syscall_h_gen > $(INC)oz_hw486_syscall.h
+
+# ------------------------------------------------------------------------
+#
+#  Idiot stdio.h
+#
+
+$(INC)stdio.h: $(INC)oz_crtl_fio.h
+	$(DEL) $(INC)stdio.h
+	cp $(INC)oz_crtl_fio.h $(INC)stdio.h
+
+# ------------------------------------------------------------------------
+#
+#  Build object libraries and objects needed by cross-loader
+#
+
+libraries: \
+	$(LIB)oz_crtl.a			\
+	$(LIB)oz_dev_knl486.a		\
+	$(LIB)oz_dev_ldr486.a		\
+	$(LIB)oz_knl.a			\
+	$(LIB)oz_sys.a
+
+# ------------------------------------------------------------------------
+#
+#  Kernel images - the kernel and the loader
+#
+#  The loader loads the kernel into memory and jumps to it.  It can also 
+#  do other utility functions like copy files, list directories, set boot 
+#  parameters, etc.  It is basically a stripped-down uniprocessor kernel 
+#  that runs in kernel mode only with a simple command-line interface.
+#
+#  The kernel is the full-featured kernel.
+#
+
+kernelimages: \
+	$(BIN)oz_kernel_486.oz 		\
+	$(BIN)oz_kernel_smp_486.oz	\
+	$(BIN)oz_loader_486.bb		\
+	$(BIN)oz_loader_486.cd
+
+# ------------------------------------------------------------------------
+#
+#  Loader bootblock file (for the WRITEBOOT command)
+#
+#  This is made by concatting the boot block, the preloader, the parameter 
+#  block, then the raw loader.  The boot block gets loaded by the BIOS at 
+#  memory location 7C00.  The memory from 7E00..7FFF is used by the boot block 
+#  for stack and does not have a block in this file.  Then the boot block reads 
+#  the rest of this file into memory starting at 8000.  So the preloader starts 
+#  at 8000, the param block ends up at 9000, and the loader starts at A000.
+#
+#  This file may also be copied directly to a (floppy) disk and it will boot as 
+#  is, it does not have to be part of a filesystem disk.  This works because 
+#  the ozone_boot_486.s program is set up by default to read the disk starting 
+#  at lbn 1 and it reads 1216 blocks (basically up to the memory hole), which 
+#  is as large as a loader is allowed to be.
+#
+#  When copied onto a filesystem disk, the WRITEBOOT command copies the first 
+#  block (VBN 1) of this file to the volume's boot block (LBN 0) and then 
+#  modifies the starting LBN pointer in the bootblock to point to VBN 2 of this 
+#  file.  It also sets up the proper block count in LBN 0.
+#
+
+$(BIN)oz_loader_486.bb: \
+	$(OBJ)ozone_boot_486.512	\
+	$(OBJ)oz_preloader_486.4096	\
+	$(OBJ)param_block.4096		\
+	$(OBJ)oz_ldr_expand_486.raw	\
+	$(OBJ)oz_loader_486.raw.gz
+	cat $(OBJ)ozone_boot_486.512 	\
+	    $(OBJ)oz_preloader_486.4096	\
+	    $(OBJ)param_block.4096	\
+	    $(OBJ)oz_ldr_expand_486.raw	\
+	    $(OBJ)oz_loader_486.raw.gz	\
+	    > $(BIN)oz_loader_486.bb
+
+# This one can go to an El Torito CD in non-emulation mode, loaded at segment 0x7C0 (address 0x7C00)
+# Rebuild the param_block each time so we get a new signature
+
+$(BIN)oz_loader_486.cd: \
+	$(OBJ)ozone_cdboot_486.2048	\
+	$(OBJ)oz_preloader_486.4096	\
+	$(OBJ)oz_ldr_expand_486.raw	\
+	$(OBJ)oz_loader_486.raw.gz
+	$(OBJ)make_param_block $(OBJ)param_block_cd.4096 \
+		-set load_directory /ozone/binaries/ \
+		-set load_fstemplate oz_cdfs \
+		-set load_script ../startup/cdloader.ldr \
+		-set kernel_image oz_kernel_486.oz \
+		-set startup_image oz_cli.oz \
+		-set startup_input ../startup/cdstartup.cli \
+		-set startup_output console: \
+		-set startup_error console: \
+		-set kernel_stack_size 12288 \
+		-set def_user_stack_size 1048576 \
+		-set nonpaged_pool_size 8388608
+	cat $(OBJ)ozone_cdboot_486.2048	\
+	    $(OBJ)oz_preloader_486.4096	\
+	    $(OBJ)param_block_cd.4096	\
+	    $(OBJ)oz_ldr_expand_486.raw	\
+	    $(OBJ)oz_loader_486.raw.gz	\
+	    > $(BIN)oz_loader_486.cd
+
+# ------------------------------------------------------------------------
+#
+#  Memory test program - loads the memtest program at 400000
+#
+
+$(BIN)oz_memtest_486.img: \
+	$(OBJ)ozone_boot_486.512	\
+	$(OBJ)oz_preloader_486.4096	\
+	$(OBJ)param_block.4096		\
+	$(OBJ)oz_ldr_expand_486.raw	\
+	$(OBJ)oz_memtest_486.raw.gz
+	cat $(OBJ)ozone_boot_486.512 	\
+	    $(OBJ)oz_preloader_486.4096	\
+	    $(OBJ)param_block.4096	\
+	    $(OBJ)oz_ldr_expand_486.raw	\
+	    $(OBJ)oz_memtest_486.raw.gz	\
+	    > $(BIN)oz_memtest_486.bb
+	dd if=/dev/zero of=$(BIN)oz_memtest_486.img bs=1024 count=1440
+	dd if=$(BIN)oz_memtest_486.bb of=$(BIN)oz_memtest_486.img conv=notrunc
+
+$(OBJ)oz_memtest_486.raw.gz: \
+		$(OBJ)oz_loader_486.o		\
+		$(OBJ)oz_common_486.o		\
+		$(OBJ)oz_idt_init_486.o		\
+		$(OBJ)oz_hw_tod_486.o		\
+		$(OBJ)oz_hw_uniproc_486.o	\
+		$(OBJ)oz_common_486_c.o		\
+		$(OBJ)oz_dev_vgavideo_486.o	\
+		$(OBJ)oz_idt_init_486.o		\
+		$(OBJ)oz_knl_crtl_486.o		\
+		$(OBJ)oz_knl_misc.o		\
+		$(OBJ)oz_knl_printk.o		\
+		$(OBJ)oz_knl_sdata.o		\
+		$(OBJ)oz_loader_486_c.o		\
+		$(OBJ)oz_ldr_memtest.o		\
+		$(OBJ)oz_ldr_params.o		\
+		$(OBJ)oz_ldr_pdata.o		\
+		$(OBJ)oz_ldr_section.o		\
+		$(OBJ)oz_ldr_systempdata_486.o	\
+		$(OBJ)oz_ldr_thread.o		\
+		$(OBJ)oz_sys_vxprintf_fp.o	\
+		$(OBJ)oz_sys_xprintf.o
+
+	$(LDDRO) $(OBJ)oz_memtest_486.r		\
+		$(OBJ)oz_loader_486.o		\
+		$(OBJ)oz_common_486.o		\
+		$(OBJ)oz_dev_console_486.o	\
+		$(OBJ)oz_dev_timer.o		\
+		$(OBJ)oz_dev_vgavideo_486.o	\
+		$(OBJ)oz_idt_init_486.o		\
+		$(OBJ)oz_knl_crtl_486.o		\
+		$(OBJ)oz_knl_debug.o		\
+		$(OBJ)oz_knl_devio.o		\
+		$(OBJ)oz_knl_event.o		\
+		$(OBJ)oz_knl_handle.o		\
+		$(OBJ)oz_knl_image.o		\
+		$(OBJ)oz_knl_image_elf32.o	\
+		$(OBJ)oz_knl_image_oz.o		\
+		$(OBJ)oz_knl_kmalloc.o		\
+		$(OBJ)oz_knl_logname.o		\
+		$(OBJ)oz_knl_lowipl.o		\
+		$(OBJ)oz_knl_malloc.o		\
+		$(OBJ)oz_knl_misc.o		\
+		$(OBJ)oz_knl_printinstr.o	\
+		$(OBJ)oz_knl_printk.o		\
+		$(OBJ)oz_knl_printkaddr.o	\
+		$(OBJ)oz_knl_sdata.o		\
+		$(OBJ)oz_knl_security.o		\
+		$(OBJ)oz_hw_random_486.o	\
+		$(OBJ)oz_hw_tod_486.o		\
+		$(OBJ)oz_hw_uniproc_486.o	\
+		$(OBJ)oz_common_486_c.o		\
+		$(OBJ)oz_loader_486_c.o		\
+		$(OBJ)oz_ldr_memtest.o		\
+		$(OBJ)oz_ldr_misc.o		\
+		$(OBJ)oz_ldr_params.o		\
+		$(OBJ)oz_ldr_pdata.o		\
+		$(OBJ)oz_ldr_section.o		\
+		$(OBJ)oz_ldr_systempdata_486.o	\
+		$(OBJ)oz_ldr_thread.o		\
+		$(OBJ)oz_ldr_thread_486.o	\
+		$(OBJ)oz_sys_dateconv.o		\
+		$(OBJ)oz_sys_debug.o		\
+		$(OBJ)oz_sys_disassemble_486.o	\
+		$(OBJ)oz_sys_hash.o		\
+		$(OBJ)oz_sys_vxprintf_fp.o	\
+		$(OBJ)oz_sys_xprintf.o
+	$(ELFC) oz_memtest_486 "-raw 400000"
+	$(GZIP) $(OBJ)oz_memtest_486.raw $(OBJ)oz_memtest_486.raw.gz
+
+$(OBJ)oz_ldr_memtest.o: $(SRC)oz_ldr_memtest.c
+	$(OZCC) $(OBJ)oz_ldr_memtest.o $(SRC)oz_ldr_memtest.c
+
+# ------------------------------------------------------------------------
+#
+#  Build boot block image
+#  It gets loaded at address 7C00 by the BIOS
+#
+#  The following locations are patched by the WRITEBOOT command in the loader:
+#    long at offset 504: logical block number of the preloader
+#    word at offset 508: number of blocks for the preloader, param block, loader
+#
+#  As created here, the logical block number is set to 1, and the block count 
+#  is set to 1216.  This will load the loaders if the loader.bb file is copied 
+#  directly to a disk without a filesystem.
+#
+
+$(OBJ)ozone_boot_486.512: $(SRC)ozone_boot_486.s
+	as86 -0 -a -l $(OBJ)ozone_boot_486.l -o $(OBJ)ozone_boot_486.o $(SRC)ozone_boot_486.s
+	ld86 -o $(OBJ)ozone_boot_486 $(OBJ)ozone_boot_486.o
+	dd if=$(OBJ)ozone_boot_486 of=$(OBJ)ozone_boot_486.512 skip=32 bs=1 count=512
+
+# This CDROM version gets loaded at 0x7C00
+# It might be possible to load it at 0x7800 if need be
+
+$(OBJ)ozone_cdboot_486.2048: $(SRC)ozone_cdboot_486.s
+	as86 -0 -a -l $(OBJ)ozone_cdboot_486.l -o $(OBJ)ozone_cdboot_486.o $(SRC)ozone_cdboot_486.s
+	ld86 -o $(OBJ)ozone_cdboot_486 $(OBJ)ozone_cdboot_486.o
+	dd if=$(OBJ)ozone_cdboot_486 of=$(OBJ)ozone_cdboot_486.2048 skip=32 bs=1 count=2048
+
+# ------------------------------------------------------------------------
+#
+#  Build 16-bit standalone preloader image
+#  It gets loaded at address 8000 by the boot block
+#  Its maximum size is 4096 bytes
+#
+
+$(OBJ)oz_preloader_486.4096: $(SRC)oz_preloader_486.s
+	as86 -0 -a -l $(OBJ)oz_preloader_486.l -o $(OBJ)oz_preloader_486.o $(SRC)oz_preloader_486.s
+	ld86 -o $(OBJ)oz_preloader_486 $(OBJ)oz_preloader_486.o
+	dd if=$(OBJ)oz_preloader_486 of=$(OBJ)oz_preloader_486.nh skip=32 bs=1
+	dd if=$(OBJ)oz_preloader_486.nh of=$(OBJ)oz_preloader_486.4096 conv=sync bs=4096
+
+# ------------------------------------------------------------------------
+#
+#  Make param_block.4096 file
+#  It gets loaded into memory at 9000 by the boot block program
+#
+#  This file contains the default system parameters used by 
+#  the loader before any loader parameter script file is run
+#
+
+$(OBJ)param_block.4096: $(OBJ)make_param_block
+	$(OBJ)make_param_block $(OBJ)param_block.4096
+
+$(OBJ)param_block_cd.4096: $(OBJ)make_param_block
+	$(OBJ)make_param_block $(OBJ)param_block_cd.4096 -set load_directory /ozone/binaries/ -set load_fstemplate oz_cdfs -set load_script ../startup/cdloader.ldr -set kernel_image oz_kernel_486.oz -set startup_image oz_cli.oz -set startup_input ../startup/cdstartup.cli -set startup_output console: -set startup_error console: -set kernel_stack_size 12288 -set def_user_stack_size 1048576 -set nonpaged_pool_size 8388608
+
+$(OBJ)make_param_block: $(SRC)make_param_block.c $(OBJ)oz_ldr_params.o $(OBJ)oz_sys_dateconv.o $(OBJ)oz_knl_crtl_486.o $(INC)oz_ldr_params.h
+	cc -DOZ_HW_TYPE_486 -I../includes/ -o $(OBJ)make_param_block $(SRC)make_param_block.c $(OBJ)oz_ldr_params.o $(OBJ)oz_sys_dateconv.o $(OBJ)oz_knl_crtl_486.o
+
+# ------------------------------------------------------------------------
+#
+#  Build the expander image
+#  It gets loaded at address A000 by the boot block
+#  It expands the loader image that follows and puts the result in 400000 (4Meg)
+#
+
+$(OBJ)oz_ldr_expand_486.raw: \
+		$(OBJ)oz_ldr_expand_486.o	\
+		$(LEX_KNL_OBJS)			\
+		$(OBJ)gzip.o
+##	ld -Map oz_ldr_expand_486.map -o oz_ldr_expand_486.trash	\
+##		$(OBJ)oz_ldr_expand_486.o	\
+##		$(LEX_KNL_OBJS)			\
+##		$(OBJ)gzip.o
+	$(LDDRO) $(OBJ)oz_ldr_expand_486.r	\
+		$(OBJ)oz_ldr_expand_486.o	\
+		$(LEX_KNL_OBJS)			\
+		$(OBJ)gzip.o
+	$(ELFC) oz_ldr_expand_486 "-raw A000"
+
+$(OBJ)oz_ldr_expand_486.o: $(SRC)oz_ldr_expand_486.s
+	$(OZAS) -a=$(OBJ)oz_ldr_expand_486.l -o $(OBJ)oz_ldr_expand_486.o $(SRC)oz_ldr_expand_486.s
+
+# ------------------------------------------------------------------------
+#
+#  Build the 486 standalone loader image
+#  It gets loaded just following the expander by the bootblock
+#
+#  The .raw file is the executable image starting at 400000
+#  without any headers or trailers
+#
+
+$(OBJ)oz_loader_486.raw.gz: $(OBJ)oz_loader_486.r
+	$(ELFC) oz_loader_486 "-raw 400000"
+	$(GZIP) $(OBJ)oz_loader_486.raw $(OBJ)oz_loader_486.raw.gz
+
+$(OBJ)oz_loader_486.r: $(LDR_OBJS)
+	$(LDDRO) $(OBJ)oz_loader_486.r $(LDR_OBJS)
+
+$(OBJ)oz_loader_486.o: $(SRC)oz_loader_486.s
+	$(OZAS) -a=$(OBJ)oz_loader_486.l -o $(OBJ)oz_loader_486.o $(SRC)oz_loader_486.s
+
+$(OBJ)oz_loader_486_c.o: $(SRC)oz_loader_486_c.c
+	$(OZCC) $(OBJ)oz_loader_486_c.o $(SRC)oz_loader_486_c.c
+
+$(OBJ)oz_hw_bootscan_486.o: $(SRC)oz_hw_bootscan_486.c
+	$(OZCC) $(OBJ)oz_hw_bootscan_486.o $(SRC)oz_hw_bootscan_486.c
+
+$(OBJ)oz_ldr_dev_inits_486.o: $(SRC)oz_ldr_dev_inits_486.c
+	$(OZCC) $(OBJ)oz_ldr_dev_inits_486.o $(SRC)oz_ldr_dev_inits_486.c
+
+$(OBJ)oz_ldr_misc.o: $(SRC)oz_ldr_misc.c
+	$(OZCC) $(OBJ)oz_ldr_misc.o $(SRC)oz_ldr_misc.c
+
+$(OBJ)oz_ldr_pdata.o: $(SRC)oz_ldr_pdata.c
+	$(OZCC) $(OBJ)oz_ldr_pdata.o $(SRC)oz_ldr_pdata.c
+
+$(OBJ)oz_ldr_phymem.o: $(SRC)oz_ldr_phymem.c
+	$(OZCC) $(OBJ)oz_ldr_phymem.o $(SRC)oz_ldr_phymem.c
+
+$(OBJ)oz_ldr_section.o: $(SRC)oz_ldr_section.c
+	$(OZCC) $(OBJ)oz_ldr_section.o $(SRC)oz_ldr_section.c
+
+$(OBJ)oz_ldr_systempdata_486.o: $(SRC)oz_ldr_systempdata_486.s $(SRC)oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_ldr_systempdata_486.l -o $(OBJ)oz_ldr_systempdata_486.o $(SRC)oz_ldr_systempdata_486.s
+
+$(OBJ)oz_ldr_thread.o: $(SRC)oz_ldr_thread.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_ldr_thread.s $(SRC)oz_ldr_thread.c
+	$(OZAS) -a=$(OBJ)oz_ldr_thread.l -o $(OBJ)oz_ldr_thread.o $(OBJ)oz_ldr_thread.s
+
+$(OBJ)oz_ldr_thread_486.o: $(SRC)oz_ldr_thread_486.s $(SRC)oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_ldr_thread_486.l -o $(OBJ)oz_ldr_thread_486.o $(SRC)oz_ldr_thread_486.s
+
+$(OBJ)gzip.o: $(SRC)gzip.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)gzip.s $(SRC)gzip.c
+	$(OZAS) -a=$(OBJ)gzip.l -o $(OBJ)gzip.o $(OBJ)gzip.s
+
+# ------------------------------------------------------------------------
+#
+#  Build the kernel image
+#
+#    This gets loaded into memory at 0x100000 by the loader then called
+#
+
+$(BIN)oz_kernel_486.oz:	\
+		$(KNL486_OBJS)			\
+		$(KNLUNI486_OBJS)		\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a 			\
+		$(LIB)oz_sys.a
+	$(LDDRO) $(OBJ)oz_kernel_486.r		\
+		-u oz_dev_scsi_scan		\
+		-u oz_knl_crash_set		\
+		-u oz_knl_shutdown		\
+		-u oz_knl_user_become		\
+		-u oz_sys_fork			\
+		-u oz_sys_gethostipaddr		\
+		-u oz_sys_io_fs_printerror	\
+		-u oz_sys_threadlock_wait	\
+		-u oz_sys_vxscanf		\
+		-u oz_usr_debug_init		\
+		-u oz_freesiz			\
+		$(KNL486_OBJS)			\
+		$(KNLUNI486_OBJS)		\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a			\
+		$(LIB)oz_sys.a			\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a			\
+		$(LIB)oz_sys.a			\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a			\
+		$(LIB)oz_sys.a
+	$(ELFC) oz_kernel_486 "-base 100000"
+
+$(BIN)oz_kernel_smp_486.oz:	\
+		$(KNL486_OBJS)			\
+		$(KNLSMP486_OBJS)		\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a 			\
+		$(LIB)oz_sys.a
+	$(LDDRO) $(OBJ)oz_kernel_smp_486.r	\
+		-u oz_dev_scsi_scan		\
+		-u oz_knl_crash_set		\
+		-u oz_knl_shutdown		\
+		-u oz_knl_user_become		\
+		-u oz_sys_fork			\
+		-u oz_sys_gethostipaddr		\
+		-u oz_sys_io_fs_printerror	\
+		-u oz_sys_threadlock_wait	\
+		-u oz_sys_vxscanf		\
+		-u oz_usr_debug_init		\
+		-u oz_freesiz			\
+		$(KNL486_OBJS)			\
+		$(KNLSMP486_OBJS)		\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a			\
+		$(LIB)oz_sys.a			\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a			\
+		$(LIB)oz_sys.a			\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a			\
+		$(LIB)oz_sys.a
+	$(ELFC) oz_kernel_smp_486 "-base 100000"
+
+$(BIN)oz_kernel_486.elf32: \
+		oz_kernel_486.t			\
+		$(KNL486_OBJS)			\
+		$(KNLUNI486_OBJS)		\
+		$(LIB)oz_dev_knl486.a		\
+		$(LIB)oz_knl.a 			\
+		$(LIB)oz_sys.a
+	ld -e _start -shared -soname=oz_kernel_486.elf32 -S -x -Bsymbolic \
+		-Map $(OBJ)oz_kernel_486.map		\
+		-o $(BIN)oz_kernel_486.elf32		\
+		-T oz_kernel_486.t			\
+		-u oz_dev_scsi_scan			\
+		-u oz_knl_crash_set			\
+		-u oz_knl_shutdown			\
+		-u oz_knl_user_become			\
+		-u oz_sys_fork				\
+		-u oz_sys_gethostipaddr			\
+		-u oz_sys_io_fs_printerror		\
+		-u oz_sys_threadlock_wait		\
+		-u oz_sys_vxscanf			\
+		-u oz_usr_debug_init			\
+		-u oz_freesiz				\
+		../objects/oz_kernel_486.o		\
+		../objects/oz_hw_process_486.o		\
+		../objects/oz_sys_condhand_486.o	\
+		../objects/oz_common_486.o		\
+		../objects/oz_idt_init_486.o		\
+		../objects/oz_common_486_c.o		\
+		$(OBJ)oz_hw_tod_486.o			\
+		$(OBJ)oz_hw486_setuseriopl.o		\
+		../objects/oz_hw_uniproc_486.o		\
+		'-(' ../libraries/oz_dev_knl486.a	\
+		     ../libraries/oz_knl.a		\
+		     ../libraries/oz_sys.a		\
+		'-)'
+
+$(OBJ)oz_kernel_486.o: $(SRC)oz_kernel_486.s $(SRC)oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_kernel_486.l -o $(OBJ)oz_kernel_486.o $(SRC)oz_kernel_486.s
+
+$(OBJ)oz_hw_smproc_486.o: $(SRC)oz_hw_smproc_486.s $(SRC)oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_hw_smproc_486.l -o $(OBJ)oz_hw_smproc_486.o $(SRC)oz_hw_smproc_486.s
+
+$(OBJ)oz_hw_uniproc_486.o: $(SRC)oz_hw_uniproc_486.s $(SRC)oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_hw_uniproc_486.l -o $(OBJ)oz_hw_uniproc_486.o $(SRC)oz_hw_uniproc_486.s
+
+$(OBJ)oz_hw_process_486.o: $(SRC)oz_hw_process_486.c $(SRC)oz_params_486.h
+	$(OZCC) $(OBJ)oz_hw_process_486.o $(SRC)oz_hw_process_486.c
+
+$(OBJ)oz_hw486_setuseriopl.o: oz_hw486_setuseriopl.s oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_hw486_setuseriopl.l -o $(OBJ)oz_hw486_setuseriopl.o oz_hw486_setuseriopl.s
+
+$(OBJ)oz_sys_condhand_486.o: $(SRC)oz_sys_condhand_486.s
+	$(OZAS) -a=$(OBJ)oz_sys_condhand_486.l -o $(OBJ)oz_sys_condhand_486.o $(SRC)oz_sys_condhand_486.s
+
+# ------------------------------------------------------------------------
+#
+#  Utility programs
+#
+
+utilities: \
+	$(BIN)oz_cli.oz 		\
+	$(BIN)oz_util_cat.oz 		\
+	$(BIN)oz_util_console_getscreen.oz \
+	$(BIN)oz_util_copy.oz 		\
+	$(BIN)oz_util_crash.oz		\
+	$(BIN)oz_util_credir.oz 	\
+	$(BIN)oz_util_dd.oz 		\
+	$(BIN)oz_util_delete.oz		\
+	$(BIN)oz_util_dir.oz 		\
+	$(BIN)oz_util_diskfmt.oz 	\
+	$(BIN)oz_util_dismount.oz	\
+	$(BIN)oz_util_dump.oz		\
+	$(BIN)oz_util_elfconv.oz	\
+	$(BIN)oz_util_ftpd.oz		\
+	$(BIN)oz_util_gzip.oz		\
+	$(BIN)oz_util_init.oz 		\
+	$(BIN)oz_util_ip.oz		\
+	$(BIN)oz_util_kimage.oz		\
+	$(BIN)oz_util_kprofile.oz	\
+	$(BIN)oz_util_logon.oz		\
+	$(BIN)oz_util_logwrite.oz	\
+	$(BIN)oz_util_make.oz		\
+	$(BIN)oz_util_mount.oz 		\
+	$(BIN)oz_util_partition.oz	\
+	$(BIN)oz_util_prochandles.oz	\
+	$(BIN)oz_knl_prochandles.oz	\
+	$(BIN)oz_util_scsi.oz		\
+	$(BIN)oz_util_shutdown.oz	\
+	$(BIN)oz_util_sort.oz 		\
+	$(BIN)oz_util_tailf.oz		\
+	$(BIN)oz_util_tape.oz		\
+	$(BIN)oz_util_telnet.oz		\
+	$(BIN)oz_util_telnetd.oz	\
+	$(BIN)oz_util_timexc.oz		\
+	$(BIN)oz_util_top.oz		\
+	$(BIN)oz_util_verify.oz		\
+	$(BIN)oz_util_writeboot.oz
+
+$(BIN)oz_cli.oz: $(OBJ)oz_cli.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_cli.r $(OBJ)oz_cli.o $(UTIL_LINK)
+	$(ELFC) oz_cli
+
+$(BIN)oz_cli.elf32: $(OBJ)oz_cli.o $(UTIL_LINK)
+	ld -o ../binaries/oz_cli.elf32 -Map ../objects/oz_cli.map $(OBJ)oz_cli.o $(UTIL_LINK) ../binaries/oz_kernel_486.elf32
+
+$(BIN)oz_util_cat.oz: $(OBJ)oz_util_cat.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_cat.r $(OBJ)oz_util_cat.o $(UTIL_LINK)
+	$(ELFC) oz_util_cat
+
+$(BIN)oz_util_console_getscreen.oz: $(OBJ)oz_util_console_getscreen.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_console_getscreen.r $(OBJ)oz_util_console_getscreen.o $(UTIL_LINK)
+	$(ELFC) oz_util_console_getscreen
+
+$(BIN)oz_util_copy.oz: $(OBJ)oz_util_copy.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_copy.r $(OBJ)oz_util_copy.o $(UTIL_LINK)
+	$(ELFC) oz_util_copy
+
+$(BIN)oz_util_crash.oz: $(OBJ)oz_util_crash.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_crash.r $(OBJ)oz_util_crash.o $(UTIL_LINK)
+	$(ELFC) oz_util_crash
+
+$(BIN)oz_util_credir.oz: $(OBJ)oz_util_credir.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_credir.r $(OBJ)oz_util_credir.o $(UTIL_LINK)
+	$(ELFC) oz_util_credir
+
+$(BIN)oz_util_dd.oz: $(OBJ)oz_util_dd.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_dd.r $(OBJ)oz_util_dd.o $(UTIL_LINK)
+	$(ELFC) oz_util_dd
+
+$(BIN)oz_util_delete.oz: $(OBJ)oz_util_delete.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_delete.r $(OBJ)oz_util_delete.o $(UTIL_LINK)
+	$(ELFC) oz_util_delete
+
+$(BIN)oz_util_dir.oz: $(OBJ)oz_util_dir.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_dir.r $(OBJ)oz_util_dir.o $(UTIL_LINK)
+	$(ELFC) oz_util_dir
+
+$(BIN)oz_util_diskfmt.oz: $(OBJ)oz_util_diskfmt.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_diskfmt.r $(OBJ)oz_util_diskfmt.o $(UTIL_LINK)
+	$(ELFC) oz_util_diskfmt
+
+$(BIN)oz_util_dismount.oz: $(OBJ)oz_util_dismount.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_dismount.r $(OBJ)oz_util_dismount.o $(UTIL_LINK)
+	$(ELFC) oz_util_dismount
+
+$(BIN)oz_util_dump.oz: $(OBJ)oz_util_dump.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_dump.r $(OBJ)oz_util_dump.o $(UTIL_LINK)
+	$(ELFC) oz_util_dump
+
+$(BIN)oz_util_elfconv.oz: $(OBJ)oz_util_elfconv.oz.o $(CRTL_LINK)
+	$(LDDRO) $(OBJ)oz_util_elfconv.r $(OBJ)oz_util_elfconv.oz.o $(CRTL_LINK)
+	$(ELFC) oz_util_elfconv
+
+$(BIN)oz_util_ftpd.oz: $(OBJ)oz_util_ftpd.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_ftpd.r $(OBJ)oz_util_ftpd.o $(UTIL_LINK)
+	$(ELFC) oz_util_ftpd
+
+$(BIN)oz_util_gzip.oz: $(OBJ)oz_util_gzip.o $(OBJ)gzip.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_gzip.r $(OBJ)oz_util_gzip.o $(OBJ)gzip.o $(UTIL_LINK)
+	$(ELFC) oz_util_gzip
+
+$(BIN)oz_util_init.oz: $(OBJ)oz_util_init.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_init.r $(OBJ)oz_util_init.o $(UTIL_LINK)
+	$(ELFC) oz_util_init
+
+$(BIN)oz_util_ip.oz: $(OBJ)oz_util_ip.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_ip.r $(OBJ)oz_util_ip.o $(UTIL_LINK)
+	$(ELFC) oz_util_ip
+
+$(BIN)oz_util_kimage.oz: $(OBJ)oz_util_kimage.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_kimage.r $(OBJ)oz_util_kimage.o $(UTIL_LINK)
+	$(ELFC) oz_util_kimage
+
+$(BIN)oz_util_kprofile.oz: $(OBJ)oz_util_kprofile.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_kprofile.r $(OBJ)oz_util_kprofile.o $(UTIL_LINK)
+	$(ELFC) oz_util_kprofile
+
+$(BIN)oz_util_logon.oz: $(OBJ)oz_util_logon.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_logon.r $(OBJ)oz_util_logon.o $(UTIL_LINK)
+	$(ELFC) oz_util_logon
+
+$(BIN)oz_util_logwrite.oz: $(OBJ)oz_util_logwrite.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_logwrite.r $(OBJ)oz_util_logwrite.o $(UTIL_LINK)
+	$(ELFC) oz_util_logwrite
+
+$(BIN)oz_util_make.oz: $(OBJ)oz_util_make.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_make.r $(OBJ)oz_util_make.o $(UTIL_LINK)
+	$(ELFC) oz_util_make
+
+$(BIN)oz_util_mount.oz: $(OBJ)oz_util_mount.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_mount.r $(OBJ)oz_util_mount.o $(UTIL_LINK)
+	$(ELFC) oz_util_mount
+
+$(BIN)oz_util_partition.oz: $(OBJ)oz_util_partition.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_partition.r $(OBJ)oz_util_partition.o $(UTIL_LINK)
+	$(ELFC) oz_util_partition
+
+$(BIN)oz_util_prochandles.oz: $(OBJ)oz_util_prochandles.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_prochandles.r $(OBJ)oz_util_prochandles.o $(UTIL_LINK)
+	$(ELFC) oz_util_prochandles
+
+$(BIN)oz_knl_prochandles.oz: $(OBJ)oz_knl_prochandles.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_knl_prochandles.r $(OBJ)oz_knl_prochandles.o
+	$(ELFC) oz_knl_prochandles -dynamic
+
+$(BIN)oz_util_scsi.oz: $(OBJ)oz_util_scsi.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_scsi.r $(OBJ)oz_util_scsi.o $(UTIL_LINK)
+	$(ELFC) oz_util_scsi
+
+$(BIN)oz_util_shutdown.oz: $(OBJ)oz_util_shutdown.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_shutdown.r $(OBJ)oz_util_shutdown.o $(UTIL_LINK)
+	$(ELFC) oz_util_shutdown
+
+$(BIN)oz_util_sort.oz: $(OBJ)oz_util_sort.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_sort.r $(OBJ)oz_util_sort.o $(UTIL_LINK)
+	$(ELFC) oz_util_sort
+
+$(BIN)oz_util_tailf.oz: $(OBJ)oz_util_tailf.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_tailf.r $(OBJ)oz_util_tailf.o $(UTIL_LINK)
+	$(ELFC) oz_util_tailf
+
+$(BIN)oz_util_tape.oz: $(OBJ)oz_util_tape.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_tape.r $(OBJ)oz_util_tape.o $(UTIL_LINK)
+	$(ELFC) oz_util_tape
+
+$(BIN)oz_util_telnet.oz: $(OBJ)oz_util_telnet.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_telnet.r $(OBJ)oz_util_telnet.o $(UTIL_LINK)
+	$(ELFC) oz_util_telnet
+
+$(BIN)oz_util_telnetd.oz: $(OBJ)oz_util_telnetd.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_telnetd.r $(OBJ)oz_util_telnetd.o $(UTIL_LINK)
+	$(ELFC) oz_util_telnetd
+
+$(BIN)oz_util_timexc.oz: $(OBJ)oz_util_timexc.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_timexc.r $(OBJ)oz_util_timexc.o $(UTIL_LINK)
+	$(ELFC) oz_util_timexc
+
+$(BIN)oz_util_top.oz: $(OBJ)oz_util_top.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_top.r $(OBJ)oz_util_top.o $(UTIL_LINK)
+	$(ELFC) oz_util_top
+
+$(BIN)oz_util_verify.oz: $(OBJ)oz_util_verify.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_verify.r $(OBJ)oz_util_verify.o $(UTIL_LINK)
+	$(ELFC) oz_util_verify
+
+$(BIN)oz_util_writeboot.oz: $(OBJ)oz_util_writeboot.o $(OBJ)oz_ldr_params.o $(UTIL_LINK)
+	$(LDDRO) $(OBJ)oz_util_writeboot.r $(OBJ)oz_util_writeboot.o $(OBJ)oz_ldr_params.o $(UTIL_LINK)
+	$(ELFC) oz_util_writeboot
+
+$(OBJ)oz_cli.o: $(SRC)oz_cli.c
+	$(OZCC) $(OBJ)oz_cli.o $(SRC)oz_cli.c
+
+$(OBJ)oz_util_cat.o: $(SRC)oz_util_cat.c
+	$(OZCC) $(OBJ)oz_util_cat.o $(SRC)oz_util_cat.c
+
+$(OBJ)oz_util_console_getscreen.o: $(SRC)oz_util_console_getscreen.c
+	$(OZCC) $(OBJ)oz_util_console_getscreen.o $(SRC)oz_util_console_getscreen.c
+
+$(OBJ)oz_util_copy.o: $(SRC)oz_util_copy.c
+	$(OZCC) $(OBJ)oz_util_copy.o $(SRC)oz_util_copy.c
+
+$(OBJ)oz_util_crash.o: $(SRC)oz_util_crash.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_util_crash.s $(SRC)oz_util_crash.c
+	$(OZAS) -a=$(OBJ)oz_util_crash.l -o $(OBJ)oz_util_crash.o $(OBJ)oz_util_crash.s
+
+$(OBJ)oz_util_credir.o: $(SRC)oz_util_credir.c
+	$(OZCC) $(OBJ)oz_util_credir.o $(SRC)oz_util_credir.c
+
+$(OBJ)oz_util_dd.o: $(SRC)oz_util_dd.c
+	$(OZCC) $(OBJ)oz_util_dd.o $(SRC)oz_util_dd.c
+
+$(OBJ)oz_util_delete.o: $(SRC)oz_util_delete.c
+	$(OZCC) $(OBJ)oz_util_delete.o $(SRC)oz_util_delete.c
+
+$(OBJ)oz_util_dir.o: $(SRC)oz_util_dir.c
+	$(OZCC) $(OBJ)oz_util_dir.o $(SRC)oz_util_dir.c
+
+$(OBJ)oz_util_diskfmt.o: $(SRC)oz_util_diskfmt.c
+	$(OZCC) $(OBJ)oz_util_diskfmt.o $(SRC)oz_util_diskfmt.c
+
+$(OBJ)oz_util_dismount.o: $(SRC)oz_util_dismount.c
+	$(OZCC) $(OBJ)oz_util_dismount.o $(SRC)oz_util_dismount.c
+
+$(OBJ)oz_util_dump.o: $(SRC)oz_util_dump.c
+	$(OZCC) $(OBJ)oz_util_dump.o $(SRC)oz_util_dump.c
+
+$(OBJ)oz_util_elfconv.oz.o: $(SRC)oz_util_elfconv.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_util_elfconv.s $(SRC)oz_util_elfconv.c
+	$(OZAS) -a=$(OBJ)oz_util_elfconv.l -o $(OBJ)oz_util_elfconv.oz.o $(OBJ)oz_util_elfconv.s
+
+$(OBJ)oz_util_filesel.o: $(SRC)oz_util_filesel.c
+	$(OZCC) $(OBJ)oz_util_filesel.o $(SRC)oz_util_filesel.c
+
+$(OBJ)oz_util_ftpd.o: $(SRC)oz_util_ftpd.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_util_ftpd.s $(SRC)oz_util_ftpd.c
+	$(OZAS) -a=$(OBJ)oz_util_ftpd.l -o $(OBJ)oz_util_ftpd.o $(OBJ)oz_util_ftpd.s
+##$(OBJ)oz_util_ftpd.o: $(SRC)oz_util_ftpd.c
+##	$(OZCC) $(OBJ)oz_util_ftpd.o $(SRC)oz_util_ftpd.c
+
+$(OBJ)oz_util_gzip.o: $(SRC)oz_util_gzip.c
+	$(OZCC) $(OBJ)oz_util_gzip.o $(SRC)oz_util_gzip.c
+
+$(OBJ)oz_util_init.o: $(SRC)oz_util_init.c
+	$(OZCC) $(OBJ)oz_util_init.o $(SRC)oz_util_init.c
+
+$(OBJ)oz_util_ip.o: $(SRC)oz_util_ip.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_util_ip.s $(SRC)oz_util_ip.c
+	$(OZAS) -a=$(OBJ)oz_util_ip.l -o $(OBJ)oz_util_ip.o $(OBJ)oz_util_ip.s
+
+$(OBJ)oz_util_kimage.o: $(SRC)oz_util_kimage.c
+	$(OZCC) $(OBJ)oz_util_kimage.o $(SRC)oz_util_kimage.c
+
+$(OBJ)oz_util_kprofile.o: $(SRC)oz_util_kprofile.c
+	$(OZCC) $(OBJ)oz_util_kprofile.o $(SRC)oz_util_kprofile.c
+
+$(OBJ)oz_util_logon.o: $(SRC)oz_util_logon.c
+	$(OZCC) $(OBJ)oz_util_logon.o $(SRC)oz_util_logon.c
+
+$(OBJ)oz_util_logwrite.o: $(SRC)oz_util_logwrite.c
+	$(OZCC) $(OBJ)oz_util_logwrite.o $(SRC)oz_util_logwrite.c
+
+$(OBJ)oz_util_make.o: $(SRC)oz_util_make.c
+	$(OZCC) $(OBJ)oz_util_make.o $(SRC)oz_util_make.c
+
+$(OBJ)oz_util_mount.o: $(SRC)oz_util_mount.c
+	$(OZCC) $(OBJ)oz_util_mount.o $(SRC)oz_util_mount.c
+
+$(OBJ)oz_util_partition.o: $(SRC)oz_util_partition.c $(OBJ)ozone_part_486.h
+	$(OZCC) $(OBJ)oz_util_partition.o -I$(OBJ) $(SRC)oz_util_partition.c
+
+$(OBJ)oz_util_prochandles.o: $(SRC)oz_util_prochandles.c
+	$(OZCC) $(OBJ)oz_util_prochandles.o $(SRC)oz_util_prochandles.c
+
+$(OBJ)oz_knl_prochandles.o: $(SRC)oz_knl_prochandles.c
+	$(OZCC) $(OBJ)oz_knl_prochandles.o $(SRC)oz_knl_prochandles.c
+
+$(OBJ)oz_util_scsi.o: $(SRC)oz_util_scsi.c
+	$(OZCC) $(OBJ)oz_util_scsi.o $(SRC)oz_util_scsi.c
+
+$(OBJ)oz_util_shutdown.o: $(SRC)oz_util_shutdown.c
+	$(OZCC) $(OBJ)oz_util_shutdown.o $(SRC)oz_util_shutdown.c
+
+$(OBJ)oz_util_start.o: $(SRC)oz_util_start.c
+	$(OZCC) $(OBJ)oz_util_start.o $(SRC)oz_util_start.c
+
+$(OBJ)oz_util_sort.o: $(SRC)oz_util_sort.c
+	$(OZCC) $(OBJ)oz_util_sort.o $(SRC)oz_util_sort.c
+
+$(OBJ)oz_util_tailf.o: $(SRC)oz_util_tailf.c
+	$(OZCC) $(OBJ)oz_util_tailf.o $(SRC)oz_util_tailf.c
+
+$(OBJ)oz_util_tape.o: $(SRC)oz_util_tape.c
+	$(OZCC) $(OBJ)oz_util_tape.o $(SRC)oz_util_tape.c
+
+$(OBJ)oz_util_telnet.o: $(SRC)oz_util_telnet.c
+	$(OZCC) $(OBJ)oz_util_telnet.o $(SRC)oz_util_telnet.c
+
+$(OBJ)oz_util_telnetd.o: $(SRC)oz_util_telnetd.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_util_telnetd.s $(SRC)oz_util_telnetd.c
+	$(OZAS) -a=$(OBJ)oz_util_telnetd.l -o $(OBJ)oz_util_telnetd.o $(OBJ)oz_util_telnetd.s
+
+$(OBJ)oz_util_timexc.o: $(SRC)oz_util_timexc.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_util_timexc.s $(SRC)oz_util_timexc.c
+	$(OZAS) -a=$(OBJ)oz_util_timexc.l -o $(OBJ)oz_util_timexc.o $(OBJ)oz_util_timexc.s
+
+$(OBJ)oz_util_top.o: $(SRC)oz_util_top.c
+	$(OZCC) $(OBJ)oz_util_top.o $(SRC)oz_util_top.c
+
+$(OBJ)oz_util_verify.o: $(SRC)oz_util_verify.c
+	$(OZCC) $(OBJ)oz_util_verify.o $(SRC)oz_util_verify.c
+
+$(OBJ)oz_util_writeboot.o: $(SRC)oz_util_writeboot.c
+	$(OZCC) $(OBJ)oz_util_writeboot.o $(SRC)oz_util_writeboot.c
+
+# ------------------------------------------------------------------------
+#
+#  Partition utility stuff
+#
+
+$(OBJ)ozone_part_486.h: $(SRC)ozone_part_486.s
+	as86 -0 -a -l $(OBJ)ozone_part_486.l -o $(OBJ)ozone_part_486.o $(SRC)ozone_part_486.s
+	ld86 -o $(OBJ)ozone_part_486 $(OBJ)ozone_part_486.o
+	$(MOP4H)
+
+# ------------------------------------------------------------------------
+#
+#  Simple user mode test programs
+#
+
+testprograms: \
+	$(BIN)bigpig.oz			\
+	$(BIN)dump486trace.oz		\
+	$(BIN)dumpcachepages.oz		\
+	$(BIN)dumpioapic.oz		\
+	$(BIN)dumpkmem.oz		\
+	$(BIN)dumppiix4.oz		\
+	$(BIN)dumppmem.oz		\
+	$(BIN)dumpppt.oz		\
+	$(BIN)dumprtcram.oz		\
+	$(BIN)dump_smplev_clash.oz	\
+	$(BIN)forktest.oz		\
+	$(BIN)pokephys.oz		\
+	$(BIN)pokevirt.oz		\
+	$(BIN)quickyfreq.oz		\
+	$(BIN)realloctest.oz		\
+	$(BIN)testexecuteoz.oz		\
+	$(BIN)testfilext.oz		\
+	$(BIN)testfilrem.oz		\
+	$(BIN)testkimage.oz		\
+	$(BIN)time_localapic.oz
+
+##	$(BIN)dumppcidevs.oz		\
+##	$(TST)etherdump.oz		\
+##	$(TST)ethertest.oz		\
+##	$(TST)exttest.oz		\
+##	$(TST)fptest.oz			\
+##	$(TST)infloop.oz		\
+##	$(TST)chtest.oz			\
+##	$(TST)testpcibios.oz
+
+##$(TST)z.oz: $(TST)z.c $(CRTL_LINK)
+##	$(OZCC) $(OBJ)z.o $(TST)z.c
+##	$(LDDRO) $(OBJ)z.r $(OBJ)z.o $(CRTL_LINK)
+##	$(ELFC) z
+
+##xx.oz:	xx.c $(CRTL_LINK)
+##	$(OZCC) xx.o xx.c
+##	$(LDDRO) $(OBJ)xx.r xx.o $(CRTL_LINK)
+##	$(ELFC) xx.oz xx
+
+$(BIN)bigpig.oz: $(TST)bigpig.c $(CRTL_LINK)
+	$(OZCC) $(OBJ)bigpig.o $(TST)bigpig.c
+	$(LDDRO) $(OBJ)bigpig.r $(OBJ)bigpig.o $(CRTL_LINK)
+	$(ELFC) bigpig
+
+$(BIN)dump486trace.oz: $(TST)dump486trace.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dump486trace.o $(TST)dump486trace.c
+	$(LDDRO) $(OBJ)dump486trace.r $(OBJ)dump486trace.o $(UTIL_LINK)
+	$(ELFC) dump486trace
+
+$(BIN)dumpcachepages.oz: $(TST)dumpcachepages.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumpcachepages.o $(TST)dumpcachepages.c
+	$(LDDRO) $(OBJ)dumpcachepages.r $(OBJ)dumpcachepages.o $(UTIL_LINK)
+	$(ELFC) dumpcachepages
+
+$(BIN)dumpioapic.oz: $(TST)dumpioapic.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumpioapic.o $(TST)dumpioapic.c
+	$(LDDRO) $(OBJ)dumpioapic.r $(OBJ)dumpioapic.o $(UTIL_LINK)
+	$(ELFC) dumpioapic
+
+$(BIN)dumpkmem.oz: $(TST)dumpkmem.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumpkmem.o $(TST)dumpkmem.c
+	$(LDDRO) $(OBJ)dumpkmem.r $(OBJ)dumpkmem.o $(UTIL_LINK)
+	$(ELFC) dumpkmem
+
+$(BIN)dumppciconfig.oz: $(TST)dumppciconfig.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumppciconfig.o $(TST)dumppciconfig.c
+	$(LDDRO) $(OBJ)dumppciconfig.r $(OBJ)dumppciconfig.o $(UTIL_LINK)
+	$(ELFC) dumppciconfig
+
+$(BIN)dumppcidevs.oz: $(TST)dumppcidevs.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumppcidevs.o $(TST)dumppcidevs.c
+	$(LDDRO) $(OBJ)dumppcidevs.r $(OBJ)dumppcidevs.o $(UTIL_LINK)
+	$(ELFC) dumppcidevs
+
+$(BIN)dumppciirqroutetable.oz: $(TST)dumppciirqroutetable.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumppciirqroutetable.o $(TST)dumppciirqroutetable.c
+	$(LDDRO) $(OBJ)dumppciirqroutetable.r $(OBJ)dumppciirqroutetable.o $(UTIL_LINK)
+	$(ELFC) dumppciirqroutetable
+
+$(BIN)dumppiix4.oz: $(TST)dumppiix4.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumppiix4.o $(TST)dumppiix4.c
+	$(LDDRO) $(OBJ)dumppiix4.r $(OBJ)dumppiix4.o $(UTIL_LINK)
+	$(ELFC) dumppiix4
+
+$(BIN)dumppmem.oz: $(TST)dumppmem.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumppmem.o $(TST)dumppmem.c
+	$(LDDRO) $(OBJ)dumppmem.r $(OBJ)dumppmem.o $(UTIL_LINK)
+	$(ELFC) dumppmem
+
+$(BIN)dumpppt.oz: $(TST)dumpppt.c $(OBJ)oz_util_start.o $(BIN)dumpppt_knl.oz
+	$(OZCC) $(OBJ)dumpppt.o $(TST)dumpppt.c
+	$(LDDRO) $(OBJ)dumpppt.r $(OBJ)dumpppt.o $(UTIL_LINK)
+	ln -f -s $(BIN)dumpppt_knl.oz dumpppt_knl.oz
+	ln -f -s $(BIN)oz_kernel_486.oz oz_kernel_486.oz
+	../linux/oz_util_elfconv $(BIN)dumpppt.oz $(OBJ)dumpppt.r dumpppt_knl.oz  oz_kernel_486.oz > $(OBJ)dumppt.m
+	sort $(OBJ)dumppt.m > $(OBJ)dumppt.ms
+	rm -f dumpppt_knl.oz oz_kernel_486.oz
+
+$(BIN)dumpppt_knl.oz: $(TST)dumpppt_knl.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)dumpppt_knl.s $(TST)dumpppt_knl.c
+	$(OZAS) -a=$(OBJ)dumpppt_knl.l -o $(OBJ)dumpppt_knl.o $(OBJ)dumpppt_knl.s
+	$(LDDRO) $(OBJ)dumpppt_knl.r $(OBJ)dumpppt_knl.o
+	$(ELFC) dumpppt_knl -dynamic
+
+$(BIN)dumprtcram.oz: $(TST)dumprtcram.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dumprtcram.o $(TST)dumprtcram.c
+	$(LDDRO) $(OBJ)dumprtcram.r $(OBJ)dumprtcram.o $(UTIL_LINK)
+	$(ELFC) dumprtcram
+
+$(BIN)dump_smplev_clash.oz: $(TST)dump_smplev_clash.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)dump_smplev_clash.o $(TST)dump_smplev_clash.c
+	$(LDDRO) $(OBJ)dump_smplev_clash.r $(OBJ)dump_smplev_clash.o $(UTIL_LINK)
+	$(ELFC) dump_smplev_clash
+
+$(BIN)forktest.oz: $(TST)forktest.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)forktest.o $(TST)forktest.c
+	$(LDDRO) $(OBJ)forktest.r $(OBJ)forktest.o $(UTIL_LINK)
+	$(ELFC) forktest
+
+$(BIN)ix4kbuktest.oz: $(TST)ix4kbuktest.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)ix4kbuktest.o $(TST)ix4kbuktest.c
+	$(LDDRO) $(OBJ)ix4kbuktest.r $(OBJ)ix4kbuktest.o $(UTIL_LINK)
+	$(ELFC) ix4kbuktest
+
+$(BIN)ixdebtest.oz: $(TST)ixdebtest.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)ixdebtest.o $(TST)ixdebtest.c
+	$(LDDRO) $(OBJ)ixdebtest.r $(OBJ)ixdebtest.o $(UTIL_LINK)
+	$(ELFC) ixdebtest
+
+$(BIN)pokephys.oz: $(TST)pokephys.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)pokephys.o $(TST)pokephys.c
+	$(LDDRO) $(OBJ)pokephys.r $(OBJ)pokephys.o $(UTIL_LINK)
+	$(ELFC) pokephys
+
+$(BIN)pokevirt.oz: $(TST)pokevirt.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)pokevirt.o $(TST)pokevirt.c
+	$(LDDRO) $(OBJ)pokevirt.r $(OBJ)pokevirt.o $(UTIL_LINK)
+	$(ELFC) pokevirt
+
+$(BIN)quickyfreq.oz: $(TST)quickyfreq.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)quickyfreq.o $(TST)quickyfreq.c
+	$(LDDRO) $(OBJ)quickyfreq.r $(OBJ)quickyfreq.o $(UTIL_LINK)
+	$(ELFC) quickyfreq
+
+$(BIN)realloctest.oz: $(TST)realloctest.c $(CTRL_LINK)
+	$(OZCC) $(OBJ)realloctest.o $(TST)realloctest.c
+	$(LDDRO) $(OBJ)realloctest.r $(OBJ)realloctest.o $(CRTL_LINK)
+	$(ELFC) realloctest
+
+$(BIN)testexecuteoz.oz: $(TST)testexecuteoz.c $(CRTL_LINK)
+	$(OZCC) $(OBJ)testexecuteoz.o $(TST)testexecuteoz.c
+	$(LDDRO) $(OBJ)testexecuteoz.r $(OBJ)testexecuteoz.o $(CRTL_LINK)
+	$(ELFC) testexecuteoz
+
+$(TST)infloop.oz: $(TST)infloop.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)infloop.o $(TST)infloop.c
+	$(LDDRO) $(OBJ)infloop.r $(OBJ)infloop.o $(UTIL_LINK)
+	$(ELFC) infloop
+
+$(BIN)keycodes.oz: $(TST)keycodes.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)keycodes.o $(TST)keycodes.c
+	$(LDDRO) $(OBJ)keycodes.r $(OBJ)keycodes.o $(UTIL_LINK)
+	$(ELFC) keycodes
+
+$(BIN)ps2mouse.oz: $(TST)ps2mouse.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)ps2mouse.o $(TST)ps2mouse.c
+	$(LDDRO) $(OBJ)ps2mouse.r $(OBJ)ps2mouse.o $(UTIL_LINK)
+	$(ELFC) ps2mouse
+
+$(BIN)ps2mousedev.oz: $(TST)ps2mousedev.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_util_start.o
+	$(OZCC) $(OBJ)ps2mousedev.o $(TST)ps2mousedev.c
+	$(LDDRO) $(OBJ)ps2mousedev.r $(OBJ)ps2mousedev.o $(UTIL_LINK)
+	$(ELFC) ps2mousedev
+
+$(TST)etherdump.oz: $(TST)etherdump.c $(UTIL_LINK)
+	$(OZCC) $(OBJ)etherdump.o $(TST)etherdump.c
+	$(LDDRO) $(OBJ)etherdump.r $(OBJ)etherdump.o $(UTIL_LINK)
+	$(ELFC) etherdump
+
+$(TST)ethertest.oz: $(TST)ethertest.c $(UTIL_LINK)
+	$(OZCC) $(OBJ)ethertest.o $(TST)ethertest.c
+	$(LDDRO) $(OBJ)ethertest.r $(OBJ)ethertest.o $(UTIL_LINK)
+	$(ELFC) ethertest
+
+$(TST)testpcibios.oz: $(TST)testpcibios.c $(TST)callpcibios.o $(UTIL_LINK)
+	$(OZCC) $(OBJ)testpcibios.o $(TST)testpcibios.c
+	$(LDDRO) $(OBJ)testpcibios.r $(OBJ)testpcibios.o $(TST)callpcibios.o $(UTIL_LINK)
+	$(ELFC) testpcibios
+
+$(TST)callpcibios.o: $(TST)callpcibios.s
+	$(OZAS) -a=$(TST)callpcibios.l -o $(TST)callpcibios.o $(TST)callpcibios.s
+
+$(TST)chtest.oz: $(TST)chtest.s
+	$(OZAS) -a=$(OBJ)chtest.l -o $(OBJ)chtest.o $(TST)chtest.s
+	$(LDDRO) $(OBJ)chtest.r $(OBJ)chtest.o
+	$(ELFC) chtest
+
+$(TST)fptest.oz: $(TST)fptest.c $(UTIL_LINK)
+	$(OZCC) $(OBJ)fptest.o $(TST)fptest.c
+	$(LDDRO) $(OBJ)fptest.r $(OBJ)fptest.o $(UTIL_LINK)
+	$(ELFC) fptest
+
+$(TST)usr_crtl_test.oz: $(OBJ)usr_crtl_test.o $(CRTL_LINK)
+	$(LDDRO) $(OBJ)usr_crtl_test.r $(OBJ)usr_crtl_test.o $(CRTL_LINK)
+	$(ELFC) usr_crtl_test
+
+$(OBJ)usr_crtl_test.o: $(TST)usr_crtl_test.c
+	$(OZCC) $(OBJ)usr_crtl_test.o $(TST)usr_crtl_test.c
+
+$(TST)exttest.oz: $(TST)exttest.c $(UTIL_LINK)
+	$(OZCC) $(OBJ)exttest.o $(TST)exttest.c
+	$(LDDRO) $(OBJ)exttest.r $(OBJ)exttest.o $(UTIL_LINK)
+	$(ELFC) exttest
+
+$(BIN)testfilext.oz: $(TST)testfilext.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_crtl_start.o $(LIB)oz_crtl.a
+	$(OZCC) $(OBJ)testfilext.o $(TST)testfilext.c
+	$(LDDRO) $(OBJ)testfilext.r $(OBJ)testfilext.o $(OBJ)oz_crtl_start.o $(LIB)oz_crtl.a
+	$(ELFC) testfilext
+
+$(BIN)testfilrem.oz: $(TST)testfilrem.c $(OBJ)oz_crtl_malloc.o $(OBJ)oz_crtl_start.o $(LIB)oz_crtl.a
+	$(OZCC) $(OBJ)testfilrem.o $(TST)testfilrem.c
+	$(LDDRO) $(OBJ)testfilrem.r $(OBJ)testfilrem.o $(OBJ)oz_crtl_start.o $(LIB)oz_crtl.a
+	$(ELFC) testfilrem
+
+$(BIN)testkimage.oz: $(TST)testkimage.c
+	$(OZCC) $(OBJ)testkimage.o $(TST)testkimage.c
+	$(LDDRO) $(OBJ)testkimage.r $(OBJ)testkimage.o
+	$(ELFC) testkimage
+
+$(BIN)time_localapic.oz: $(TST)time_localapic.c
+	$(OZCC) $(OBJ)time_localapic.o $(TST)time_localapic.c
+	$(LDDRO) $(OBJ)time_localapic.r $(OBJ)time_localapic.o $(OBJ)oz_util_start.o $(LIB)oz_crtl.a
+	$(ELFC) time_localapic
+
+$(BIN)tim_rtl8139.oz: $(TST)tim_rtl8139.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)tim_rtl8139.s $(TST)tim_rtl8139.c
+	$(OZAS) -a=$(OBJ)tim_rtl8139.l -o $(OBJ)tim_rtl8139.o $(OBJ)tim_rtl8139.s
+	$(LDDRO) $(OBJ)tim_rtl8139.r $(OBJ)tim_rtl8139.o
+	$(ELFC) tim_rtl8139 -dynamic
+
+# ------------------------------------------------------------------------
+#
+#  Loadable (driver) images
+#
+
+driverimages:	\
+	$(BIN)oz_dev_comport_486.oz	\
+	$(BIN)oz_dev_fat.oz		\
+	$(BIN)oz_dev_ip_fs.oz		\
+	$(BIN)oz_dev_rtl8139_486.oz	\
+	$(BIN)oz_dev_stego.oz
+
+$(BIN)oz_dev_comport_486.oz: $(OBJ)oz_dev_comport_486.o $(SRC)oz_dev_image.c
+	$(OZCC) $(OBJ)oz_dev_comport_486_image.o -DENTRYPOINT=oz_dev_comport_init $(SRC)oz_dev_image.c
+	$(LDDRO) $(OBJ)oz_dev_comport_486.r $(OBJ)oz_dev_comport_486.o $(OBJ)oz_dev_comport_486_image.o
+	$(ELFC) oz_dev_comport_486 -dynamic
+
+$(BIN)oz_dev_exb8500.oz: $(OBJ)oz_dev_exb8500.o $(SRC)oz_dev_image.c
+	$(OZCC) $(OBJ)oz_dev_exb8500_image.o -DENTRYPOINT=oz_dev_exb8500_init $(SRC)oz_dev_image.c
+	$(LDDRO) $(OBJ)oz_dev_exb8500.r $(OBJ)oz_dev_exb8500_image.o $(OBJ)oz_dev_exb8500.o
+	$(ELFC) oz_dev_exb8500 -dynamic
+
+$(BIN)oz_dev_fat.oz: $(OBJ)oz_dev_fat.o $(SRC)oz_dev_image.c
+	$(OZCC) $(OBJ)oz_dev_fat_image.o -DENTRYPOINT=oz_dev_fat_init $(SRC)oz_dev_image.c
+	$(LDDRO) $(OBJ)oz_dev_fat.r $(OBJ)oz_dev_fat.o $(OBJ)oz_dev_fat_image.o $(OBJ)oz_sys_cipher.o
+	$(ELFC) oz_dev_fat -dynamic
+
+$(BIN)oz_dev_ip_fs.oz: $(OBJ)oz_dev_ip_fs.o $(SRC)oz_dev_image.c
+	$(OZCC) $(OBJ)oz_dev_ip_fs_image.o -DENTRYPOINT=oz_dev_ip_fs_init $(SRC)oz_dev_image.c
+	$(LDDRO) $(OBJ)oz_dev_ip_fs.r $(OBJ)oz_dev_ip_fs_image.o $(OBJ)oz_dev_ip_fs.o
+	$(ELFC) oz_dev_ip_fs -dynamic
+
+$(BIN)oz_dev_rtl8139_486.oz: $(OBJ)oz_dev_rtl8139_486.o $(SRC)oz_dev_image.c
+	$(OZCC) $(OBJ)oz_dev_rtl8139_486_image.o -DENTRYPOINT=oz_dev_rtl8139_init $(SRC)oz_dev_image.c
+	$(LDDRO) $(OBJ)oz_dev_rtl8139_486.r $(OBJ)oz_dev_rtl8139_486.o $(OBJ)oz_dev_rtl8139_486_image.o
+	$(ELFC) oz_dev_rtl8139_486 -dynamic
+
+$(BIN)oz_dev_stego.oz: $(OBJ)oz_dev_stego.o $(SRC)oz_dev_image.c
+	$(OZCC) $(OBJ)oz_dev_stego_image.o -DENTRYPOINT=oz_dev_stego_init $(SRC)oz_dev_image.c
+	$(LDDRO) $(OBJ)oz_dev_stego.r $(OBJ)oz_dev_stego.o $(OBJ)oz_dev_stego_image.o $(OBJ)oz_sys_cipher.o
+	$(ELFC) oz_dev_stego -dynamic
+
+# ------------------------------------------------------------------------
+#
+#  C Runtime library - replaces libc.a and libgcc.a
+#
+
+$(LIB)oz_crtl.a: $(CRTL_OBJS) $(GLIBC_OBJS)
+	$(DEL) $(LIB)oz_crtl.a
+	ar rcs $(LIB)oz_crtl.a $(CRTL_OBJS) $(GLIBC_OBJS)
+
+$(BIN)oz_crtl.oz: $(CRTL_OBJS) $(GLIBC_OBJS)
+	ld -Map $(OBJ)oz_crtl.map -d -r -o $(OBJ)oz_crtl.r $(CRTL_OBJS) $(GLIBC_OBJS)
+	$(ELFC) oz_crtl -dynamic
+
+# ------------------------------------------------------------------------
+#
+#  Routines common to both standalone kernel and standalone loader
+#
+
+$(OBJ)oz_common_486.o: oz_common_486.s oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_common_486.l -o $(OBJ)oz_common_486.o oz_common_486.s
+
+$(OBJ)oz_common_486_c.o: $(SRC)oz_common_486_c.c
+	$(OZCC) $(OBJ)oz_common_486_c.o $(SRC)oz_common_486_c.c
+
+$(OBJ)oz_hw_tod_486.o: oz_hw_tod_486.s oz_params_486.s
+	$(OZAS) -a=$(OBJ)oz_hw_tod_486.l -o $(OBJ)oz_hw_tod_486.o oz_hw_tod_486.s
+
+$(OBJ)oz_idt_init_486.o: $(SRC)oz_idt_init_486.s
+	$(OZAS) -a=$(OBJ)oz_idt_init_486.l -o $(OBJ)oz_idt_init_486.o $(SRC)oz_idt_init_486.s
+
+# ------------------------------------------------------------------------
+#
+#  486 standalone device drivers
+#
+
+$(LIB)oz_dev_knl486.a: $(DEV_KNL486_OBJS)
+	$(DEL) $(LIB)oz_dev_knl486.a
+	ar rcs $(LIB)oz_dev_knl486.a $(DEV_KNL486_OBJS)
+
+$(LIB)oz_dev_ldr486.a: $(DEV_LDR486_OBJS)
+	$(DEL) $(LIB)oz_dev_ldr486.a
+	ar rcs $(LIB)oz_dev_ldr486.a $(DEV_LDR486_OBJS)
+
+$(OBJ)oz_dev_comport_486.o: $(SRC)oz_dev_comport_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_comport_486.s $(SRC)oz_dev_comport_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_comport_486.l -o $(OBJ)oz_dev_comport_486.o $(OBJ)oz_dev_comport_486.s
+
+$(OBJ)oz_dev_conclass.o: $(SRC)oz_dev_conclass.c
+	$(OZCC) $(OBJ)oz_dev_conclass.o $(SRC)oz_dev_conclass.c
+
+$(OBJ)oz_dev_conpseudo.o: $(SRC)oz_dev_conpseudo.c
+	$(OZCC) $(OBJ)oz_dev_conpseudo.o $(SRC)oz_dev_conpseudo.c
+
+$(OBJ)oz_dev_console_486.o: $(SRC)oz_dev_console_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_console_486.s $(SRC)oz_dev_console_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_console_486.l -o $(OBJ)oz_dev_console_486.o $(OBJ)oz_dev_console_486.s
+
+$(OBJ)oz_dev_dectulip.o: $(SRC)oz_dev_dectulip.c
+	$(OZCC) $(OBJ)oz_dev_dectulip.o $(SRC)oz_dev_dectulip.c
+
+$(OBJ)oz_dev_exb8500.o: $(SRC)oz_dev_exb8500.c
+	$(OZCC) $(OBJ)oz_dev_exb8500.o $(SRC)oz_dev_exb8500.c
+
+$(OBJ)oz_dev_floppy_486.o: $(SRC)oz_dev_floppy_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_floppy_486.s $(SRC)oz_dev_floppy_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_floppy_486.l -o $(OBJ)oz_dev_floppy_486.o $(OBJ)oz_dev_floppy_486.s
+
+$(OBJ)oz_dev_ide8038i.o: $(SRC)oz_dev_ide8038i.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_ide8038i.s $(SRC)oz_dev_ide8038i.c
+	$(OZAS) -a=$(OBJ)oz_dev_ide8038i.l -o $(OBJ)oz_dev_ide8038i.o $(OBJ)oz_dev_ide8038i.s
+
+$(OBJ)oz_dev_ip.o: $(SRC)oz_dev_ip.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_ip.s $(SRC)oz_dev_ip.c
+	$(OZAS) -a=$(OBJ)oz_dev_ip.l -o $(OBJ)oz_dev_ip.o $(OBJ)oz_dev_ip.s
+
+##$(OBJ)oz_dev_ip_gencksm.o: $(SRC)oz_dev_ip_gencksm_486.s
+##	$(OZAS) -o $(OBJ)oz_dev_ip_gencksm.o $(SRC)oz_dev_ip_gencksm_486.s
+$(OBJ)oz_dev_ip_gencksm.o: $(SRC)oz_dev_ip_gencksm.c
+	$(OZCC) $(OBJ)oz_dev_ip_gencksm.o $(SRC)oz_dev_ip_gencksm.c
+
+$(OBJ)oz_dev_ip_fs.o: $(SRC)oz_dev_ip_fs.c
+	$(OZCC) $(OBJ)oz_dev_ip_fs.o $(SRC)oz_dev_ip_fs.c
+
+$(OBJ)oz_dev_ipdns.o: $(SRC)oz_dev_ipdns.c
+	$(OZCC) $(OBJ)oz_dev_ipdns.o $(SRC)oz_dev_ipdns.c
+
+$(OBJ)oz_dev_isa_486.o: $(SRC)oz_dev_isa_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_isa_486.s $(SRC)oz_dev_isa_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_isa_486.l -o $(OBJ)oz_dev_isa_486.o $(OBJ)oz_dev_isa_486.s
+
+$(OBJ)oz_dev_lio.o: $(SRC)oz_dev_lio.c
+	$(OZCC) $(OBJ)oz_dev_lio.o $(SRC)oz_dev_lio.c
+
+$(OBJ)oz_dev_lsil875_486.o: $(SRC)oz_dev_lsil875_486.c $(SRC)oz_dev_lsil875_486.out
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_lsil875_486.s $(SRC)oz_dev_lsil875_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_lsil875_486.l -o $(OBJ)oz_dev_lsil875_486.o $(OBJ)oz_dev_lsil875_486.s
+
+$(OBJ)oz_dev_mutex.o: $(SRC)oz_dev_mutex.c
+	$(OZCC) $(OBJ)oz_dev_mutex.o $(SRC)oz_dev_mutex.c
+
+$(OBJ)oz_dev_pci_486.o: $(SRC)oz_dev_pci_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_pci_486.s $(SRC)oz_dev_pci_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_pci_486.l -o $(OBJ)oz_dev_pci_486.o $(OBJ)oz_dev_pci_486.s
+
+$(OBJ)oz_dev_pipe.o: $(SRC)oz_dev_pipe.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_pipe.s $(SRC)oz_dev_pipe.c
+	$(OZAS) -a=$(OBJ)oz_dev_pipe.l -o $(OBJ)oz_dev_pipe.o $(OBJ)oz_dev_pipe.s
+
+$(OBJ)oz_dev_ps2mouse_486.o: $(SRC)oz_dev_ps2mouse_486.c
+	$(OZCC) $(OBJ)oz_dev_ps2mouse_486.o $(SRC)oz_dev_ps2mouse_486.c
+
+$(OBJ)oz_dev_ramdisk.o: $(SRC)oz_dev_ramdisk.c
+	$(OZCC) $(OBJ)oz_dev_ramdisk.o $(SRC)oz_dev_ramdisk.c
+
+$(OBJ)oz_dev_rtl8139_486.o: $(SRC)oz_dev_rtl8139_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_rtl8139_486.s $(SRC)oz_dev_rtl8139_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_rtl8139_486.l -o $(OBJ)oz_dev_rtl8139_486.o $(OBJ)oz_dev_rtl8139_486.s
+
+$(OBJ)oz_dev_scsi.o: $(SRC)oz_dev_scsi.c
+	$(OZCC) $(OBJ)oz_dev_scsi.o $(SRC)oz_dev_scsi.c
+
+$(OBJ)oz_dev_scsi_disk.o: $(SRC)oz_dev_scsi_disk.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_scsi_disk.s $(SRC)oz_dev_scsi_disk.c
+	$(OZAS) -a=$(OBJ)oz_dev_scsi_disk.l -o $(OBJ)oz_dev_scsi_disk.o $(OBJ)oz_dev_scsi_disk.s
+
+$(OBJ)oz_dev_stego.o: $(SRC)oz_dev_stego.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_stego.s $(SRC)oz_dev_stego.c
+	$(OZAS) -a=$(OBJ)oz_dev_stego.l -o $(OBJ)oz_dev_stego.o $(OBJ)oz_dev_stego.s
+
+$(OBJ)oz_dev_timer.o: $(SRC)oz_dev_timer.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_timer.s $(SRC)oz_dev_timer.c
+	$(OZAS) -a=$(OBJ)oz_dev_timer.l -o $(OBJ)oz_dev_timer.o $(OBJ)oz_dev_timer.s
+
+$(OBJ)oz_dev_vgavideo_486.o: $(SRC)oz_dev_vgavideo_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_vgavideo_486.s $(SRC)oz_dev_vgavideo_486.c
+	$(OZAS) -a=$(OBJ)oz_dev_vgavideo_486.l -o $(OBJ)oz_dev_vgavideo_486.o $(OBJ)oz_dev_vgavideo_486.s
+
+# ------------------------------------------------------------------------
+#
+#  Common stuff to both linux and 486 standalone
+#
+
+$(OBJ)oz_dev_cdfs.o: $(SRC)oz_dev_cdfs.c $(INC)oz_dev_vdfs.h
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_cdfs.s $(SRC)oz_dev_cdfs.c
+	$(OZAS) -a=$(OBJ)oz_dev_cdfs.l -o $(OBJ)oz_dev_cdfs.o $(OBJ)oz_dev_cdfs.s
+
+$(OBJ)oz_dev_disk.o: $(SRC)oz_dev_disk.c
+	$(OZCC) $(OBJ)oz_dev_disk.o $(SRC)oz_dev_disk.c
+
+$(OBJ)oz_dev_dfs.o: $(SRC)oz_dev_dfs.c $(INC)oz_dev_vdfs.h
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_dfs.s $(SRC)oz_dev_dfs.c
+	$(OZAS) -a=$(OBJ)oz_dev_dfs.l -o $(OBJ)oz_dev_dfs.o $(OBJ)oz_dev_dfs.s
+
+$(OBJ)oz_dev_dpar.o: $(SRC)oz_dev_dpar.c
+	$(OZCC) $(OBJ)oz_dev_dpar.o $(SRC)oz_dev_dpar.c
+
+$(OBJ)oz_dev_dpt.o: $(SRC)oz_dev_dpt.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_dpt.s $(SRC)oz_dev_dpt.c
+	$(OZAS) -a=$(OBJ)oz_dev_dpt.l -o $(OBJ)oz_dev_dpt.o $(OBJ)oz_dev_dpt.s
+
+$(OBJ)oz_dev_etherloop.o: $(SRC)oz_dev_etherloop.c
+	$(OZCC) $(OBJ)oz_dev_etherloop.o $(SRC)oz_dev_etherloop.c
+
+$(OBJ)oz_dev_fat.o: $(SRC)oz_dev_fat.c $(INC)oz_dev_vdfs.h
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_fat.s $(SRC)oz_dev_fat.c
+	$(OZAS) -a=$(OBJ)oz_dev_fat.l -o $(OBJ)oz_dev_fat.o $(OBJ)oz_dev_fat.s
+
+$(OBJ)oz_dev_knlcons.o: $(SRC)oz_dev_knlcons.c
+	$(OZCC) $(OBJ)oz_dev_knlcons.o $(SRC)oz_dev_knlcons.c
+
+$(OBJ)oz_dev_vdfs.o: $(SRC)oz_dev_vdfs.c $(INC)oz_dev_vdfs.h
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_dev_vdfs.s $(SRC)oz_dev_vdfs.c
+	$(OZAS) -a=$(OBJ)oz_dev_vdfs.l -o $(OBJ)oz_dev_vdfs.o $(OBJ)oz_dev_vdfs.s
+
+$(OBJ)oz_ldr_loader.o: $(SRC)oz_ldr_loader.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_ldr_loader.s $(SRC)oz_ldr_loader.c
+	$(OZAS) -a=$(OBJ)oz_ldr_loader.l -o $(OBJ)oz_ldr_loader.o $(OBJ)oz_ldr_loader.s
+
+$(OBJ)oz_ldr_params.o: $(SRC)oz_ldr_params.c
+	$(OZCC) $(OBJ)oz_ldr_params.o $(SRC)oz_ldr_params.c
+
+# ------------------------------------------------------------------------
+#
+#  Kernel library
+#
+
+$(LIB)oz_knl.a: $(KNL_OBJS)
+	$(DEL) $(LIB)oz_knl.a
+	ar rcs $(LIB)oz_knl.a $(KNL_OBJS)
+
+$(OBJ)oz_hw_bootblock_486.o: $(SRC)oz_hw_bootblock_486.c
+	$(OZCC) $(OBJ)oz_hw_bootblock_486.o $(SRC)oz_hw_bootblock_486.c
+
+$(OBJ)oz_hw_random_486.o: $(SRC)oz_hw_random_486.s
+	$(OZAS) -a=$(OBJ)oz_hw_random_486.l -o $(OBJ)oz_hw_random_486.o oz_hw_random_486.s
+
+$(OBJ)oz_knl_ast.o: $(SRC)oz_knl_ast.c
+	$(OZCC) $(OBJ)oz_knl_ast.o $(SRC)oz_knl_ast.c
+
+$(OBJ)oz_knl_boot.o: $(SRC)oz_knl_boot.c
+	$(OZCC) $(OBJ)oz_knl_boot.o $(SRC)oz_knl_boot.c
+
+$(OBJ)oz_knl_crtl_486.o: oz_knl_crtl_486.s
+	$(OZAS) -a=$(OBJ)oz_knl_crtl_486.l -o $(OBJ)oz_knl_crtl_486.o oz_knl_crtl_486.s
+
+$(OBJ)oz_knl_cache.o: $(SRC)oz_knl_cache.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_cache.s $(SRC)oz_knl_cache.c
+	$(OZAS) -a=$(OBJ)oz_knl_cache.l -o $(OBJ)oz_knl_cache.o $(OBJ)oz_knl_cache.s
+
+$(OBJ)oz_knl_crash.o: $(SRC)oz_knl_crash.c
+	$(OZCC) $(OBJ)oz_knl_crash.o $(SRC)oz_knl_crash.c
+
+$(OBJ)oz_knl_dcache.o: $(SRC)oz_knl_dcache.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_dcache.s $(SRC)oz_knl_dcache.c
+	$(OZAS) -a=$(OBJ)oz_knl_dcache.l -o $(OBJ)oz_knl_dcache.o $(OBJ)oz_knl_dcache.s
+
+$(OBJ)oz_knl_debug.o: $(SRC)oz_knl_debug.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_debug.s $(SRC)oz_knl_debug.c
+	$(OZAS) -a=$(OBJ)oz_knl_debug.l -o $(OBJ)oz_knl_debug.o $(OBJ)oz_knl_debug.s
+
+$(OBJ)oz_knl_dev_inits_486.o: $(SRC)oz_knl_dev_inits_486.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_dev_inits_486.s $(SRC)oz_knl_dev_inits_486.c
+	$(OZAS) -a=$(OBJ)oz_knl_dev_inits_486.l -o $(OBJ)oz_knl_dev_inits_486.o $(OBJ)oz_knl_dev_inits_486.s
+
+$(OBJ)oz_knl_devio.o: $(SRC)oz_knl_devio.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_devio.s $(SRC)oz_knl_devio.c
+	$(OZAS) -a=$(OBJ)oz_knl_devio.l -o $(OBJ)oz_knl_devio.o $(OBJ)oz_knl_devio.s
+
+$(OBJ)oz_knl_diag.o: $(SRC)oz_knl_diag.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_diag.s $(SRC)oz_knl_diag.c
+	$(OZAS) -a=$(OBJ)oz_knl_diag.l -o $(OBJ)oz_knl_diag.o $(OBJ)oz_knl_diag.s
+
+$(OBJ)oz_knl_event.o: $(SRC)oz_knl_event.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_event.s $(SRC)oz_knl_event.c
+	$(OZAS) -a=$(OBJ)oz_knl_event.l -o $(OBJ)oz_knl_event.o $(OBJ)oz_knl_event.s
+
+$(OBJ)oz_knl_handle.o: $(SRC)oz_knl_handle.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_handle.s $(SRC)oz_knl_handle.c
+	$(OZAS) -a=$(OBJ)oz_knl_handle.l -o $(OBJ)oz_knl_handle.o $(OBJ)oz_knl_handle.s
+
+$(OBJ)oz_knl_idno.o: $(SRC)oz_knl_idno.c
+	$(OZCC) $(OBJ)oz_knl_idno.o $(SRC)oz_knl_idno.c
+
+$(OBJ)oz_knl_image.o: $(SRC)oz_knl_image.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_image.s $(SRC)oz_knl_image.c
+	$(OZAS) -a=$(OBJ)oz_knl_image.l -o $(OBJ)oz_knl_image.o $(OBJ)oz_knl_image.s
+
+$(OBJ)oz_knl_image_elf32.o: $(SRC)oz_knl_image_elf32.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_image_elf32.s $(SRC)oz_knl_image_elf32.c
+	$(OZAS) -a=$(OBJ)oz_knl_image_elf32.l -o $(OBJ)oz_knl_image_elf32.o $(OBJ)oz_knl_image_elf32.s
+
+$(OBJ)oz_knl_image_oz.o: $(SRC)oz_knl_image_oz.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_image_oz.s $(SRC)oz_knl_image_oz.c
+	$(OZAS) -a=$(OBJ)oz_knl_image_oz.l -o $(OBJ)oz_knl_image_oz.o $(OBJ)oz_knl_image_oz.s
+
+$(OBJ)oz_knl_kmalloc.o: $(SRC)oz_knl_kmalloc.c
+	$(OZCC) $(OBJ)oz_knl_kmalloc.o $(SRC)oz_knl_kmalloc.c
+
+$(OBJ)oz_hw486_thread.o: $(SRC)oz_hw486_thread.c
+	$(OZCC) $(OBJ)oz_hw486_thread.o $(SRC)oz_hw486_thread.c
+
+$(OBJ)oz_knl_log.o: $(SRC)oz_knl_log.c
+	$(OZCC) $(OBJ)oz_knl_log.o $(SRC)oz_knl_log.c
+
+$(OBJ)oz_knl_logon.o: $(SRC)oz_knl_logon.c
+	$(OZCC) $(OBJ)oz_knl_logon.o $(SRC)oz_knl_logon.c
+
+$(OBJ)oz_knl_logname.o: $(SRC)oz_knl_logname.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_logname.s $(SRC)oz_knl_logname.c
+	$(OZAS) -a=$(OBJ)oz_knl_logname.l -o $(OBJ)oz_knl_logname.o $(OBJ)oz_knl_logname.s
+
+$(OBJ)oz_knl_lowipl.o: $(SRC)oz_knl_lowipl.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_lowipl.s $(SRC)oz_knl_lowipl.c
+	$(OZAS) -a=$(OBJ)oz_knl_lowipl.l -o $(OBJ)oz_knl_lowipl.o $(OBJ)oz_knl_lowipl.s
+
+$(OBJ)oz_knl_malloc.o: $(SRC)oz_knl_malloc_binned.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_malloc.s $(SRC)oz_knl_malloc_binned.c
+	$(OZAS) -a=$(OBJ)oz_knl_malloc.l -o $(OBJ)oz_knl_malloc.o $(OBJ)oz_knl_malloc.s
+
+$(OBJ)oz_knl_misc.o: $(SRC)oz_knl_misc.c
+	$(OZCC) $(OBJ)oz_knl_misc.o $(SRC)oz_knl_misc.c
+
+$(OBJ)oz_knl_pagefile.o: $(SRC)oz_knl_pagefile.c
+	$(OZCC) $(OBJ)oz_knl_pagefile.o $(SRC)oz_knl_pagefile.c
+
+$(OBJ)oz_knl_phymem.o: $(SRC)oz_knl_phymem.c
+	$(OZCC) $(OBJ)oz_knl_phymem.o $(SRC)oz_knl_phymem.c
+
+$(OBJ)oz_knl_printinstr.o: $(SRC)oz_knl_printinstr.c
+	$(OZCC) $(OBJ)oz_knl_printinstr.o $(SRC)oz_knl_printinstr.c
+
+$(OBJ)oz_knl_printk.o: $(SRC)oz_knl_printk.c
+	$(OZCC) $(OBJ)oz_knl_printk.o $(SRC)oz_knl_printk.c
+
+$(OBJ)oz_knl_printkaddr.o: $(SRC)oz_knl_printkaddr.c
+	$(OZCC) $(OBJ)oz_knl_printkaddr.o $(SRC)oz_knl_printkaddr.c
+
+$(OBJ)oz_knl_process.o: $(SRC)oz_knl_process.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_process.s $(SRC)oz_knl_process.c
+	$(OZAS) -a=$(OBJ)oz_knl_process.l -o $(OBJ)oz_knl_process.o $(OBJ)oz_knl_process.s
+
+$(OBJ)oz_knl_quota.o: $(SRC)oz_knl_quota.c
+	$(OZCC) $(OBJ)oz_knl_quota.o $(SRC)oz_knl_quota.c
+
+$(OBJ)oz_knl_sdata.o: $(SRC)oz_knl_sdata.c $(INC)oz_sys_syscall.h $(INC)oz_hw_486.h
+	$(OZCC) $(OBJ)oz_knl_sdata.o $(SRC)oz_knl_sdata.c
+
+$(OBJ)oz_knl_section.o: $(SRC)oz_knl_section.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_section.s $(SRC)oz_knl_section.c
+	$(OZAS) -a=$(OBJ)oz_knl_section.l -o $(OBJ)oz_knl_section.o $(OBJ)oz_knl_section.s
+
+$(OBJ)oz_knl_security.o: $(SRC)oz_knl_security.c
+	$(OZCC) $(OBJ)oz_knl_security.o $(SRC)oz_knl_security.c
+
+$(OBJ)oz_knl_shuthand.o: $(SRC)oz_knl_shuthand.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_shuthand.s $(SRC)oz_knl_shuthand.c
+	$(OZAS) -a=$(OBJ)oz_knl_shuthand.l -o $(OBJ)oz_knl_shuthand.o $(OBJ)oz_knl_shuthand.s
+
+$(OBJ)oz_knl_spte.o: $(SRC)oz_knl_spte.c
+	$(OZCC) $(OBJ)oz_knl_spte.o $(SRC)oz_knl_spte.c
+
+$(OBJ)oz_knl_startup.o: $(SRC)oz_knl_startup.c
+	$(OZCC) $(OBJ)oz_knl_startup.o $(SRC)oz_knl_startup.c
+
+$(OBJ)oz_knl_thread.o: $(SRC)oz_knl_thread.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_thread.s $(SRC)oz_knl_thread.c
+	$(OZAS) -a=$(OBJ)oz_knl_thread.l -o $(OBJ)oz_knl_thread.o $(OBJ)oz_knl_thread.s
+
+$(OBJ)oz_knl_threadlock.o: $(SRC)oz_knl_threadlock.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_knl_threadlock.s $(SRC)oz_knl_threadlock.c
+	$(OZAS) -a=$(OBJ)oz_knl_threadlock.l -o $(OBJ)oz_knl_threadlock.o $(OBJ)oz_knl_threadlock.s
+
+$(OBJ)oz_knl_user_become.o: $(SRC)oz_knl_user_become.c
+	$(OZCC) $(OBJ)oz_knl_user_become.o $(SRC)oz_knl_user_become.c
+
+$(OBJ)oz_knl_userjob.o: $(SRC)oz_knl_userjob.c
+	$(OZCC) $(OBJ)oz_knl_userjob.o $(SRC)oz_knl_userjob.c
+
+# ------------------------------------------------------------------------
+#
+#  System call library
+#
+
+$(LIB)oz_sys.a: $(SYS_OBJS)
+	$(DEL) $(LIB)oz_sys.a
+	ar rcs $(LIB)oz_sys.a $(SYS_OBJS)
+
+$(OBJ)oz_sys_callknl.o: $(SRC)oz_sys_callknl.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -E -o $(OBJ)oz_sys_callknl.i $(SRC)oz_sys_callknl.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_sys_callknl.s $(OBJ)oz_sys_callknl.i
+	$(OZAS) -a=$(OBJ)oz_sys_callknl.l -o $(OBJ)oz_sys_callknl.o $(OBJ)oz_sys_callknl.s
+
+$(OBJ)oz_sys_cipher.o: $(SRC)oz_sys_cipher_idea.c
+	$(OZCC) $(OBJ)oz_sys_cipher.o $(SRC)oz_sys_cipher_idea.c
+
+$(OBJ)oz_sys_condhand.o: $(SRC)oz_sys_condhand.c
+	$(OZCC) $(OBJ)oz_sys_condhand.o $(SRC)oz_sys_condhand.c
+
+$(OBJ)oz_sys_copyright.o: $(SRC)oz_sys_copyright.c
+	$(OZCC) $(OBJ)oz_sys_copyright.o $(SRC)oz_sys_copyright.c
+
+$(OBJ)oz_sys_dateconv.o: $(SRC)oz_sys_dateconv.c
+	$(OZCC) $(OBJ)oz_sys_dateconv.o $(SRC)oz_sys_dateconv.c
+
+$(OBJ)oz_sys_debug.o: $(SRC)oz_sys_debug.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_sys_debug.s $(SRC)oz_sys_debug.c
+	$(OZAS) -a=$(OBJ)oz_sys_debug.l -o $(OBJ)oz_sys_debug.o $(OBJ)oz_sys_debug.s
+
+$(OBJ)oz_sys_disassemble_486.o: $(SRC)oz_sys_disassemble_486.c
+	$(OZCC) $(OBJ)oz_sys_disassemble_486.o $(SRC)oz_sys_disassemble_486.c
+
+$(OBJ)oz_sys_event.o: $(SRC)oz_sys_event.c
+	$(OZCC) $(OBJ)oz_sys_event.o $(SRC)oz_sys_event.c
+
+$(OBJ)oz_sys_exhand.o: $(SRC)oz_sys_exhand.c
+	$(OZCC) $(OBJ)oz_sys_exhand.o $(SRC)oz_sys_exhand.c
+
+$(OBJ)oz_sys_fork.o: $(SRC)oz_sys_fork.c
+	$(OZCC) $(OBJ)oz_sys_fork.o $(SRC)oz_sys_fork.c
+
+$(OBJ)oz_sys_gethostipaddr.o: $(SRC)oz_sys_gethostipaddr.c
+	$(OZCC) $(OBJ)oz_sys_gethostipaddr.o $(SRC)oz_sys_gethostipaddr.c
+
+$(OBJ)oz_sys_handle.o: $(SRC)oz_sys_handle.c
+	$(OZCC) $(OBJ)oz_sys_handle.o $(SRC)oz_sys_handle.c
+
+$(OBJ)oz_sys_handle_getinfo.o: $(SRC)oz_sys_handle_getinfo.c
+	$(OZCC) $(OBJ)oz_sys_handle_getinfo.o $(SRC)oz_sys_handle_getinfo.c
+
+$(OBJ)oz_sys_hash.o: $(SRC)oz_sys_hash_sha.c
+	$(OZCC) $(OBJ)oz_sys_hash.o $(SRC)oz_sys_hash_sha.c
+
+$(OBJ)oz_sys_image.o: $(SRC)oz_sys_image.c
+	$(OZCC) $(OBJ)oz_sys_image.o $(SRC)oz_sys_image.c
+
+$(OBJ)oz_sys_io.o: $(SRC)oz_sys_io.c
+	$(OZCC) $(OBJ)oz_sys_io.o $(SRC)oz_sys_io.c
+
+$(OBJ)oz_sys_io_fs.o: $(SRC)oz_sys_io_fs.c
+	$(OZCC) $(OBJ)oz_sys_io_fs.o $(SRC)oz_sys_io_fs.c
+
+$(OBJ)oz_sys_io_fs_printf.o: $(SRC)oz_sys_io_fs_printf.c
+	$(OZCC) $(OBJ)oz_sys_io_fs_printf.o $(SRC)oz_sys_io_fs_printf.c
+
+$(OBJ)oz_sys_logname.o: $(SRC)oz_sys_logname.c
+	$(OZCC) $(OBJ)oz_sys_logname.o $(SRC)oz_sys_logname.c
+
+$(OBJ)oz_sys_misc.o: $(SRC)oz_sys_misc.c
+	$(OZCC) $(OBJ)oz_sys_misc.o $(SRC)oz_sys_misc.c
+
+$(OBJ)oz_sys_password.o: $(SRC)oz_sys_password.c
+	$(OZCC) $(OBJ)oz_sys_password.o $(SRC)oz_sys_password.c
+
+$(OBJ)oz_sys_pdata.o: $(SRC)oz_sys_pdata.c
+	$(OZCC) $(OBJ)oz_sys_pdata.o $(SRC)oz_sys_pdata.c
+
+$(OBJ)oz_sys_process.o: $(SRC)oz_sys_process.c
+	$(OZCC) $(OBJ)oz_sys_process.o $(SRC)oz_sys_process.c
+
+$(OBJ)oz_sys_recio.o: $(SRC)oz_sys_recio.c
+	$(OZCC) $(OBJ)oz_sys_recio.o $(SRC)oz_sys_recio.c
+
+$(OBJ)oz_sys_section.o: $(SRC)oz_sys_section.c
+	$(OZCC) $(OBJ)oz_sys_section.o $(SRC)oz_sys_section.c
+
+$(OBJ)oz_sys_spawn.o: $(SRC)oz_sys_spawn.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_sys_spawn.s $(SRC)oz_sys_spawn.c
+	$(OZAS) -a=$(OBJ)oz_sys_spawn.l -o $(OBJ)oz_sys_spawn.o $(OBJ)oz_sys_spawn.s
+
+$(OBJ)oz_sys_syscall.o: $(SRC)oz_sys_syscall.c
+	$(OZCC) $(OBJ)oz_sys_syscall.o $(SRC)oz_sys_syscall.c
+
+$(OBJ)oz_sys_thread.o: $(SRC)oz_sys_thread.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_sys_thread.s $(SRC)oz_sys_thread.c
+	$(OZAS) -a=$(OBJ)oz_sys_thread.l -o $(OBJ)oz_sys_thread.o $(OBJ)oz_sys_thread.s
+
+$(OBJ)oz_sys_threadlock.o: $(SRC)oz_sys_threadlock.c
+	$(OZCC) $(OBJ)oz_sys_threadlock.o $(SRC)oz_sys_threadlock.c
+
+$(OBJ)oz_sys_tzconv.o: $(SRC)oz_sys_tzconv.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_sys_tzconv.s $(SRC)oz_sys_tzconv.c
+	$(OZAS) -a=$(OBJ)oz_sys_tzconv.l -o $(OBJ)oz_sys_tzconv.o $(OBJ)oz_sys_tzconv.s
+
+$(OBJ)oz_sys_userjob.o: $(SRC)oz_sys_userjob.c
+	$(OZCC) $(OBJ)oz_sys_userjob.o $(SRC)oz_sys_userjob.c
+
+$(OBJ)oz_sys_vxprintf_fp.o: $(SRC)oz_sys_vxprintf_fp.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_sys_vxprintf_fp.s $(SRC)oz_sys_vxprintf_fp.c
+	$(OZAS) -a=$(OBJ)oz_sys_vxprintf_fp.l -o $(OBJ)oz_sys_vxprintf_fp.o $(OBJ)oz_sys_vxprintf_fp.s
+
+$(OBJ)oz_sys_xscanf.o: $(SRC)oz_sys_xscanf.c
+	$(OZCC) $(OBJ)oz_sys_xscanf.o $(SRC)oz_sys_xscanf.c
+
+$(OBJ)oz_sys_xprintf.o: $(SRC)oz_sys_xprintf.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -S -o $(OBJ)oz_sys_xprintf.s $(SRC)oz_sys_xprintf.c
+	$(OZAS) -a=$(OBJ)oz_sys_xprintf.l -o $(OBJ)oz_sys_xprintf.o $(OBJ)oz_sys_xprintf.s
+
+# ------------------------------------------------------------------------
+#
+#  C Runtime library - they go into oz_crtl.a
+#
+#  These routines have the traditional Unix-style entrypoint names
+
+$(OBJ)oz_crtl_dirio.o: $(SRC)oz_crtl_dirio.c
+	$(OZCC) $(OBJ)oz_crtl_dirio.o $(SRC)oz_crtl_dirio.c
+
+$(OBJ)oz_crtl_dummy.o: $(SRC)oz_crtl_dummy.c
+	$(OZCC) $(OBJ)oz_crtl_dummy.o $(SRC)oz_crtl_dummy.c
+
+$(OBJ)oz_crtl_fd.o: $(SRC)oz_crtl_fd.c $(INC)oz_crtl_fd.h
+	$(OZCC) $(OBJ)oz_crtl_fd.o $(SRC)oz_crtl_fd.c
+
+$(OBJ)oz_crtl_fio.o: $(SRC)oz_crtl_fio.c
+	$(OZCC) $(OBJ)oz_crtl_fio.o $(SRC)oz_crtl_fio.c
+
+$(OBJ)oz_crtl_io.o: $(SRC)oz_crtl_io.c $(INC)oz_crtl_fd.h
+	$(OZCC) $(OBJ)oz_crtl_io.o $(SRC)oz_crtl_io.c
+
+$(OBJ)oz_crtl_malloc.o: $(SRC)oz_crtl_malloc.c
+	$(OZCC) $(OBJ)oz_crtl_malloc.o $(SRC)oz_crtl_malloc.c
+
+$(OBJ)oz_crtl_misc.o: $(SRC)oz_crtl_misc.c
+	$(OZCC) $(OBJ)oz_crtl_misc.o $(SRC)oz_crtl_misc.c
+
+$(OBJ)oz_crtl_misc_fp.o: $(SRC)oz_crtl_misc_fp.c
+	$(OZCC) $(OBJ)oz_crtl_misc_fp.o $(SRC)oz_crtl_misc_fp.c
+
+$(OBJ)oz_crtl_netio.o: $(SRC)oz_crtl_netio.c $(INC)oz_crtl_fd.h
+	$(OZCC) $(OBJ)oz_crtl_netio.o $(SRC)oz_crtl_netio.c
+
+$(OBJ)oz_crtl_perror.o: $(SRC)oz_crtl_perror.c
+	$(OZCC) $(OBJ)oz_crtl_perror.o $(SRC)oz_crtl_perror.c
+
+$(OBJ)oz_crtl_pipeio.o: $(SRC)oz_crtl_pipeio.c $(INC)oz_crtl_fd.h
+	$(OZCC) $(OBJ)oz_crtl_pipeio.o $(SRC)oz_crtl_pipeio.c
+
+$(OBJ)oz_crtl_signal.o: $(SRC)oz_crtl_signal.c
+	$(OZCC) $(OBJ)oz_crtl_signal.o $(SRC)oz_crtl_signal.c
+
+$(OBJ)oz_crtl_time.o: $(SRC)oz_crtl_time.c
+	$(OZCC) $(OBJ)oz_crtl_time.o $(SRC)oz_crtl_time.c
+
+$(OBJ)oz_crtl_start.o: $(SRC)oz_crtl_start.c
+	$(OZCC) $(OBJ)oz_crtl_start.o $(SRC)oz_crtl_start.c
+
+$(OBJ)oz_usr_debug.o: $(SRC)oz_usr_debug.c
+	$(OZGCC) $(OZINCL) $(CCFLAGS) -O2 -S -o $(OBJ)oz_usr_debug.s $(SRC)oz_usr_debug.c
+	$(OZAS) -a=$(OBJ)oz_usr_debug.l -o $(OBJ)oz_usr_debug.o $(OBJ)oz_usr_debug.s
+
+$(OBJ)oz_usr_profile.o: $(SRC)oz_usr_profile.c
+	$(OZCC) $(OBJ)oz_usr_profile.o $(SRC)oz_usr_profile.c
+
+# ------------------------------------------------------------------------
+#
+#  Runtime routines from the standard glibc - they go into oz_crtl.a
+#
+
+$(OBJ)oz_glibc__strerror.o: oz_glibc__strerror.c
+	$(INDIR) $(GLIBC_DIR)sysdeps/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc__strerror.o -I.. ../$(GLIBC_RTN)$(SRC)oz_glibc__strerror.c"
+
+$(OBJ)oz_glibc_C-ctype.o: $(GLIBC_DIR)locale/C-ctype.c
+	$(INDIR) $(GLIBC_DIR)locale/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc_C-ctype.o C-ctype.c"
+
+$(OBJ)oz_glibc_C_name.o: $(GLIBC_DIR)locale/C_name.c
+	$(INDIR) $(GLIBC_DIR)locale/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc_C_name.o C_name.c"
+
+$(OBJ)oz_glibc_bsearch.o: $(GLIBC_DIR)stdlib/bsearch.c
+	$(INDIR) $(GLIBC_DIR)stdlib/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc_bsearch.o bsearch.c"
+
+$(OBJ)oz_glibc_ctype-info.o: $(GLIBC_DIR)ctype/ctype-info.c
+	$(INDIR) $(GLIBC_DIR)ctype/ "$(OZGCC) $(OZINCL) $(CCFLAGS) -DLC_ALL=6 -c -o ../$(GLIBC_RTN)$(OBJ)oz_glibc_ctype-info.o ctype-info.c"
+
+$(OBJ)oz_glibc_errlist.o: $(GLIBC_DIR)sysdeps/stub/errlist.c
+	$(INDIR) $(GLIBC_DIR)sysdeps/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc_errlist.o stub/errlist.c"
+
+$(OBJ)oz_glibc_fnmatch.o: $(GLIBC_DIR)posix/fnmatch.c
+	$(INDIR) $(GLIBC_DIR)posix/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc_fnmatch.o -D_LIBC fnmatch.c"
+
+$(OBJ)oz_glibc_qsort.o: $(GLIBC_DIR)stdlib/qsort.c
+	$(INDIR) $(GLIBC_DIR)stdlib/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc_qsort.o -D_quicksort=qsort qsort.c"
+
+$(OBJ)oz_glibc_strerror.o: $(GLIBC_DIR)string/strerror.c
+	$(INDIR) $(GLIBC_DIR)string/ "$(OZCC) ../$(GLIBC_RTN)$(OBJ)oz_glibc_strerror.o strerror.c"

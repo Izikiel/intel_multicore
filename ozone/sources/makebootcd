@@ -1,0 +1,16 @@
+#
+# makes a minimal bootable cd
+# just executables and startup files
+#
+mkisofs -A "ozone boot cd" \
+	-b ozone/binaries/oz_loader_486.cd \
+	-no-emul-boot \
+	-boot-load-seg 0x07C0 \
+	-boot-load-size 4 \
+	-c boot.catalog \
+	-no-bak -r \
+	-o ../bootcd.iso \
+	-graft-points \
+	ozone/binaries/=../binaries \
+	ozone/startup/=../startup
+gzip -c ../bootcd.iso > ../bootcd.iso.gz

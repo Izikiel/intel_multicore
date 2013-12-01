@@ -1,0 +1,41 @@
+
+init -clusterfactor 8 hd10meg_img oz_dfs hd10meg_img
+mount hd10meg_img oz_dfs
+
+mkdir hd10meg_img.oz_dfs:/bin86/
+mkdir hd10meg_img.oz_dfs:/binutils/
+mkdir hd10meg_img.oz_dfs:/ozone/
+
+copy fs_linux:../../bin86/binaries/    hd10meg_img.oz_dfs:/bin86/binaries/
+copy fs_linux:../../binutils/binaries/ hd10meg_img.oz_dfs:/binutils/binaries/
+copy fs_linux:../binaries/             hd10meg_img.oz_dfs:/ozone/binaries/
+copy fs_linux:../startup/              hd10meg_img.oz_dfs:/ozone/startup/
+
+rename hd10meg_img.oz_dfs:/ozone/binaries/oz_kernel_smp_486.oz hd10meg_img.oz_dfs:/ozone/binaries/oz_kernel_486.oz
+
+dir hd10meg_img.oz_dfs:/
+dir hd10meg_img.oz_dfs:/ozone/
+dir hd10meg_img.oz_dfs:/ozone/binaries/
+dir hd10meg_img.oz_dfs:/ozone/startup/
+
+set load_device ide_pm
+set load_fstemplate oz_dfs
+set load_directory /ozone/binaries/
+set load_script ../startup/hardiskstartup.ldr
+set kernel_image oz_kernel_486.oz
+set startup_input ../startup/bochstartup.cli
+set startup_output console:
+set startup_error console:
+set startup_image oz_cli.oz
+set startup_params StartupParams
+set kernel_stack_size 12288
+set def_user_stack_size 1048576
+set nonpaged_pool_size 4194304
+set tz_offset_rtc -18000
+set uniprocessor 0
+set debug_init 0
+set monochrome 0
+writeboot hd10meg_img.oz_dfs:/ozone/binaries/oz_loader_486.bb
+show
+dismount hd10meg_img.oz_dfs
+barf

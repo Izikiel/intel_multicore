@@ -1,0 +1,11 @@
+#!/bin/bash -v
+	dd if=/dev/zero of=../gccfloppy bs=1024 count=1920
+	ln -f -s ../gccfloppy dev_fd0
+	echo dev_fd0 > gccfloppy.tmp
+	echo EXIT >> gccfloppy.tmp
+	echo set load_script make_gccfloppy.ldr >> gccfloppy.tmp
+	echo exit >> gccfloppy.tmp
+	export TTYNAME=gccfloppy.tmp
+	../linux/oz_loader_linux
+#	rm -f gccfloppy.tmp
+	rm -f dev_fd0

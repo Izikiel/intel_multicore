@@ -1,0 +1,4 @@
+../hd10meg.img:16:4:0
+EXIT
+set load_script make_bochsdisk_10meg.ldr
+exit

@@ -1,0 +1,11 @@
+El objetivo de este proyecto será investigar la arquitectura multicore implementada por intel en sus microprocesadores, y habilitarla.
+Esta arquitectura está muy poco documentada en el sentido de mostrar el código específico del proceso, así que el otro objetivo de este proyecto es documentar todo el proceso de habilitar los procesadores en intel, y liberarlo como proyecto open source para que quede como referencia para las personas que a futuro decidan utilizarla.
+
+Para empezar a desarrollar este proyecto, investigaremos lo que hace el bootloader GRUB para habilitar multicore en intel, desde la perspectiva de un bootloader, y lo que hace barrelfish OS (www.barrelfish.org), para verlo desde la perspectiva de un OS.
+
+A partir de esto, y en base a lo que se descubra, hay 2 caminos a seguir.
+
+Por un lado,  crear un módulo para GRUB con ciertos parámetros para habilitar el multicore.
+Por otro, ver de usar parte de la implementación de barrelfish para lograr el mismo objetivo.
+
+El segundo caso tiene la ventaja que sería independiente del bootloader, pero quizás más complejo que el primero.

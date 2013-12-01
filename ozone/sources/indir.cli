@@ -1,0 +1,8 @@
+create symbol defdirlnm {oz_lnm_lookup("OZ_DEFAULT_DIR","user")}
+create symbol defdirstr {oz_lnm_string(defdirlnm,0)}
+close handle {defdirlnm}
+set default {oz_arg_1}
+{oz_arg_2}
+create symbol -integer sts {oz_status}
+set default {defdirstr}
+exit {sts}

@@ -1,0 +1,27 @@
+init safloppy oz_dfs safloppy
+mount safloppy oz_dfs
+copy fs_linux:../binaries/oz_loader_486.bb safloppy.oz_dfs:/oz_loader_486.bb
+copy fs_linux:../binaries/oz_kernel_486.oz safloppy.oz_dfs:/oz_kernel_486.oz
+copy fs_linux:../startup/startup.cli       safloppy.oz_dfs:/startup.cli
+copy fs_linux:../binaries/oz_cli.oz        safloppy.oz_dfs:/oz_cli.oz
+copy fs_linux:../startup/floppystartup.ldr safloppy.oz_dfs:/floppystartup.ldr
+copy fs_linux:../tests/infloop.oz          safloppy.oz_dfs:/infloop.oz
+dir safloppy.oz_dfs:/
+set load_device floppy.p0
+set load_fstemplate oz_dfs
+set load_directory /
+set load_script floppystartup.ldr
+set kernel_image oz_kernel_486.oz
+set startup_input startup.cli
+set startup_output console:
+set startup_error console:
+set startup_image oz_cli.oz
+set startup_params StartupParams
+set kernel_stack_size 16384
+set def_user_stack_size 1048576
+set nonpaged_pool_size 1048576
+set system_pages 1024
+set tz_offset_rtc -18000
+show
+writeboot safloppy.oz_dfs:/oz_loader_486.bb
+barf

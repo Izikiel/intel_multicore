@@ -1,0 +1,13 @@
+	echo {oz_verify(1)}
+	create logical name OZ_CLI_TABLES%as-new as.oz
+	create logical name OZ_CLI_TABLES%xgcc gcc.oz
+	create symbol -integer i 0
+	create symbol args ""
+loop:
+	create symbol -integer i i + 1
+	if {i >= oz_nargs} goto done
+	create symbol -string args args + '" "' + oz_arg_{i}
+	goto loop
+done:
+	make -define "CD=set default" -define "CDEFS=-D_OZONE" -define "DEL=script del.cli" -define "ELFC=script elfc.cli" -define "GZIP=gzip" -define "INDIR=script indir.cli" -define "MPB=script make_param_block.cli" -define "OZAS=as" -define "OZGCC=gcc" -input makefile_486.ozone -output makefile_486.cli {args}
+	if {oz_status==1} script makefile_486.cli

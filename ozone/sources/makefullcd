@@ -1,0 +1,28 @@
+#
+# this CD contains full sources plus binaries
+#
+mkisofs -A "ozone full cd" \
+	-b ozone/binaries/oz_loader_486.cd \
+	-no-emul-boot \
+	-boot-load-seg 0x07C0 \
+	-boot-load-size 4 \
+	-c boot.catalog \
+	-no-bak -r \
+	-o ../fullcd.iso \
+	-graft-points \
+	bin86/binaries/=../../bin86/binaries \
+	binutils/binaries/=../../binutils/binaries \
+	gcc/binaries/=../../gcc/binaries \
+	gcc/includes/=../../gcc/includes \
+	gcc/libraries/=../../gcc/libraries \
+	glibc/includes/=../../glibc/includes \
+	ozone/binaries/=../binaries \
+	ozone/edt/=../edt \
+	ozone/includes/=../includes \
+	ozone/libraries/=../libraries \
+	ozone/objects/=../objects \
+	ozone/sources/=../sources \
+	ozone/startup/=../startup \
+	ozone/tests/=../tests \
+	ozone/timezones/=../timezones
+gzip -c ../fullcd.iso > ../fullcd.iso.gz

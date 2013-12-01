@@ -1,0 +1,12 @@
+#!/bin/bash -v
+	echo efloppy > efloppy.tmp
+	echo EXIT >> efloppy.tmp
+	echo set load_script make_efloppy.ldr >> efloppy.tmp
+	echo exit >> efloppy.tmp
+	rm -f ../efloppy
+	dd if=/dev/zero of=../efloppy bs=1024 count=282
+	ln -f -s ../binaries/oz_loader_486.bb oz_loader_486.bb
+	ln -f -s ../efloppy efloppy
+	export TTYNAME=efloppy.tmp
+	../linux/oz_loader_linux
+	rm -f efloppy efloppy.tmp oz_loader_486.bb

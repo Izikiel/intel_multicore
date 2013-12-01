@@ -1,0 +1,1188 @@
+  +++2002-01-14
+      Copyright (C) 2001,2002  Mike Rieker, Beverly, MA USA
+  
+      This program is free software; you can redistribute it and/or modify
+      it under the terms of the GNU General Public License as published by
+      the Free Software Foundation; version 2 of the License.
+  
+      This program is distributed in the hope that it will be useful,
+      but WITHOUT ANY WARRANTY; without even the implied warranty of
+      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+      GNU General Public License for more details.
+  
+      You should have received a copy of the GNU General Public License
+      along with this program; if not, write to the Free Software
+      Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  ---2002-01-14
+
+   1                             ;;+++2001-10-06
+   2                             ;;    Copyright (C) 2001, Mike Rieker, Beverly, MA USA
+   3                             ;;
+   4                             ;;    This program is free software; you can redistribute it and/or modify
+   5                             ;;    it under the terms of the GNU General Public License as published by
+   6                             ;;    the Free Software Foundation; version 2 of the License.
+   7                             ;;
+   8                             ;;    This program is distributed in the hope that it will be useful,
+   9                             ;;    but WITHOUT ANY WARRANTY; without even the implied warranty of
+  10                             ;;    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  11                             ;;    GNU General Public License for more details.
+  12                             ;;
+  13                             ;;    You should have received a copy of the GNU General Public License
+  14                             ;;    along with this program; if not, write to the Free Software
+  15                             ;;    Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+  16                             ;;---2001-10-06
+  17                             
+  18                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  19                             ;  Copyright 2000,2001,2002  OZONE ENTERPRISES, BEVERLY, MA			;
+  20                             ;										;
+  21                             ;  SCRIPTS for 53C875 chip							;
+  22                             ;										;
+  23                             ;  Under normal conditions, this script is always running.  It looks for new 	;
+  24                             ;  requests to process and old targets re-connecting.  Although there is code 	;
+  25                             ;  to handle the case of a requestor connecting, the host CPU has the control 	;
+  26                             ;  registers set up to disable a response from the chip.			;
+  27                             ;										;
+  28                             ;  In the absense of errors, to get things going, the host CPU queues requests 	;
+  29                             ;  to the scsi_id_table[scsi_id].queue_head and sets the SIGP bit in the ISTAT 	;
+  30                             ;  reg.  This chip then signals completion of the request by doing an INTFLY	;
+  31                             ;  instruction, then this chip processes any other requests it finds in a 	;
+  32                             ;  queue.									;
+  33                             ;										;
+  34                             ;  If an error occurrs, this chip halts and the host CPU gets an interrupt.  	;
+  35                             ;  The host CPU will attempt to recover the condition and restart the chip.  	;
+  36                             ;  The host CPU may decide the best recovery is to software reset this chip 	;
+  37                             ;  and perform a SCSI reset, at which point it will re-load this code and re-	;
+  38                             ;  start this chip.								;
+  39                             ;										;
+  40                             ;  Interrupts occur during these normal conditions and operation continues	;
+  41                             ;    1) A target wants to disconnect in the middle of a transfer (like a disk 	;
+  42                             ;       head seeking to a new track in a long transfer).  The host CPU adjusts 	;
+  43                             ;       the CHMOV/MOVE instructions and restarts this chip.			;
+  44                             ;    2) An I/O completes.  This chip does an INTFLY and continues processing 	;
+  45                             ;       another request without host CPU intervention.				;
+  46                             ;    3) A select times out.  The host CPU removes all requests for this 	;
+  47                             ;       scsi_id and restarts this chip.						;
+  48                             ;  Interrupts that occur for any other condition are considered fatal and 	;
+  49                             ;  cause a reset of the chip and the scsi bus.					;
+  50                             ;										;
+  51                             ;  Command tag queuing not yet supported					;
+  52                             ;										;
+  53                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  54                             ;
+  55                             	ARCH	875				; chip is an 53C875
+  56                             ;
+  57                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  58                             ;
+  59                             ;  List of entrypoints that the host can start us at
+  60                             ;
+  61                             	ENTRY	scsi_id_table			; address of the scsi-id queue head table
+  62                             	ENTRY	disconnecting			; jump here if unexpected disconnect interrupt
+  63                             	ENTRY	select_timedout			; jump here after 'SELECT' timeout interrupt
+  64                             	ENTRY	queue_fixed			; jump here after fixing the queue (INT 0x96)
+  65                             	ENTRY	startup				; initialization
+  66                             	ENTRY	transfer_data_done		; the list of rp_datamovs JUMP's here when done
+  67                             	ENTRY	transfer_data_mismatch		; re-enter here if phase mismatch during data transfer
+  68                             ;
+  69                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  70                             ;
+  71                             ;  Transfer requested negotiation options
+  72                             ;
+  73                             	ABSOLUTE REQ_ACK_OFFSET   = 16	; can send up to 16 unacknowleged data at a time
+  74                             	ABSOLUTE XFER_PERIOD_FACT = 12	; 12=50ns (20MHz)
+  75                             ;
+  76                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+  77                             ;
+  78                             ;  Scsi id table entry definitions
+  79                             ;
+  80                             ;  There is one entry per possible scsi id.  These are stored in the internal RAM.  
+  81                             ;  The table must be aligned on a 256-byte boundary.  Each element can have up to 
+  82                             ;  16 bytes.
+  83                             ;
+  84                             ;	   se_queue_head[32]: pointer to first request in queue (must be longword aligned)
+  85                             ;	                      <00:01> : 00 - queue is empty
+  86                             ;	                                01 - new request queued
+  87                             ;	                                10 - request is in progress
+  88                             ;	           se_select: the next 4 bytes compose this and are used for the SELECT instruction
+  89                             ;	     se0_sequence[8]: sequence number of request being processed
+  90                             ;	        se1_sxfer[8]: negotiated value (default startup value 0x00)
+  91                             ;	      se2_scsi_id[8]: corresponding scsi_id for SELECT instruction
+  92                             ;	       se3_scntl3[8]: negotiated value (default startup value 0x55)
+  93                             ;	    se_saved_dsp[32]: save pointers' rp_datamov_pa value
+  94                             ;	                      <00> = 0 : no data has been transferred since save
+  95                             ;	                      <00> = 1 : data has been transferred since save
+  96                             ;	    se_saved_dbc[32]: save pointers' contents of 0(rp_datamov_pa)
+  97                             ;
+  98                             	ABSOLUTE se_queue_head = 0
+  99                             	ABSOLUTE se_select     = 4
+ 100                             	ABSOLUTE   se0_sequence = se_select + 0
+ 101                             	ABSOLUTE   se1_sxfer    = se_select + 1
+ 102                             	ABSOLUTE   se2_scsi_id  = se_select + 2
+ 103                             	ABSOLUTE   se3_scntl3   = se_select + 3
+ 104                             	ABSOLUTE se_saved_dsp  =  8
+ 105                             	ABSOLUTE se_saved_dbc  = 12
+ 106                             ;
+ 107                             ;  Initialization value for longword at offset 4
+ 108                             ;
+ 109                             	ABSOLUTE INIT_SCNTL3 = 0x55
+ 110                             	ABSOLUTE INIT_SXFER  = 0x00
+ 111                             	ABSOLUTE INIT_SELECT = (INIT_SXFER << 8) | (INIT_SCNTL3 << 24)
+ 112                             ;
+ 113                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 114                             ;
+ 115                             ;  Request packet definitions.  There is one per outstanding I/O request.  These 
+ 116                             ;  are stored in the host CPU's general memory.
+ 117                             ;
+ 118                             ;	      rp_this_va[32]: host's virtual address of this packet
+ 119                             ;	      rp_next_pa[32]: pointer to next request in queue 
+ 120                             ;	                      (0 if end of queue, else address with low bit set)
+ 121                             ;	   rp_datamov_pa[32]: pointer to data transfer CHMOV's
+ 122                             ;	        rp0_flags[8]: flag bits:
+ 123                             ;	                      <0> : 0=have already done identify message
+ 124                             ;	                            1=have yet to do identify message (this is the initial state)
+ 125                             ;	                      <1> : 0=don't do width negotiation
+ 126                             ;	                            1=do width negotiation
+ 127                             ;	                      <2> : 0=don't do synchronous negotiation
+ 128                             ;	                            1=do sync negotiation
+ 129                             ;	                      <3> : 0=disconnect not allowed
+ 130                             ;	                            1=disconnect allowed
+ 131                             ;	                      <4> : 0=haven't received status yet
+ 132                             ;	                            1=status byte has been received
+ 133                             ;	                      <5> : 0=request still pending
+ 134                             ;	                            1=request completed
+ 135                             ;	                      <6> : 0=don't allow target to disconnect
+ 136                             ;	                            1=allow target to disconnect
+ 137                             ;	        rp1_abort[8]: 0=host wants request executed as is
+ 138                             ;	                   else=host wants request aborted asap (set RP_FLAG_DONE and unhook abort complete)
+ 139                             ;	       rp2_seqsts[8]: input: this request's sequence number
+ 140                             ;	                     output: the final scsi status byte (RP_FLAG_GOTSTATUS will be set)
+ 141                             ;	       rp3_cmdlen[8]: number of bytes in command (1..??)
+ 142                             ;	      rp_command[??]: command bytes
+ 143                             ;
+ 144                             	ABSOLUTE rp_this_va    =  0
+ 145                             	ABSOLUTE rp_next_pa    =  4
+ 146                             	ABSOLUTE rp_datamov_pa =  8
+ 147                             	ABSOLUTE rp0_flags     = 12
+ 148                             		ABSOLUTE RP_FLAG_NEEDTOIDENT = 0x01
+ 149                             		ABSOLUTE RP_FLAG_NEGWIDTH    = 0x02
+ 150                             		ABSOLUTE RP_FLAG_NEGSYNCH    = 0x04
+ 151                             		ABSOLUTE RP_FLAG_GOTSTATUS   = 0x08
+ 152                             		ABSOLUTE RP_FLAG_DONE        = 0x10
+ 153                             		ABSOLUTE RP_FLAG_ABORTED     = 0x20
+ 154                             		ABSOLUTE RP_FLAG_DISCONNECT  = 0x40
+ 155                             	ABSOLUTE rp1_abort     = 13
+ 156                             		ABSOLUTE RP_ABORT_BUFFEROVF  = 1	; this is the only one of these codes set by the SCRIPTS
+ 157                             	ABSOLUTE rp2_seqsts    = 14
+ 158                             	ABSOLUTE rp3_cmdlen    = 15
+ 159                             	ABSOLUTE rp_command    = 16
+ 160                             ;
+ 161                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 162                             ;
+ 163                             ;  Scratch registers
+ 164                             ;
+ 165                             	; scsi_id_entry   = SCRATCHG		; scsi_id_table entry
+ 166                             	; request_packetv = SCRATCHH		; host virt address of request being processed
+ 167                             						; (only valid when SCRATCHJ1 = 1)
+ 168                             						; (... or for INT 0x69)
+ 169                             	; request_packet  = SCRATCHI		; base address of request being processed
+ 170                             	; state           = SCRATCHJ0		; current state (for diag purposes only)
+ 171                             	; doing_data_xfer = SCRATCHJ1		; used to inform host CPU when we expect that an exception might occur
+ 172                             	; scsi_index      = SCRATCHJ2		; scsi index being processed
+ 173                             	; next_scsi_index = SCRATCHJ3		; next scsi index to be processed
+ 174                             ;
+ 175                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 176                             ;
+ 177                             ;  State values kept in SCRATCHJ0
+ 178                             ;
+ 179                             	ABSOLUTE STATE_IDLE                 =  0
+ 180                             	ABSOLUTE STATE_GETTING_MESSAGE      =  1
+ 181                             	ABSOLUTE STATE_GETTING_STATUS       =  2
+ 182                             	ABSOLUTE STATE_MESSAGE_OUT          =  3
+ 183                             	ABSOLUTE STATE_CHECKING_TARGET      =  4
+ 184                             	ABSOLUTE STATE_SELECTED             =  5
+ 185                             	ABSOLUTE STATE_SELECTING            =  6
+ 186                             	ABSOLUTE STATE_SENDING_COMMAND      =  7
+ 187                             	ABSOLUTE STATE_TRANSFERRING_DATA    =  8
+ 188                             	ABSOLUTE STATE_WAITING_FOR_RESELECT =  9
+ 189                             	ABSOLUTE STATE_ABORTING             = 10
+ 190                             	ABSOLUTE STATE_REQ_COMPLETE         = 11
+ 191                             ;
+ 192                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 193                             ;
+ 194                             ;  Flags that go in SCRATCHJ1.  The host cpu driver uses these values when it 
+ 195                             ;  gets an interrupt to see if it should do anything special to process it.
+ 196                             ;
+ 197                             	ABSOLUTE SCRATCHJ1_CHMOVS = 1
+ 198                             	ABSOLUTE SCRATCHJ1_SELECT = 2
+ 199                             ;
+ 200                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 201                             ;
+ 202                             ;  Internal memory
+ 203                             ;
+ 204                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 205                             ;
+ 206                             ;  SCSI id table - this is assumed by the host CPU to be at the very beginning 
+ 207                             ;  of the internal memory.  It is assumed by this SCRIPT processor to be on a 
+ 208                             ;  256-byte boundary.
+ 209                             ;
+ 210 00000000: 00000000 55000000 scsi_id_table:	CHMOV	0, INIT_SELECT | ( 0 << 16), WHEN DATA_OUT
+ 211 00000008: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 212 00000010: 00000000 55010000 		CHMOV	0, INIT_SELECT | ( 1 << 16), WHEN DATA_OUT
+ 213 00000018: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 214 00000020: 00000000 55020000 		CHMOV	0, INIT_SELECT | ( 2 << 16), WHEN DATA_OUT
+ 215 00000028: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 216 00000030: 00000000 55030000 		CHMOV	0, INIT_SELECT | ( 3 << 16), WHEN DATA_OUT
+ 217 00000038: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 218 00000040: 00000000 55040000 		CHMOV	0, INIT_SELECT | ( 4 << 16), WHEN DATA_OUT
+ 219 00000048: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 220 00000050: 00000000 55050000 		CHMOV	0, INIT_SELECT | ( 5 << 16), WHEN DATA_OUT
+ 221 00000058: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 222 00000060: 00000000 55060000 		CHMOV	0, INIT_SELECT | ( 6 << 16), WHEN DATA_OUT
+ 223 00000068: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 224 00000070: 00000000 55070000 		CHMOV	0, INIT_SELECT | ( 7 << 16), WHEN DATA_OUT
+ 225 00000078: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 226 00000080: 00000000 55080000 		CHMOV	0, INIT_SELECT | ( 8 << 16), WHEN DATA_OUT
+ 227 00000088: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 228 00000090: 00000000 55090000 		CHMOV	0, INIT_SELECT | ( 9 << 16), WHEN DATA_OUT
+ 229 00000098: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 230 000000A0: 00000000 550A0000 		CHMOV	0, INIT_SELECT | (10 << 16), WHEN DATA_OUT
+ 231 000000A8: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 232 000000B0: 00000000 550B0000 		CHMOV	0, INIT_SELECT | (11 << 16), WHEN DATA_OUT
+ 233 000000B8: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 234 000000C0: 00000000 550C0000 		CHMOV	0, INIT_SELECT | (12 << 16), WHEN DATA_OUT
+ 235 000000C8: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 236 000000D0: 00000000 550D0000 		CHMOV	0, INIT_SELECT | (13 << 16), WHEN DATA_OUT
+ 237 000000D8: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 238 000000E0: 00000000 550E0000 		CHMOV	0, INIT_SELECT | (14 << 16), WHEN DATA_OUT
+ 239 000000E8: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 240 000000F0: 00000000 550F0000 		CHMOV	0, INIT_SELECT | (15 << 16), WHEN DATA_OUT
+ 241 000000F8: 00000000 00000000 		CHMOV	0,                        0, WHEN DATA_OUT
+ 242                             ;
+ 243                             ;  Misc variables
+ 244                             ;
+ 245 00000100: 00000000 00000000 scsi_id_entry:	CHMOV	0, scsi_id_table, WHEN DATA_OUT	; points to current scsi_id's entry in scsi_id_table
+ 246                             							; (copy of SCRATCHG so it can be easily LOADed into the DSA)
+ 247                             ;
+ 248 00000108: 00000000 00000000 request_packet:	CHMOV	0, 0, WHEN DATA_OUT		; points to current request packet being worked on
+ 249                             							; low 2 bits are always clear in this version
+ 250                             							; (copy of SCRATCHI so it can be easily LOADed into the DSA)
+ 251                             ;
+ 252 00000110: 00000000 00000000 msg_buf:	CHMOV	0, 0, WHEN DATA_OUT		; 8-byte temp message-in or -out buffer
+ 253                             ;
+ 254                             ;  Predefined messages
+ 255                             ;
+ 256 00000118: 000006C0 00000000 ident_abort_task_msg:	CHMOV	0x06C0, 0, WHEN DATA_OUT ; IDENTIFY, ABORT TASK (0xC0, 0x06)
+ 257 00000120: 00000006 00000000 abort_task:		CHMOV	0x06, 0, WHEN DATA_OUT	; ABORT TASK (0x06)
+ 258 00000128: 00000007 00000000 message_reject:		CHMOV	0x07, 0, WHEN DATA_OUT	; MESSAGE REJECT (0x07)
+ 259 00000130: 00000008 00000000 noop_message:		CHMOV	0x08, 0, WHEN DATA_OUT	; NO-OP (0x08)
+ 260                             
+ 261                             					; the 'message_ident_*' messages have their first byte modified depending on the 
+ 262                             					; setting of rp0_flags<6>.  1=allow target to disconnect, 0=don't allow it.
+ 263 00000138: 030201C0 00000001 message_ident_width:	CHMOV	0x0201C0, 1, WHEN STATUS
+ 264                             					; IDENTIFY AND ALLOW DISCONNECT (0xC0), 
+ 265                             					; NEGOTIATE WIDE DATA TRANSFER (0x01,0x02,0x03,1)
+ 266                             
+ 267 00000140: 010301C0 0000100C message_ident_synch:	CHMOV	0x0301C0, XFER_PERIOD_FACT+(REQ_ACK_OFFSET<<8), WHEN DATA_IN
+ 268                             					; IDENTIFY AND ALLOW DISCONNECT (0xC0), 
+ 269                             					; NEGOTIATE SYNCHRONOUS TRANSFER (0x01,0x03,0x01,XFER_PERIOD_FACT,REQ_ACK_OFFSET)
+ 270                             ;
+ 271                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 272                             ;
+ 273                             ;  This is the initial start entrypoint
+ 274                             ;
+ 275 00000148:                   startup:
+ 276 00000148: 787D0000 00000000 	MOVE 0 TO SCRATCHJ1				; we are not doing anything special
+ 277                             							; - so if host gets an interrupt (other than INTFLY), 
+ 278                             							;   it should consider it a fatal error
+ 279 00000150: 787F0000 00000000 	MOVE 0 TO SCRATCHJ3				; start looking at device 0
+ 280 00000158: E1700004 00000104 	LOAD SCRATCHG0, 4, scsi_id_entry+4		; set scsi_id_table entry pointer
+ 281                             ;
+ 282                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 283                             ;
+ 284                             ;  See if there is any new request to start (or any old requests that are to be aborted)
+ 285                             ;
+ 286                             ;  New requests will have the low bit set in scsi_id_table[scsi_id].queue_head
+ 287                             ;  When the queue is empty, scsi_id_table[scsi_id].queue_head will be zero
+ 288                             ;  When the request is in progress, scsi_id_table[scsi_id].queue_head will be non-zero with two low bits = 10
+ 289                             ;
+ 290 00000160:                   select_timedout:
+ 291 00000160:                   queue_fixed:
+ 292 00000160:                   mainloop:
+ 293 00000160: 787C0000 00000000 	MOVE STATE_IDLE TO SCRATCHJ0			; we aren't doing anything
+ 294 00000168: 7C14DF00 00000000 	MOVE ISTAT & 0xDF TO ISTAT			; about to scan loop, so clear SIGP flag bit
+ 295                             							; if host queues something while we're scanning, 
+ 296                             							; ... it will set this bit again and we won't 
+ 297                             							; ... hang in the WAIT RESELECT instruction
+ 298 00000170: 7834F000 00000000 	MOVE 0xF0 TO SCRATCHA0				; max of 16 devices to scan
+ 299 00000178:                   new_req_scanloop:
+ 300 00000178: 727F0000 00000000 	MOVE SCRATCHJ3 TO SFBR				; get which device to scan for
+ 301 00000180: 6A7E0000 00000000 	MOVE SFBR TO SCRATCHJ2
+ 302 00000188: 7E7F0100 00000000 	MOVE SCRATCHJ3 +  1 TO SCRATCHJ3		; set up id of next device to check
+ 303 00000190: 7C7F0F00 00000000 	MOVE SCRATCHJ3 & 15 TO SCRATCHJ3
+ 304 00000198: 88880000 00000878 	CALL REL (get_request_packet)			; point to first request packet queued to device
+ 305 000001A0: 808C0000 00000028 	JUMP REL (check_next_scsi_id), IF 0		; on to next device if nothing queued
+ 306 000001A8: 808C0001 00000108 	JUMP REL (got_new_req), IF 1			; break out if we got something new
+ 307 000001B0: E1100004 00000108 	LOAD DSA0, 4, request_packet			; see if there is an old request ...
+ 308 000001B8: F1350001 0000000D 	LOAD SCRATCHA1, 1, DSAREL (rp1_abort)		; ... that host CPU wants us to abort
+ 309 000001C0: 72350000 00000000 	MOVE SCRATCHA1 TO SFBR
+ 310 000001C8: 80840000 000000C0 	JUMP REL (abort_request_inprog), IF NOT 0
+ 311 000001D0:                   check_next_scsi_id:
+ 312 000001D0: 7E340100 00000000 	MOVE SCRATCHA0 + 1 TO SCRATCHA0			; nothing to do there, try next device
+ 313 000001D8: 80A00000 FFFFFF98 	JUMP REL (new_req_scanloop), IF NOT CARRY
+ 314                             ;
+ 315                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 316                             ;
+ 317                             ;  Check for some target trying to reselect
+ 318                             ;  Presumably, it is ready for data or status transfer
+ 319                             ;
+ 320 000001E0:                   check_reselect:
+ 321 000001E0: 787D0000 00000000 	MOVE 0 TO SCRATCHJ1				; (no longer doing the SELECT instruction)
+ 322 000001E8: 54000000 00000078 	WAIT RESELECT REL (check_select)		; wait for reselection
+ 323                             							; - this will jump to 'check_select' if either ISTAT<SIGP> is set
+ 324                             							;   (meaning there are new requests to process) or some dumbell is 
+ 325                             							;   trying to select me
+ 326                             ;
+ 327                             ;  Something is trying to re-select, resume processing the target
+ 328                             ;
+ 329 000001F0: 720A0000 00000000 	MOVE SSID TO SFBR				; see who is calling us
+ 330 000001F8: 808C7F00 00000018 	JUMP REL (bad_reselect_scsi_id), IF 0 AND MASK 0x7F ; bad if the 'valid' bit is not set
+ 331 00000200: 6C7E0F00 00000000 	MOVE SFBR & 0x0F TO SCRATCHJ2			; save the scsi id in the scsi_index scratch register
+ 332                             
+ 333 00000208: 88880000 00000808 	CALL REL (get_request_packet)			; set request_packet = first queue entry for the scsi_index
+ 334 00000210: 808C0002 00000028 	JUMP REL (reselected), IF 2			; jump if an old request is in progress on the target
+ 335                             							; if we don't have an old request, we have no 
+ 336                             							; idea why this target is trying to re-connect!
+ 337 00000218:                   bad_reselect_scsi_id:
+ 338 00000218: 88880000 000008D8 	CALL REL (set_atn)				; reselect from unknown source, tell target we have something to tell it
+ 339 00000220: 78020000 00000000 	MOVE 0x00 TO SCNTL2				; we expect a disconnect
+ 340 00000228: 0E000001 00000120 	MOVE 1, abort_task, WHEN MSG_OUT		; tell it to abort what it is trying to do
+ 341 00000230: 48000000 00000000 	WAIT DISCONNECT					; wait for target to disconnect from scsi bus
+ 342 00000238: 80880000 FFFFFF20 	JUMP REL (mainloop)				; go find something else to do
+ 343                             ;
+ 344                             ;  Target just reselected
+ 345                             ;
+ 346                             ;    Registers:
+ 347                             ;
+ 348                             ;	SCRATCHG  (scsi_id_entry)  = points to the scsi_id_table entry for the device
+ 349                             ;	SCRATCHI  (request_packet) = points to the old request packet (low bits are clear)
+ 350                             ;	SCRATCHJ2 (scsi_index)     = scsi-id of device that reselected
+ 351                             ;	DSA = scsi_id_entry
+ 352                             ;
+ 353 00000240:                   reselected:
+ 354 00000240: 88880000 00000878 	CALL REL (restore_pointers)
+ 355 00000248: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+ 356                             ;
+ 357                             ;  Set up previously negotiated width and speed then see what target wants
+ 358                             ;
+ 359 00000250:                   set_connect_params:
+ 360 00000250: F1030001 00000007 	LOAD SCNTL3, 1, DSAREL (se3_scntl3)
+ 361 00000258: F1050001 00000005 	LOAD SXFER, 1, DSAREL (se1_sxfer)
+ 362 00000260: 80880000 000000E8 	JUMP REL (check_target_state)
+ 363                             ;
+ 364                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 365                             ;
+ 366                             ;  Not being reselected, maybe some idiot is trying to select me
+ 367                             ;  Supposedly this should never happen as the host CPU has disabled selection as a target
+ 368                             ;
+ 369 00000268:                   check_select:
+ 370 00000268: 54000000 FFFFFEF0 	WAIT SELECT REL (mainloop)			; see if someone is trying to select me
+ 371                             							; - this will jump to 'mainloop' if either ISTAT<SIGP> is set
+ 372                             							;   (meaning there are new requests to process) or some target 
+ 373                             							;   is trying to reselect me
+ 374 00000270: 06000001 00000120 	MOVE 1, abort_task, WITH MSG_OUT
+ 375 00000278: 48000000 00000000 	DISCONNECT
+ 376 00000280: 60000200 00000000 	CLEAR TARGET
+ 377 00000288: 80880000 FFFFFED0 	JUMP REL (mainloop)
+ 378                             ;
+ 379                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 380                             ;
+ 381                             ;  The host CPU has asked that a request in progress is to be aborted
+ 382                             ;  So we tell the target to abort the task and post the request as completed
+ 383                             ;
+ 384 00000290:                   abort_request_inprog:
+ 385 00000290: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+ 386 00000298: 47000004 FFFFFF40 	SELECT ATN FROM se_select, REL (check_reselect)	; select the target and set previously negotiated width and speed
+ 387                             							; - a jump to check_reselect is made if either someone is trying to 
+ 388                             							;   reselect me or if the host CPU sets the SIGP bit
+ 389                             							; - if this select times out, the host CPU will abort all requests 
+ 390                             							;   queued to the device anyway before restarting me
+ 391 000002A0: 78020000 00000000 	MOVE 0x00 TO SCNTL2				; we expect a disconnect
+ 392 000002A8: 0E000002 00000118 	MOVE 2, ident_abort_task_msg, WHEN MSG_OUT	; ... after we tell it to F0A9+4
+ 393 000002B0: 80880000 00000410 	JUMP REL (abort_request_markit)
+ 394                             ;
+ 395                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 396                             ;
+ 397                             ;  New request found, try to select the device.  If another target tries to 
+ 398                             ;  reselect us in the mean time, forget about this for now and go process it.
+ 399                             ;
+ 400                             ;    Registers:
+ 401                             ;
+ 402                             ;	SCRATCHG  (scsi_id_entry)  = DSA = points to the scsi_id_table entry for the device
+ 403                             ;	SCRATCHI  (request_packet) = points to the new request packet (low bits are clear)
+ 404                             ;	SCRATCHJ2 (scsi_index)     = scsi-id of device that has a new request
+ 405                             ;
+ 406 000002B8:                   got_new_req:
+ 407 000002B8: F1340001 00000004 	LOAD SCRATCHA0, 1, DSAREL (se0_sequence)	; get what its sequence should be
+ 408 000002C0: 72340000 00000000 	MOVE SCRATCHA0 TO SFBR				; ... into SFBR
+ 409 000002C8: E1100004 00000108 	LOAD DSA0, 4, request_packet			; point to the request packet
+ 410 000002D0: F1360001 0000000E 	LOAD SCRATCHA2, 1, DSAREL (rp2_seqsts)		; get what its sequence actually is
+ 411 000002D8: 7BB60000 00000000 	MOVE SCRATCHA2 XOR SFBR TO SCRATCHA2		; hopefully they match
+ 412 000002E0: 72360000 00000000 	MOVE SCRATCHA2 TO SFBR
+ 413 000002E8: 98040000 00000096 	INT 0x96, IF NOT 0				; halt if not
+ 414                             							; - the host CPU will fix the queue then restart us at queue_fixed
+ 415 000002F0: F1350001 0000000D 	LOAD SCRATCHA1, 1, DSAREL (rp1_abort)		; see if host CPU wants this request aborted
+ 416 000002F8: 72350000 00000000 	MOVE SCRATCHA1 TO SFBR
+ 417 00000300: 80840000 000003E0 	JUMP REL (req_complete_ab), IF NOT 0		; if so, go post it as completed
+ 418 00000308: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+ 419 00000310: 787C0600 00000000 	MOVE STATE_SELECTING TO SCRATCHJ0		; set the state to 'SELECTING'
+ 420 00000318: 787D0200 00000000 	MOVE SCRATCHJ1_SELECT TO SCRATCHJ1		; tell host CPU that this is THE select so it knows to do recovery
+ 421 00000320: 47000004 FFFFFEB8 	SELECT ATN FROM se_select, REL (check_reselect)	; select the target and set previously negotiated width and speed
+ 422                             							; a jump is made to 'check_reselect' if someone is trying to (re)select
+ 423                             							; - note that SIGP is probably still clear so the WAIT instructions should 
+ 424                             							;   do their job.  If SIGP was set by the host in the mean time, this idiot 
+ 425                             							;   computer skips the WAIT instructions and thus we should end up right 
+ 426                             							;   back here very quickly only to do it all over again (but hopefully with 
+ 427                             							;   SIGP cleared)
+ 428                             							; if this times out, host CPU will jump to 'select_timedout' 
+ 429                             							; - the host aborts all requests from the queue first, however
+ 430                             							; - it also clears SCRATCHJ1 for us
+ 431                             							; - the jump goes back to clear SIGP and re-scan for more requests to start
+ 432 00000328: 787D0000 00000000 	MOVE 0 TO SCRATCHJ1				; (no longer doing the SELECT instruction)
+ 433                             ;
+ 434                             ;  We have selected the target, mark the queue entry as being 'in progress' by clearing se_queue_head <00> and setting <01>
+ 435                             ;  Also, clear the low bit in queue_head entry so we won't think we need to select again
+ 436                             ;
+ 437 00000330: 787C0500 00000000 	MOVE STATE_SELECTED TO SCRATCHJ0		; set the state to 'SELECTED'
+ 438 00000338: 72780200 00000000 	MOVE SCRATCHI0 | 0x02 TO SFBR			; bit <00> is already clear, so just set bit <01>
+ 439 00000340: F2080001 00000000 	STORE NOFLUSH SFBR, 1, DSAREL (se_queue_head)	; store the request_packet pointer with appropriate low bits
+ 440                             ;
+ 441                             ;  Save the initial data pointer
+ 442                             ;
+ 443 00000348: 88880000 00000730 	CALL REL (save_data_pointer)
+ 444                             ;
+ 445                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 446                             ;
+ 447                             ;  Now see what target wants to do - it tells us by what phase it is in
+ 448                             ;
+ 449                             ;    Registers:
+ 450                             ;
+ 451                             ;	SCRATCHJ2 (scsi_index)     = the scsi-id of the device we are processing
+ 452                             ;	SCRATCHG  (scsi_id_entry)  = points to entry in the scsi_id_table that we are processing
+ 453                             ;	SCRATCHI  (request_packet) = points to the request packet for the device
+ 454                             ;
+ 455 00000350:                   check_target_state:
+ 456 00000350: 787C0400 00000000 	MOVE STATE_CHECKING_TARGET TO SCRATCHJ0		; set state to 'checking target'
+ 457 00000358: 868B0000 00000030 	JUMP REL (transfer_message_out), WHEN MSG_OUT	; now see what the target wants to do
+ 458                             							; ?? - it seems that we get the 'select timeout' interrupt
+ 459                             							; ??   here instead of at the SELECT instruction above!
+ 460                             							; ??   so the host CPU is going to have to deal with that!
+ 461                             							; ?? - also got an 'unexpected disconnect' here so we have 
+ 462                             							; ??   the host CPU jump to 'disconnecting' label below
+ 463 00000360: 828A0000 00000268 	JUMP REL (transfer_command),     IF CMD
+ 464 00000368: 818A0000 000002C0 	JUMP REL (transfer_data_in),     IF DATA_IN
+ 465 00000370: 808A0000 000002B8 	JUMP REL (transfer_data_out),    IF DATA_OUT
+ 466 00000378: 838A0000 00000378 	JUMP REL (transfer_status),      IF STATUS
+ 467 00000380: 878A0000 000003B8 	JUMP REL (transfer_message_in),  IF MSG_IN
+ 468 00000388: 98080000 000000A1 	INT 0xA1					; don't know what to do - target has gone nuts
+ 469                             ;
+ 470                             ;  Target is ready to accept a message from us
+ 471                             ;  We generally have three messages to send it (in this order):
+ 472                             ;    1) Identify (always)
+ 473                             ;    2) Negotiate width (optional)
+ 474                             ;    3) Negotiate speed (optional)
+ 475                             ;
+ 476 00000390:                   transfer_message_out:
+ 477 00000390: 787C0300 00000000 	MOVE STATE_MESSAGE_OUT TO SCRATCHJ0		; set up new state
+ 478 00000398: E1100004 00000108 	LOAD DSA0, 4, request_packet			; see what messages we have yet to send
+ 479 000003A0: F1340001 0000000C 	LOAD SCRATCHA0, 1, DSAREL (rp0_flags)
+ 480 000003A8: 72340000 00000000 	MOVE SCRATCHA0 TO SFBR
+ 481 000003B0: 808CF801 00000030 	JUMP REL (send_message_ident),       IF                    RP_FLAG_NEEDTOIDENT AND MASK 0xFF - (RP_FLAG_NEGSYNCH | RP_FLAG_NEGWIDTH | RP_FLAG_NEEDTOIDENT)
+ 482 000003B8: 808CFC02 00000098 	JUMP REL (send_message_width),       IF RP_FLAG_NEGWIDTH                       AND MASK 0xFF - (                   RP_FLAG_NEGWIDTH | RP_FLAG_NEEDTOIDENT)
+ 483 000003C0: 808CFC03 00000058 	JUMP REL (send_message_ident_width), IF RP_FLAG_NEGWIDTH | RP_FLAG_NEEDTOIDENT AND MASK 0xFF - (                   RP_FLAG_NEGWIDTH | RP_FLAG_NEEDTOIDENT)
+ 484 000003C8: 808CF804 00000168 	JUMP REL (send_message_synch),       IF RP_FLAG_NEGSYNCH                       AND MASK 0xFF - (RP_FLAG_NEGSYNCH | RP_FLAG_NEGWIDTH | RP_FLAG_NEEDTOIDENT)
+ 485 000003D0: 808CF805 00000128 	JUMP REL (send_message_ident_synch), IF RP_FLAG_NEGSYNCH | RP_FLAG_NEEDTOIDENT AND MASK 0xFF - (RP_FLAG_NEGSYNCH | RP_FLAG_NEGWIDTH | RP_FLAG_NEEDTOIDENT)
+ 486                             
+ 487 000003D8: 0E000001 00000130 	MOVE 1, noop_message, WHEN MSG_OUT		; we have nothing to send, so send a noop (this also clears the ATN bit)
+ 488 000003E0: 80880000 FFFFFF68 	JUMP REL (check_target_state)
+ 489                             
+ 490 000003E8:                   send_message_ident:
+ 491 000003E8: 6C08FE00 00000000 	MOVE SFBR & 0xFF - RP_FLAG_NEEDTOIDENT TO SFBR	; clear flag bit
+ 492 000003F0: F2080001 0000000C 	STORE NOFLUSH SFBR, 1, DSAREL (rp0_flags)
+ 493 000003F8: 6C084000 00000000 	MOVE SFBR & 0x40 TO SFBR			; get 'allow disconnects' flag bit
+ 494 00000400: 6A088000 00000000 	MOVE SFBR | 0x80 TO SFBR			; make the 'identify' message code
+ 495 00000408: E2080001 00000138 	STORE NOFLUSH SFBR, 1, message_ident_width	; store in message to be sent
+ 496 00000410: 0E000001 00000138 	MOVE 1, message_ident_width, WHEN MSG_OUT	; send ident message (this also clears the ATN bit)
+ 497 00000418: 80880000 FFFFFF30 	JUMP REL (check_target_state)
+ 498                             
+ 499 00000420:                   send_message_ident_width:
+ 500 00000420: 6C08FC00 00000000 	MOVE SFBR & 0xFF - (RP_FLAG_NEEDTOIDENT | RP_FLAG_NEGWIDTH) TO SFBR ; clear flag bits
+ 501 00000428: F2080001 0000000C 	STORE NOFLUSH SFBR, 1, DSAREL (rp0_flags)
+ 502 00000430: 6C084000 00000000 	MOVE SFBR & 0x40 TO SFBR			; get 'allow disconnects' flag bit
+ 503 00000438: 6A088000 00000000 	MOVE SFBR | 0x80 TO SFBR			; make the 'identify' message code
+ 504 00000440: E2080001 00000138 	STORE NOFLUSH SFBR, 1, message_ident_width	; store in message to be sent
+ 505 00000448: 0E000005 00000138 	MOVE 5, message_ident_width, WHEN MSG_OUT	; send ident and width messages (this also clears the ATN bit)
+ 506 00000450: 80880000 00000018 	JUMP REL (proc_width_reply)
+ 507                             
+ 508 00000458:                   send_message_width:
+ 509 00000458: 6C08FD00 00000000 	MOVE SFBR & 0xFF - RP_FLAG_NEGWIDTH TO SFBR	; clear flag bit
+ 510 00000460: F2080001 0000000C 	STORE NOFLUSH SFBR, 1, DSAREL (rp0_flags)
+ 511 00000468: 0E000004 00000139 	MOVE 4, message_ident_width+1, WHEN MSG_OUT	; send width message (this also clears the ATN bit)
+ 512                             
+ 513 proc_width_reply:
+ 514 00000470: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN			; read the reply, byte-by-byte
+ 515 00000478: 80840001 00000488 	JUMP REL (bad_nego_mess), IF NOT 0x01		; - it must be an extended message
+ 516 00000480: 60000040 00000000 	CLEAR ACK
+ 517 00000488: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN
+ 518 00000490: 80840002 00000478 	JUMP REL (bad_nego_mess_reject), IF NOT 0x02	; - it must have length 2
+ 519 00000498: 60000040 00000000 	CLEAR ACK
+ 520 000004A0: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN
+ 521 000004A8: 80840003 00000460 	JUMP REL (bad_nego_mess_reject), IF NOT 0x03	; - it must be a 'wide data transfer' message
+ 522 000004B0: 60000040 00000000 	CLEAR ACK
+ 523 000004B8: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN			; ok, get the resultant width (either 8 or 16 bits)
+ 524 000004C0: 88880000 000006E8 	CALL REL (save_transfer_width)			; save it in memory
+ 525 000004C8: E1100004 00000108 	LOAD DSA0, 4, request_packet			; see if we have to send synchronous negotiation message, too
+ 526 000004D0: F1340001 0000000C 	LOAD SCRATCHA0, 1, DSAREL (rp0_flags)
+ 527 000004D8: 72340000 00000000 	MOVE SCRATCHA0 TO SFBR
+ 528 000004E0: 808CFB00 00000008 	JUMP REL (proc_width_reply_clear_ack), IF 0 AND MASK 0xFF - RP_FLAG_NEGSYNCH
+ 529 000004E8: 58000008 00000000 	SET ATN						; need to do synch negotiation, tell target we have another message
+ 530 proc_width_reply_clear_ack:
+ 531 000004F0: 60000040 00000000 	CLEAR ACK					; anyway, clear ack to indicate we got all the incoming message
+ 532 000004F8: 80880000 FFFFFD50 	JUMP REL (set_connect_params)			; set up new width
+ 533                             
+ 534 00000500:                   send_message_ident_synch:
+ 535 00000500: 6C08FA00 00000000 	MOVE SFBR & 0xFF - (RP_FLAG_NEEDTOIDENT | RP_FLAG_NEGSYNCH) TO SFBR ; clear flag bits
+ 536 00000508: F2080001 0000000C 	STORE NOFLUSH SFBR, 1, DSAREL (rp0_flags)
+ 537 00000510: 6C084000 00000000 	MOVE SFBR & 0x40 TO SFBR			; get 'allow disconnects' flag bit
+ 538 00000518: 6A088000 00000000 	MOVE SFBR | 0x80 TO SFBR			; make the 'identify' message code
+ 539 00000520: E2080001 00000138 	STORE NOFLUSH SFBR, 1, message_ident_width	; store in message to be sent
+ 540 00000528: 0E000006 00000140 	MOVE 6, message_ident_synch, WHEN MSG_OUT	; send ident and synch messages (this also clears the ATN bit)
+ 541 00000530: 80880000 00000018 	JUMP REL (proc_synch_reply)
+ 542                             
+ 543 00000538:                   send_message_synch:
+ 544 00000538: 6C08FB00 00000000 	MOVE SFBR & 0xFF - RP_FLAG_NEGSYNCH TO SFBR	; clear flag bit
+ 545 00000540: F2080001 0000000C 	STORE NOFLUSH SFBR, 1, DSAREL (rp0_flags)
+ 546 00000548: 0E000005 00000141 	MOVE 5, message_ident_synch+1, WHEN MSG_OUT	; send synch message (this also clears the ATN bit)
+ 547                             
+ 548 proc_synch_reply:
+ 549 00000550: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN			; read the reply, byte-by-byte
+ 550 00000558: 80840001 000003A8 	JUMP REL (bad_nego_mess), IF NOT 0x01		; - it must be an extended message
+ 551 00000560: 60000040 00000000 	CLEAR ACK
+ 552 00000568: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN
+ 553 00000570: 80840003 00000398 	JUMP REL (bad_nego_mess_reject), IF NOT 0x03	; - it must have length 3
+ 554 00000578: 60000040 00000000 	CLEAR ACK
+ 555 00000580: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN
+ 556 00000588: 80840001 00000380 	JUMP REL (bad_nego_mess_reject), IF NOT 0x01	; - it must be a 'synchronous data transfer' message
+ 557 00000590: 60000040 00000000 	CLEAR ACK
+ 558 00000598: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN			; ok, get the resultant tranfer period factor
+ 559 000005A0: 88880000 00000640 	CALL REL (save_transfer_period)			; save it in memory
+ 560 000005A8: 60000040 00000000 	CLEAR ACK
+ 561 000005B0: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN			; get the resultant req/ack offset
+ 562 000005B8: 88880000 000006A0 	CALL REL (save_req_ack_offset)			; save it in memory
+ 563 000005C0: 60000040 00000000 	CLEAR ACK					; clear ack to indicate we got all the incoming message
+ 564 000005C8: 80880000 FFFFFC80 	JUMP REL (set_connect_params)			; set up new speed
+ 565                             ;
+ 566                             ;  Target is ready to accept the command from us
+ 567                             ;
+ 568 000005D0:                   transfer_command:
+ 569 000005D0: 787C0700 00000000 	MOVE STATE_SENDING_COMMAND TO SCRATCHJ0		; set state 'sending command'
+ 570 000005D8: E1100004 00000108 	LOAD DSA0, 4, request_packet			; point to the request packet
+ 571 000005E0: F1370001 0000000F 	LOAD SCRATCHA3, 1, DSAREL (rp3_cmdlen)		; get length of command
+ 572 000005E8: 72370000 00000000 	MOVE SCRATCHA3 TO SFBR
+ 573 000005F0: E2080001 00000620 	STORE NOFLUSH SFBR, 1, command_move+0		; store in the 'command_move' instruction
+ 574 000005F8: 7E101000 00000000 	MOVE DSA0 + rp_command TO DSA0			; point to the command bytes
+ 575 00000600: 7F110000 00000000 	MOVE DSA1 + 0 TO DSA1 WITH CARRY
+ 576 00000608: 7F120000 00000000 	MOVE DSA2 + 0 TO DSA2 WITH CARRY
+ 577 00000610: 7F130000 00000000 	MOVE DSA3 + 0 TO DSA3 WITH CARRY
+ 578 00000618: E0100004 00000624 	STORE DSA0, 4, command_move+4
+ 579 00000620:                   command_move:
+ 580 00000620: 0A000000 00000000 	MOVE 0, 0, WHEN CMD				; transfer the command bytes to the target
+ 581 00000628: 80880000 FFFFFD20 	JUMP REL (check_target_state)			; now see what target wants to do
+ 582                             ;
+ 583                             ;  Target is ready to transfer data
+ 584                             ;
+ 585 00000630:                   transfer_data_in:
+ 586 00000630:                   transfer_data_out:
+ 587 00000630: 787C0800 00000000 	MOVE STATE_TRANSFERRING_DATA TO SCRATCHJ0	; set state 'transferring data'
+ 588 00000638: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry			; remember pointer is about to be moved
+ 589 00000640: F1340001 00000008 	LOAD SCRATCHA0, 1, DSAREL (se_saved_dsp)	; ... by setting se_saved_dsp<00>
+ 590 00000648: 7A340100 00000000 	MOVE SCRATCHA0 | 0x01 TO SCRATCHA0		; ... so restore_pointers knows it has work to do
+ 591 00000650: F2340001 00000008 	STORE NOFLUSH SCRATCHA0, 1, DSAREL (se_saved_dsp)
+ 592 00000658: E1100004 00000108 	LOAD DSA0, 4, request_packet			; point to the request packet
+ 593 00000660: F11C0004 00000008 	LOAD TEMP0, 4, DSAREL (rp_datamov_pa)		; get where the CHMOV's are
+ 594 00000668: F1740004 00000000 	LOAD SCRATCHH0, 4, DSAREL (rp_this_va)		; get virt address of request packet (for host CPU in case of interrupt)
+ 595 00000670: 787D0100 00000000 	MOVE SCRATCHJ1_CHMOVS TO SCRATCHJ1		; set the 'CHMOV in progress' flag
+ 596 00000678: 90080000 00000000 	RETURN						; execute the CHMOV's (jumps to address in TEMP)
+ 597                             							; code will jump to 'transfer_data_done' if it gets to the end ok
+ 598                             							; otherwise, if a phase mismatch occurrs, the host cpu will modify 
+ 599                             							;   the 'rp_datamov_pa' pointer accordingly then jump to 
+ 600                             							;   'transfer_data_mismatch'
+ 601                             ;
+ 602 00000680:                   transfer_data_done2:
+ 603 00000680: F21C0004 00000008 	STORE NOFLUSH TEMP0, 4, DSAREL (rp_datamov_pa)	; set rp_datamov_pa = transfer_no_data
+ 604 00000688:                   transfer_data_mismatch:
+ 605 00000688: 787D0000 00000000 	MOVE 0 TO SCRATCHJ1				; clear the 'CHMOV in progress' flag
+ 606 00000690: 80880000 FFFFFCB8 	JUMP REL (check_target_state)			; go see what target wants now
+ 607                             ;
+ 608 00000698:                   transfer_data_done:
+ 609 00000698: 88880000 FFFFFFE0 	CALL REL (transfer_data_done2)			; set TEMP = transfer_no_data and jump
+ 610 000006A0:                   transfer_no_data:
+ 611 000006A0: 88880000 00000450 	CALL REL (set_atn)				; target has/wants more data but there isn't any (room) left
+ 612 000006A8: 78020000 00000000 	MOVE 0x00 TO SCNTL2				; - we expect a disconnect
+ 613 000006B0: 0E000001 00000120 	MOVE 1, abort_task, WHEN MSG_OUT		; - send it a nasty message
+ 614 000006B8: 78350100 00000000 	MOVE RP_ABORT_BUFFEROVF TO SCRATCHA1		; set up abort code
+ 615 000006C0: F2350001 0000000D 	STORE NOFLUSH SCRATCHA1, 1, DSAREL (rp1_abort)
+ 616 000006C8:                   abort_request_markit:
+ 617 000006C8: F1340001 0000000C 	LOAD SCRATCHA0, 1, DSAREL (rp0_flags)		; tell the host we sent the target an 'abort task' message
+ 618 000006D0: 7A342000 00000000 	MOVE SCRATCHA0 | RP_FLAG_ABORTED TO SCRATCHA0
+ 619 000006D8: F2340001 0000000C 	STORE NOFLUSH SCRATCHA0, 1, DSAREL (rp0_flags)
+ 620 000006E0: 48000000 00000000 	WAIT DISCONNECT					; target responds by disconnecting
+ 621 000006E8:                   req_complete_ab:
+ 622 000006E8: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry			; go mark the request complete and tell host CPU
+ 623 000006F0: 80880000 000002A0 	JUMP REL (req_complete2)
+ 624                             ;
+ 625                             ;  Target has status byte ready for us
+ 626                             ;
+ 627 000006F8:                   transfer_status:
+ 628 000006F8: 787C0200 00000000 	MOVE STATE_GETTING_STATUS TO SCRATCHJ0		; set state 'getting status'
+ 629 00000700: 0B000001 00000110 	MOVE 1, msg_buf, WHEN STATUS			; read the status byte
+ 630 00000708: 6A360000 00000000 	MOVE SFBR TO SCRATCHA2
+ 631 00000710: E1100004 00000108 	LOAD DSA0, 4, request_packet			; store in request packet struct
+ 632 00000718: F2360001 0000000E 	STORE NOFLUSH SCRATCHA2, 1, DSAREL (rp2_seqsts)
+ 633 00000720: F1340001 0000000C 	LOAD SCRATCHA0, 1, DSAREL (rp0_flags)		; ... and say that we got it
+ 634 00000728: 7A340800 00000000 	MOVE SCRATCHA0 | RP_FLAG_GOTSTATUS TO SCRATCHA0
+ 635 00000730: F0340001 0000000C 	STORE SCRATCHA0, 1, DSAREL (rp0_flags)
+ 636 00000738: 80880000 FFFFFC10 	JUMP REL (check_target_state)
+ 637                             ;
+ 638                             ;  Target has an unsolicited message for us
+ 639                             ;
+ 640 00000740:                   transfer_message_in:
+ 641 00000740: 787C0100 00000000 	MOVE STATE_GETTING_MESSAGE TO SCRATCHJ0		; set state 'getting message'
+ 642 00000748: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN			; see what the target wants
+ 643 00000750: 808C0000 00000228 	JUMP REL (req_complete), IF 0x00		; 00 means the request is now complete
+ 644 00000758: 808C0001 00000080 	JUMP REL (got_extended_message), IF 0x01	; check for 'extended' messages
+ 645 00000760: 808C0002 00000040 	JUMP REL (save_data_pointer_ack), IF 0x02	; 02 means to save data transfer pointer
+ 646 00000768: 808C0003 00000050 	JUMP REL (restore_pointers_ack), IF 0x03	; 03 means to restore transfer pointers
+ 647 00000770: 808C0004 000001E0 	JUMP REL (disconnecting), IF 0x04		; 04 means it is disconnecting and will reselect us later
+ 648 00000778: 808C0007 00000030 	JUMP REL (ignore_message), IF 0x07		; skip over reject's
+ 649 00000780: 808C0008 00000028 	JUMP REL (ignore_message), IF 0x08		; skip over nop's
+ 650 00000788: 808C7F80 00000020 	JUMP REL (ignore_message), IF 0x80 AND MASK 0x7F ; ignore all identify messages from target
+ 651                             
+ 652 00000790:                   reject_message:
+ 653 00000790: 88880000 00000360 	CALL REL (set_atn)				; tell target we are rejecting its message
+ 654 00000798: 0E000001 00000128 	MOVE 1, message_reject, WHEN MSG_OUT		; send reject message, clear ATN
+ 655 000007A0: 80880000 FFFFFBA8 	JUMP REL (check_target_state)
+ 656                             
+ 657 000007A8:                   save_data_pointer_ack:
+ 658 000007A8: 88880000 000002D0 	CALL REL (save_data_pointer)			; save current data pointer
+ 659 000007B0:                   ignore_message:
+ 660 000007B0: 60000040 00000000 	CLEAR ACK					; acknowledge it
+ 661 000007B8: 80880000 FFFFFB90 	JUMP REL (check_target_state)			; go see what target wants now
+ 662                             
+ 663 000007C0:                   restore_pointers_ack:
+ 664 000007C0: 60000040 00000000 	CLEAR ACK					; acknowledge it
+ 665 000007C8: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry			; go restore pointers
+ 666 000007D0: 88880000 000002E8 	CALL REL (restore_pointers)
+ 667 000007D8: 80880000 FFFFFB70 	JUMP REL (check_target_state)
+ 668                             
+ 669 000007E0:                   got_extended_message:
+ 670 000007E0: 60000040 00000000 	CLEAR ACK
+ 671 000007E8: 0F000002 00000110 	MOVE 2, msg_buf, WHEN MSG_IN			; get extended message length and code
+ 672 000007F0: E1340002 00000110 	LOAD SCRATCHA0, 2, msg_buf			; get length in A0, code in A1
+ 673 000007F8: 72350000 00000000 	MOVE SCRATCHA1 TO SFBR				; check out the code
+ 674 00000800: 808C0001 00000074 	JUMP REL (got_sync_data_xfer_msg), IF 0x01
+ 675 00000808: 808C0003 00000008 	JUMP REL (got_wide_data_xfer_msg), IF 0x03
+ 676 00000810: 80880000 FFFFFF78 	JUMP REL (reject_message)
+ 677                             
+ 678 00000818:                   got_wide_data_xfer_msg:
+ 679 00000818: 72340000 00000000 	MOVE SCRATCHA0 TO SFBR				; make sure the length is 2
+ 680 00000820: 80840002 000000E8 	JUMP REL (bad_nego_mess_reject), IF NOT 0x02
+ 681 00000828: 60000040 00000000 	CLEAR ACK
+ 682 00000830: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN			; get the requested width factor
+ 683 00000838: 60000040 00000000 	CLEAR ACK					; tell target we got the last byte of message
+ 684 00000840: C1000008 00000138 00000110 	MOVE MEMORY NOFLUSH 8, message_ident_width, msg_buf ; copy a template message
+ 685 0000084C: 808C0000 00000008 	JUMP REL (width_ok), IF 0			; width 0 (8-bits) is ok as is
+ 686 00000854: 78080100 00000000 	MOVE 1 TO SFBR					; else, do width 1 (16-bits)
+ 687 0000085C:                   width_ok:
+ 688 0000085C: E2080001 00000114 	STORE NOFLUSH SFBR, 1, msg_buf+4		; save it in outgoing message buffer
+ 689 00000864: 88880000 00000344 	CALL REL (save_transfer_width)			; save negotiated width in scsi_id_table entry
+ 690 0000086C: 0E000004 00000111 	MOVE 4, msg_buf+1, WHEN MSG_OUT			; send reply message
+ 691 00000874: 80880000 FFFFF9D4 	JUMP REL (set_connect_params)			; go set up new width
+ 692                             
+ 693 0000087C:                   got_sync_data_xfer_msg:
+ 694 0000087C: 72340000 00000000 	MOVE SCRATCHA0 to SFBR				; make sure the length is 3
+ 695 00000884: 80840003 00000084 	JUMP REL (bad_nego_mess_reject), IF NOT 0x03
+ 696 0000088C: 60000040 00000000 	CLEAR ACK
+ 697 00000894: 0F000002 00000110 	MOVE 2, msg_buf, WHEN MSG_IN			; get the transfer period factor and req/ack offset bytes
+ 698 0000089C: 60000040 00000000 	CLEAR ACK					; tell target we got the last bytes of message
+ 699 000008A4: E15D0001 00000111 	LOAD SCRATCHB1, 1, msg_buf+1			; save req/ack offset factor
+ 700 000008AC: C1000008 00000140 00000110 	MOVE MEMORY NOFLUSH 8, message_ident_synch, msg_buf ; set up a template message
+ 701 000008B8: 88880000 00000328 	CALL REL (save_transfer_period)			; process negotiated speed setting
+ 702 000008C0: 72360000 00000000 	MOVE SCRATCHA2 TO SFBR				; save it in reply message buffer
+ 703 000008C8: E2080001 00000114 	STORE NOFLUSH SFBR, 1, msg_buf+4
+ 704 000008D0: 725D0000 00000000 	MOVE SCRATCHB1 TO SFBR				; get requested req/ack offset
+ 705 000008D8: 88880000 00000380 	CALL REL (save_req_ack_offset)			; process it
+ 706 000008E0: 72360000 00000000 	MOVE SCRATCHA2 TO SFBR				; save negotiated value in reply message
+ 707 000008E8: 6A350000 00000000 	MOVE SFBR TO SCRATCHA1
+ 708 000008F0: E2350001 00000115 	STORE NOFLUSH SCRATCHA1, 1, msg_buf+5
+ 709 000008F8: 0E000005 00000111 	MOVE 5, msg_buf+1, WHEN MSG_OUT			; send reply message
+ 710 00000900: 80880000 FFFFF948 	JUMP REL (set_connect_params)			; go set up new speed
+ 711                             ;
+ 712                             ;  Something was bad about the negotiation reply or request, send reject then set up async mode
+ 713                             ;
+ 714 00000908:                   bad_nego_mess:
+ 715 00000908: 808C0007 00000010 	JUMP REL (bad_nego_mess_async), IF 0x07		; maybe it is rejecting my request
+ 716 00000910:                   bad_nego_mess_reject:
+ 717 00000910: 88880000 000001E0 	CALL REL (set_atn)				; something else bad with message, reject it
+ 718 00000918: 0E000001 00000128 	MOVE 1, message_reject, WHEN MSG_OUT
+ 719 00000920:                   bad_nego_mess_async:
+ 720 00000920: 60000040 00000000 	CLEAR ACK
+ 721 00000928: 78375500 00000000 	MOVE INIT_SCNTL3 TO SCRATCHA3			; set up async transfer mode
+ 722 00000930: 78350000 00000000 	MOVE INIT_SXFER TO SCRATCHA1
+ 723 00000938: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+ 724 00000940: F2370001 00000007 	STORE NOFLUSH SCRATCHA3, 1, DSAREL (se3_scntl3)
+ 725 00000948: F2350001 00000005 	STORE NOFLUSH SCRATCHA1, 1, DSAREL (se1_sxfer)
+ 726 00000950: 80880000 FFFFF8F8 	JUMP REL (set_connect_params)
+ 727                             ;
+ 728                             ;  Target is disconnecting, remember the state and go do something else in the mean time
+ 729                             ;
+ 730 00000958:                   disconnecting:
+ 731 00000958: 78020000 00000000 	MOVE 0x00 TO SCNTL2				; we expect a disconnect
+ 732 00000960: 60000040 00000000 	CLEAR ACK					; acknowledge it
+ 733 00000968: 787C0900 00000000 	MOVE STATE_WAITING_FOR_RESELECT TO SCRATCHJ0	; remember we're waiting for a reselect from it
+ 734 00000970: 48000000 00000000 	WAIT DISCONNECT					; wait for target to disconnect from scsi bus
+ 735 00000978: 80880000 FFFFF7E0 	JUMP REL (mainloop)				; go find something else to do
+ 736                             ;
+ 737                             ;  The request is complete - unlink it from queue and do an INTFLY to notify host CPU that a request just completed
+ 738                             ;
+ 739 00000980:                   req_complete:
+ 740 00000980: 78020000 00000000 	MOVE 0x00 TO SCNTL2				; we expect a disconnect
+ 741 00000988: 60000040 00000000 	CLEAR ACK					; acknowledge it
+ 742 00000990: 48000000 00000000 	WAIT DISCONNECT					; wait for target to disconnect from scsi bus
+ 743 00000998:                   req_complete2:
+ 744 00000998: 787C0B00 00000000 	MOVE STATE_REQ_COMPLETE TO SCRATCHJ0		; posting a request's completion
+ 745 000009A0: E1100004 00000108 	LOAD DSA0, 4, request_packet
+ 746 000009A8: 7A141000 00000000 	MOVE ISTAT | 0x10 TO ISTAT			; set the SEM bit to let host know were modifying queue and RP_FLAG_DONE
+ 747 000009B0: F1340004 00000004 	LOAD SCRATCHA0, 4, DSAREL (rp_next_pa)		; find the next item in the list (it is either zero or has the low bit set)
+ 748 000009B8: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+ 749 000009C0: F2340004 00000000 	STORE NOFLUSH SCRATCHA0, 4, DSAREL (se_queue_head) ; unlink request from queue
+ 750 000009C8: F1340001 00000004 	LOAD SCRATCHA0, 1, DSAREL (se0_sequence)	; increment sequence for next request
+ 751 000009D0: 7E340100 00000000 	MOVE SCRATCHA0 + 1 TO SCRATCHA0
+ 752 000009D8: F2340001 00000004 	STORE NOFLUSH SCRATCHA0, 1, DSAREL (se0_sequence)
+ 753 000009E0: E1100004 00000108 	LOAD DSA0, 4, request_packet
+ 754 000009E8: F1340001 0000000C 	LOAD SCRATCHA0, 1, DSAREL (rp0_flags)		; flag the request as 'done'
+ 755 000009F0: 7A341000 00000000 	MOVE SCRATCHA0 | RP_FLAG_DONE TO SCRATCHA0
+ 756 000009F8: F0340001 0000000C 	STORE SCRATCHA0, 1, DSAREL (rp0_flags)
+ 757 00000A00: 7C14EF00 00000000 	MOVE ISTAT & 0xEF TO ISTAT			; clear SEM bit to let host know were done with mods
+ 758 00000A08: 98180000 00000000 	INTFLY						; tell the host computer that a request completed
+ 759 00000A10: 80880000 FFFFF748 	JUMP REL (mainloop)				; go find something to do
+ 760                             ;
+ 761                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 762                             ;
+ 763                             ;  Get pointer to first request packet queued to a scsi device
+ 764                             ;
+ 765                             ;    Input:
+ 766                             ;
+ 767                             ;	SCRATCHG = some entry of the scsi_id_table (not necessarily the one we want)
+ 768                             ;	SCRATCHJ2 (scsi_index) = scsi id to get packet for
+ 769                             ;
+ 770                             ;    Output:
+ 771                             ;
+ 772                             ;	SCRATCHI (request_packet) = address of queued packet (with low bits cleared)
+ 773                             ;	SCRATCHG (scsi_id_entry)  = DSA = points to scsi_id_table entry
+ 774                             ;	SBFR = 0 : nothing queued, device is idle
+ 775                             ;	       1 : new request queued, needs to be started
+ 776                             ;	       2 : old request in progress, waiting for reselect
+ 777                             ;
+ 778 00000A18:                   get_request_packet:
+ 779                             ;
+ 780                             ;  We point SCRATCHG and scsi_id_entry at the entry in the scsi_id_table
+ 781                             ;  corresponding to the device in question.  It is here that we assume 
+ 782                             ;  the scsi_id_table is on a 256-byte boundary so we don't have to worry 
+ 783                             ;  about adding and carry bits.
+ 784                             ;
+ 785 00000A18: 727E0000 00000000 	MOVE SCRATCHJ2 TO SFBR			; multiply scsi_index by 16 to get offset in scsi_id_table
+ 786 00000A20: 6E700000 00000000 	MOVE SFBR + 0 TO SCRATCHG0		; (the '+ 0' hopefully clears carry bit for subsequent SHL's)
+ 787 00000A28: 79700000 00000000 	MOVE SCRATCHG0 SHL SCRATCHG0
+ 788 00000A30: 79700000 00000000 	MOVE SCRATCHG0 SHL SCRATCHG0
+ 789 00000A38: 79700000 00000000 	MOVE SCRATCHG0 SHL SCRATCHG0
+ 790 00000A40: 79700000 00000000 	MOVE SCRATCHG0 SHL SCRATCHG0
+ 791 00000A48: E2700004 00000100 	STORE NOFLUSH SCRATCHG0, 4, scsi_id_entry ; save it for easy loading into DSA
+ 792                             ;
+ 793                             ;  We point SCRATCHI and request_packet at the top packet on the queue for 
+ 794                             ;  the device in question.  SCRATCHI and request_packet have the low 2 bits 
+ 795                             ;  cleared.  The low 2 bits are returned in SFBR for easy testing on return.
+ 796                             ;
+ 797 00000A50: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry		; point the DSA at the scsi_id_table entry for the device
+ 798 00000A58: F1780004 00000000 	LOAD SCRATCHI0, 4, DSAREL (se_queue_head) ; load the scsi_id_table[scsi_index].queue_head entry into 'request_packet'
+ 799 00000A60: 74780300 00000000 	MOVE SCRATCHI0 & 0x03 TO SFBR		; save low 2 bits
+ 800 00000A68: 7C78FC00 00000000 	MOVE SCRATCHI0 & 0xFC TO SCRATCHI0	; clear them in the pointer register
+ 801 00000A70: E2780004 00000108 	STORE NOFLUSH SCRATCHI0, 4, request_packet ; save it for easy loading into DSA later
+ 802                             ;
+ 803 00000A78: 90080000 00000000 	RETURN
+ 804                             ;
+ 805                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 806                             ;
+ 807                             ;  Save data pointers
+ 808                             ;
+ 809 00000A80:                   save_data_pointer:
+ 810 00000A80: E1100004 00000108 	LOAD DSA0, 4, request_packet			; get current pointer
+ 811 00000A88: F1340004 00000008 	LOAD SCRATCHA0, 4, DSAREL (rp_datamov_pa)	; get address of chmov
+ 812 00000A90: F1100004 00000008 	LOAD DSA0, 4, DSAREL (rp_datamov_pa)		; point to the chmov
+ 813 00000A98: F15C0004 00000000 	LOAD SCRATCHB0, 4, DSAREL (0)			; get move bytecount
+ 814 00000AA0: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry			; point to scsi_id_table entry
+ 815 00000AA8: F2340004 00000008 	STORE NOFLUSH SCRATCHA0, 4, DSAREL (se_saved_dsp) ; save datapointer
+ 816 00000AB0: F25C0004 0000000C 	STORE NOFLUSH SCRATCHB0, 4, DSAREL (se_saved_dbc)
+ 817 00000AB8: 90080000 00000000 	RETURN
+ 818                             ;
+ 819                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 820                             ;
+ 821                             ;  Restore pointers to their last saved state
+ 822                             ;
+ 823 00000AC0:                   restore_pointers:
+ 824 00000AC0: F1340001 00000008 	LOAD SCRATCHA0, 1, DSAREL (se_saved_dsp)	; see if restore required
+ 825 00000AC8: 7D340000 00000000 	MOVE SCRATCHA0 SHR SCRATCHA0
+ 826 00000AD0: 90200000 00000000 	RETURN, IF NOT CARRY				; (only if <00> is set)
+ 827 00000AD8: E1100004 00000108 	LOAD DSA0, 4, request_packet			; point to request packet
+ 828 00000AE0: F1740004 00000000 	LOAD SCRATCHH0, 4, DSAREL (rp_this_va)		; get its va for host CPU
+ 829 00000AE8: 98080000 00000069 	INT 0x69					; have host CPU fix it
+ 830                             							; - it restores the whole rp_datachmovs list
+ 831                             							; - it restores rp_datamov_pa from se_saved_dsp
+ 832                             							; - it modifies that instr w/ se_saved_dnad
+ 833 00000AF0: 90080000 00000000 	RETURN
+ 834                             ;
+ 835                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 836                             ;
+ 837                             ;  Set ATN and wait for target to enter MSG_OUT phase
+ 838                             ;
+ 839                             ;    Output:
+ 840                             ;
+ 841                             ;	target now in MSG_OUT phase
+ 842                             ;
+ 843                             ;    Scratch:
+ 844                             ;
+ 845                             ;	SFBR, msg_buf[0]
+ 846                             ;
+ 847 00000AF8:                   set_atn:
+ 848 00000AF8: 58000008 00000000 	SET ATN						; tell target we have something to say
+ 849 00000B00:                   set_atn_clrack:
+ 850 00000B00: 60000040 00000000 	CLEAR ACK					; in case last thing was a MSG_IN
+ 851 00000B08:                   set_atn_loop:
+ 852 00000B08: 960B0000 00000000 	RETURN, WHEN MSG_OUT				; if target is in MSG_OUT, return to caller
+ 853 00000B10: 818B0000 00000028 	JUMP REL (set_atn_data_in), WHEN DATA_IN	; if target is in DATA_IN, read (& ignore) a byte
+ 854 00000B18: 808B0000 00000030 	JUMP REL (set_atn_data_out), WHEN DATA_OUT	; if target is in DATA_OUT, send it a null byte
+ 855 00000B20: 878B0000 00000048 	JUMP REL (set_atn_msg_in), WHEN MSG_IN		; if target is in MSG_IN, read (& ignore) a byte
+ 856 00000B28: 828B0000 00000050 	JUMP REL (set_atn_command), WHEN CMD		; if target is in CMD, send it a null byte
+ 857 00000B30: 838B0000 00000068 	JUMP REL (set_atn_status), WHEN STATUS		; if target is in STATUS, read (& ignore) a byte
+ 858 00000B38: 98080000 000000A2 	INT 0xA2					; don't know what state target is in, barf
+ 859 00000B40:                   set_atn_data_in:
+ 860 00000B40: 09000001 00000110 	MOVE 1, msg_buf, WHEN DATA_IN
+ 861 00000B48: 80880000 FFFFFFB8 	JUMP REL (set_atn_loop)
+ 862 00000B50:                   set_atn_data_out:
+ 863 00000B50: 78080000 00000000 	MOVE 0 TO SFBR
+ 864 00000B58: E0080001 00000110 	STORE SFBR, 1, msg_buf
+ 865 00000B60: 08000001 00000110 	MOVE 1, msg_buf, WHEN DATA_OUT
+ 866 00000B68: 80880000 FFFFFF98 	JUMP REL (set_atn_loop)
+ 867 00000B70:                   set_atn_msg_in:
+ 868 00000B70: 0F000001 00000110 	MOVE 1, msg_buf, WHEN MSG_IN
+ 869 00000B78: 80880000 FFFFFF80 	JUMP REL (set_atn_clrack)
+ 870 00000B80:                   set_atn_command:
+ 871 00000B80: 78080000 00000000 	MOVE 0 TO SFBR
+ 872 00000B88: E0080001 00000110 	STORE SFBR, 1, msg_buf
+ 873 00000B90: 0A000001 00000110 	MOVE 1, msg_buf, WHEN COMMAND
+ 874 00000B98: 80880000 FFFFFF68 	JUMP REL (set_atn_loop)
+ 875 00000BA0:                   set_atn_status:
+ 876 00000BA0: 0B000001 00000110 	MOVE 1, msg_buf, WHEN STATUS
+ 877 00000BA8: 80880000 FFFFFF58 	JUMP REL (set_atn_loop)
+ 878                             ;
+ 879                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 880                             ;
+ 881                             ;  Speed and width routines
+ 882                             ;
+ 883                             ;  These routines take the results of negotiation messages and update the 
+ 884                             ;  se3_scntl3 and se1_sxfer locations accordingly
+ 885                             ;
+ 886                             ;    scntl3 consists of the following bits:
+ 887                             ;
+ 888                             ;	<7> = 0 : normal de-glitching
+ 889                             ;	      1 : ultra synchronous de-glitching
+ 890                             ;	          this gets set only for 20MHz synchronous mode
+ 891                             ;	<4:6> = SCF divider (sets synchronous receive rate = 80MHz/4/SCF)
+ 892                             ;	        000 = /3
+ 893                             ;	        001 = /1
+ 894                             ;	        010 = /1.5
+ 895                             ;	        011 = /2
+ 896                             ;	        100 = /3
+ 897                             ;	        101 = /4
+ 898                             ;	<3> = 0 : 8-bit transfers
+ 899                             ;	      1 : 16-bit transfers
+ 900                             ;	<0:2> = CCF divider (sets asynchronous clock = 80MHz/CCF) (must not exceed 25MHz)
+ 901                             ;	        101 = /4
+ 902                             ;
+ 903                             ;    sxfer consists of these bits:
+ 904                             ;
+ 905                             ;	<5:7> = TP (synchronous clock = 80MHz/SCF/TP)
+ 906                             ;	        000 = /4
+ 907                             ;	        001 = /5
+ 908                             ;	        010 = /6
+ 909                             ;	        011 = /7
+ 910                             ;	        100 = /8
+ 911                             ;	        101 = /9
+ 912                             ;	        110 = /10
+ 913                             ;	        111 = /11
+ 914                             ;	<0:4> = req/ack offset
+ 915                             ;	        0 = async
+ 916                             ;
+ 917                             ;  These routines assume an 80MHz clock (or 40MHz with doubler enabled)
+ 918                             ;
+ 919                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+ 920                             ;
+ 921                             ;  Save transfer width
+ 922                             ;
+ 923                             ;    Input:
+ 924                             ;
+ 925                             ;	SFBR = as defined in scsi standard for the negotiation value
+ 926                             ;	       0:  8-bit transfers
+ 927                             ;	       1: 16-bit transfers
+ 928                             ;
+ 929                             ;    Output:
+ 930                             ;
+ 931                             ;	se3_scntl3 = modified
+ 932                             ;	DSA = scsi_id_entry
+ 933                             ;
+ 934                             ;    Scratch:
+ 935                             ;
+ 936                             ;	SCRATCHA3
+ 937                             ;
+ 938 00000BB0:                   save_transfer_width:
+ 939 00000BB0: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+ 940 00000BB8: F1370001 00000007 	LOAD SCRATCHA3, 1, DSAREL (se3_scntl3)		; get what was in there before
+ 941 00000BC0: 7C37F700 00000000 	MOVE SCRATCHA3 & 0xF7 TO SCRATCHA3		; clear the 'wide' bit
+ 942 00000BC8: 808C0000 00000008 	JUMP REL (save_transfer_width_ok), IF 0
+ 943 00000BD0: 7A370800 00000000 	MOVE SCRATCHA3 | 0x08 TO SCRATCHA3		; ok, set it then
+ 944 00000BD8:                   save_transfer_width_ok:
+ 945 00000BD8: F2370001 00000007 	STORE NOFLUSH SCRATCHA3, 1, DSAREL (se3_scntl3)
+ 946 00000BE0: 90080000 00000000 	RETURN
+ 947                             ;
+ 948                             ;  This is the rate that synchronous transfers will happen at
+ 949                             ;
+ 950                             ;    Input:
+ 951                             ;
+ 952                             ;	SFBR = as defined in scsi standard for the negotiation value
+ 953                             ;	       ... 10=25ns period, 11=30.3ns, 12=50ns, 13=52nS, 14=56nS, 15=60nS, ...
+ 954                             ;
+ 955                             ;    Output:
+ 956                             ;
+ 957                             ;	se1_sxfer  = modified accordingly
+ 958                             ;	se3_scntl3 = modified accordingly
+ 959                             ;	SCRATCHA2  = resultant negotiation value
+ 960                             ;	DSA = scsi_id_entry
+ 961                             ;
+ 962                             ;    Scratch:
+ 963                             ;
+ 964                             ;	SFBR, SCRATCHA1, SCRATCHA3
+ 965                             ;
+ 966                             ;    Note:
+ 967                             ;
+ 968                             ;	requested	we do	giving SCF
+ 969                             ;	<= 50ns  (12)	20MHz	 /1 (001)
+ 970                             ;	<=100ns  (25)	10MHz	 /2 (011)
+ 971                             ;	else.....	 5MHz	 /4 (101)
+ 972                             ;
+ 973 00000BE8:                   save_transfer_period:
+ 974 00000BE8: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+ 975 00000BF0: F1370001 00000007 	LOAD SCRATCHA3, 1, DSAREL (se3_scntl3)		; get what's in se3_scntl3
+ 976 00000BF8: 7C378F00 00000000 	MOVE SCRATCHA3 & 0x8F TO SCRATCHA3		; clear out the SCF bits
+ 977 00000C00: 7A375000 00000000 	MOVE SCRATCHA3 | 0x50 TO SCRATCHA3		; set SCF = 101 (/4) for 5MHz rate
+ 978 00000C08: 78363200 00000000 	MOVE 50 TO SCRATCHA2				; set up negotiation value for 5MHz
+ 979 00000C10: 6E08E600 00000000 	MOVE SFBR + (0xFF - 25) TO SFBR			; sets carry iff sfbr > 25
+ 980 00000C18: 80A80000 00000030 	JUMP REL (save_transfer_period_ok), IF CARRY
+ 981 00000C20: 7E37E000 00000000 	MOVE SCRATCHA3 - 0x20 TO SCRATCHA3		; set SCF = 011 (/2) for 10MHz rate
+ 982 00000C28: 78361900 00000000 	MOVE 25 TO SCRATCHA2				; set up negotiation value for 10MHz
+ 983 00000C30: 6E080D00 00000000 	MOVE SFBR + 13 TO SFBR				; sets carry iff original sfbr > 12
+ 984 00000C38: 80A80000 00000010 	JUMP REL (save_transfer_period_ok), IF CARRY
+ 985                             							; original SFBR <= 12 ...
+ 986 00000C40: 78360C00 00000000 	MOVE 12 TO SCRATCHA2				; set up negotiation value for 20MHz
+ 987 00000C48: 7E37E000 00000000 	MOVE SCRATCHA3 - 0x20 TO SCRATCHA3		; set SCF = 101 (/4) for 5MHz rate
+ 988 00000C50:                   save_transfer_period_ok:
+ 989 00000C50: F2370001 00000007 	STORE NOFLUSH SCRATCHA3, 1, DSAREL (se3_scntl3)
+ 990 00000C58: 80880000 00000058 	JUMP REL (check_ultra_enable)
+ 991                             ;
+ 992                             ;  This is the maximum number of req's that can be sent out without having 
+ 993                             ;  received the corresponding ack's for a synchronous transfer.
+ 994                             ;
+ 995                             ;  Zero means use asynchronous transfer (the default case)
+ 996                             ;
+ 997                             ;    Input:
+ 998                             ;
+ 999                             ;	SFBR = as defined in scsi standard for the negotiation value
+1000                             ;	       range that this chip can handle: 0..16
+1001                             ;
+1002                             ;    Output:
+1003                             ;
+1004                             ;	se1_sxfer  = modified accordingly
+1005                             ;	se3_scntl3 = modified accordingly
+1006                             ;	SCRATCHA2  = resultant negotiated value
+1007                             ;	DSA = points to scsi_id_table entry
+1008                             ;
+1009                             ;    Scratch:
+1010                             ;
+1011                             ;	SFBR, SCRATCHA1, SCRATCHA3
+1012                             ;
+1013 00000C60:                   save_req_ack_offset:
+1014 00000C60: E1100004 00000100 	LOAD DSA0, 4, scsi_id_entry
+1015 00000C68: 6A360000 00000000 	MOVE SFBR TO SCRATCHA2				; assume sfbr value is ok as is
+1016 00000C70: 6E08EF00 00000000 	MOVE SFBR + (0xFF - 16) TO SFBR			; sets carry iff sfbr > 16
+1017 00000C78: 80A00000 00000008 	JUMP REL (save_req_ack_offset_ok), IF NOT CARRY
+1018 00000C80: 78361000 00000000 	MOVE 16 TO SCRATCHA2				; if too big, just use 16
+1019 00000C88:                   save_req_ack_offset_ok:
+1020 00000C88: 72360000 00000000 	MOVE SCRATCHA2 TO SFBR
+1021 00000C90: F1350001 00000005 	LOAD SCRATCHA1, 1, DSAREL (se1_sxfer)		; get what is there
+1022 00000C98: 7C35E000 00000000 	MOVE SCRATCHA1 & 0xE0 TO SCRATCHA1		; save the existing rate info
+1023 00000CA0: 7AB50000 00000000 	MOVE SCRATCHA1 | SFBR TO SCRATCHA1		; put in the new offset info
+1024 00000CA8: F2350001 00000005 	STORE NOFLUSH SCRATCHA1, 1, DSAREL (se1_sxfer)
+1025 00000CB0: F1370001 00000007 	LOAD SCRATCHA3, 1, DSAREL (se3_scntl3)
+1026                             ;
+1027                             ;  Set the ULTRA enable bit in SCNTL3 iff SXFER indicates max speed synchronous
+1028                             ;
+1029                             ;    Input:
+1030                             ;
+1031                             ;	SCRATCHA1 = se1_sxfer contents
+1032                             ;	SCRATCHA3 = se3_scntl3 contents
+1033                             ;	DSA = scsi_id_entry
+1034                             ;
+1035 00000CB8:                   check_ultra_enable:
+1036 00000CB8: 7C377F00 00000000 	MOVE SCRATCHA3 & 0x7F TO SCRATCHA3		; clear ultra enable
+1037 00000CC0: 72350000 00000000 	MOVE SCRATCHA1 TO SFBR
+1038 00000CC8: 808CE000 00000018 	JUMP REL (check_ultra_enable_ok), IF 0x00 AND MASK 0xE0 ; don't bother setting it if async mode
+1039 00000CD0: 72370000 00000000 	MOVE SCRATCHA3 TO SFBR
+1040 00000CD8: 80848F10 00000008 	JUMP REL (check_ultra_enable_ok), IF NOT 0x10 AND MASK 0x8F ; don't bother setting if not max speed
+1041 00000CE0: 7A378000 00000000 	MOVE SCRATCHA3 | 0x80 TO SCRATCHA3		; synchronous and max speed, set ultra enable bit
+1042 00000CE8:                   check_ultra_enable_ok:
+1043 00000CE8: F0370001 00000007 	STORE SCRATCHA3, 1, DSAREL (se3_scntl3)
+1044 00000CF0: 90080000 00000000 	RETURN
+1045                             ;
+1046                             ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+1047                             
+
+--SYMBOL---------------------------VALUE------TYPE-------
+INIT_SELECT                       55000000  ABSOLUTE              
+INIT_SXFER                        00000000  ABSOLUTE              
+INIT_SCNTL3                       00000055  ABSOLUTE              
+RP_ABORT_BUFFEROVF                00000001  ABSOLUTE              
+RP_FLAG_DISCONNECT                00000040  ABSOLUTE              
+RP_FLAG_ABORTED                   00000020  ABSOLUTE              
+RP_FLAG_DONE                      00000010  ABSOLUTE              
+RP_FLAG_GOTSTATUS                 00000008  ABSOLUTE              
+RP_FLAG_NEGSYNCH                  00000004  ABSOLUTE              
+RP_FLAG_NEGWIDTH                  00000002  ABSOLUTE              
+RP_FLAG_NEEDTOIDENT               00000001  ABSOLUTE              
+rp0_flags                         0000000C  ABSOLUTE              
+rp1_abort                         0000000D  ABSOLUTE              
+rp2_seqsts                        0000000E  ABSOLUTE              
+rp3_cmdlen                        0000000F  ABSOLUTE              
+rp_command                        00000010  ABSOLUTE              
+rp_datamov_pa                     00000008  ABSOLUTE              
+rp_next_pa                        00000004  ABSOLUTE              
+rp_this_va                        00000000  ABSOLUTE              
+REQ_ACK_OFFSET                    00000010  ABSOLUTE              
+SCRATCHJ1_SELECT                  00000002  ABSOLUTE              
+SCRATCHJ1_CHMOVS                  00000001  ABSOLUTE              
+STATE_ABORTING                    0000000A  ABSOLUTE              
+STATE_CHECKING_TARGET             00000004  ABSOLUTE              
+STATE_GETTING_STATUS              00000002  ABSOLUTE              
+STATE_GETTING_MESSAGE             00000001  ABSOLUTE              
+STATE_IDLE                        00000000  ABSOLUTE              
+STATE_MESSAGE_OUT                 00000003  ABSOLUTE              
+STATE_REQ_COMPLETE                0000000B  ABSOLUTE              
+STATE_SELECTED                    00000005  ABSOLUTE              
+STATE_SELECTING                   00000006  ABSOLUTE              
+STATE_SENDING_COMMAND             00000007  ABSOLUTE              
+STATE_TRANSFERRING_DATA           00000008  ABSOLUTE              
+STATE_WAITING_FOR_RESELECT        00000009  ABSOLUTE              
+se0_sequence                      00000004  ABSOLUTE              
+se1_sxfer                         00000005  ABSOLUTE              
+se2_scsi_id                       00000006  ABSOLUTE              
+se3_scntl3                        00000007  ABSOLUTE              
+se_queue_head                     00000000  ABSOLUTE              
+se_saved_dbc                      0000000C  ABSOLUTE              
+se_saved_dsp                      00000008  ABSOLUTE              
+se_select                         00000004  ABSOLUTE              
+XFER_PERIOD_FACT                  0000000C  ABSOLUTE              
+SCRIPT                            00000000  CODE SEGMENT          
+disconnecting                     00000958  ENTRY                 
+queue_fixed                       00000160  ENTRY                 
+scsi_id_table                     00000000  ENTRY                 
+select_timedout                   00000160  ENTRY                 
+startup                           00000148  ENTRY                 
+transfer_data_mismatch            00000688  ENTRY                 
+transfer_data_done                00000698  ENTRY                 
+abort_request_markit              000006C8  LABEL                 
+abort_request_inprog              00000290  LABEL                 
+abort_task                        00000120  LABEL                 
+bad_nego_mess_async               00000920  LABEL                 
+bad_nego_mess_reject              00000910  LABEL                 
+bad_nego_mess                     00000908  LABEL                 
+bad_reselect_scsi_id              00000218  LABEL                 
+check_reselect                    000001E0  LABEL                 
+check_next_scsi_id                000001D0  LABEL                 
+check_select                      00000268  LABEL                 
+check_target_state                00000350  LABEL                 
+check_ultra_enable                00000CB8  LABEL                 
+check_ultra_enable_ok             00000CE8  LABEL                 
+command_move                      00000620  LABEL                 
+got_extended_message              000007E0  LABEL                 
+got_new_req                       000002B8  LABEL                 
+get_request_packet                00000A18  LABEL                 
+got_sync_data_xfer_msg            0000087C  LABEL                 
+got_wide_data_xfer_msg            00000818  LABEL                 
+ident_abort_task_msg              00000118  LABEL                 
+ignore_message                    000007B0  LABEL                 
+mainloop                          00000160  LABEL                 
+message_ident_synch               00000140  LABEL                 
+message_ident_width               00000138  LABEL                 
+message_reject                    00000128  LABEL                 
+msg_buf                           00000110  LABEL                 
+new_req_scanloop                  00000178  LABEL                 
+noop_message                      00000130  LABEL                 
+proc_synch_reply                  00000550  LABEL                 
+proc_width_reply_clear_ack        000004F0  LABEL                 
+proc_width_reply                  00000470  LABEL                 
+reject_message                    00000790  LABEL                 
+req_complete                      00000980  LABEL                 
+req_complete2                     00000998  LABEL                 
+req_complete_ab                   000006E8  LABEL                 
+request_packet                    00000108  LABEL                 
+reselected                        00000240  LABEL                 
+restore_pointers                  00000AC0  LABEL                 
+restore_pointers_ack              000007C0  LABEL                 
+save_data_pointer                 00000A80  LABEL                 
+save_data_pointer_ack             000007A8  LABEL                 
+save_req_ack_offset               00000C60  LABEL                 
+save_req_ack_offset_ok            00000C88  LABEL                 
+save_transfer_period              00000BE8  LABEL                 
+save_transfer_period_ok           00000C50  LABEL                 
+save_transfer_width               00000BB0  LABEL                 
+save_transfer_width_ok            00000BD8  LABEL                 
+scsi_id_entry                     00000100  LABEL                 
+send_message_ident                000003E8  LABEL                 
+send_message_ident_synch          00000500  LABEL                 
+send_message_ident_width          00000420  LABEL                 
+send_message_synch                00000538  LABEL                 
+send_message_width                00000458  LABEL                 
+set_atn                           00000AF8  LABEL                 
+set_atn_clrack                    00000B00  LABEL                 
+set_atn_command                   00000B80  LABEL                 
+set_atn_data_in                   00000B40  LABEL                 
+set_atn_data_out                  00000B50  LABEL                 
+set_atn_loop                      00000B08  LABEL                 
+set_atn_msg_in                    00000B70  LABEL                 
+set_atn_status                    00000BA0  LABEL                 
+set_connect_params                00000250  LABEL                 
+transfer_data_done2               00000680  LABEL                 
+transfer_data_in                  00000630  LABEL                 
+transfer_command                  000005D0  LABEL                 
+transfer_data_out                 00000630  LABEL                 
+transfer_message_in               00000740  LABEL                 
+transfer_message_out              00000390  LABEL                 
+transfer_no_data                  000006A0  LABEL                 
+transfer_status                   000006F8  LABEL                 
+width_ok                          0000085C  LABEL                 

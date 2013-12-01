@@ -1,0 +1,6 @@
+gcc -D_OZONE -DOZ_HW_TYPE_486 -c -o ../objects/make_param_block.o make_param_block.c
+ld -d -r -o ../objects/make_param_block.r ../objects/make_param_block.o ../objects/oz_crtl_start.o ../libraries/oz_crtl.a
+set default ../objects/
+-output make_param_block.m elfconv ../binaries/make_param_block.oz make_param_block.r oz_kernel_486.oz
+run make_param_block.oz
+set default ../sources/

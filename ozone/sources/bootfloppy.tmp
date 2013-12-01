@@ -1,0 +1,4 @@
+dev_fd0
+EXIT
+set load_script make_bootfloppy.ldr
+exit

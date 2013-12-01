@@ -1,0 +1,8 @@
+#!/bin/bash -v
+	echo /dev/hda3:63:15:0 > hardisk.tmp
+	echo EXIT >> hardisk.tmp
+	echo set load_script make_bochsdisk_full.ldr >> hardisk.tmp
+	echo exit >> hardisk.tmp
+	export TTYNAME=hardisk.tmp
+	../linux/oz_loader_linux
+#	rm -f hardisk.tmp

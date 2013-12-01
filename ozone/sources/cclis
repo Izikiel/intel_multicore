@@ -1,0 +1,4 @@
+export PATH=/home/mrieker/ozone/linux_utils:$PATH
+xgcc -nostdinc -I. -I../includes -I/home/mrieker/ozone/glibc/includes -I/home/mrieker/ozone/gcc/includes -g -DOZ_HW_TYPE_486 -S -o $1.s $1.c
+as-new -a=../objects/$1.l -o ../objects/$1.o $1.s
+rm $1.s

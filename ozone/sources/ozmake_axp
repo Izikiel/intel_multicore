@@ -1,0 +1,16 @@
+savewd=`pwd`
+cd ../..
+rootdir=`pwd`
+cd $savewd
+export PATH=$rootdir/linux_utils/axp:$PATH
+make -f makefile_axp.ozone \
+	"DEL=rm -f" \
+	"ELFC=./elfc_axp.bash" \
+	"GZIP=../linux/gzipmain" \
+	"INCL=-nostdinc -I$rootdir/glibc/includes -I$rootdir/gcc/includes" \
+	"INDIR=./indir.bash" \
+	"MOP4H=./make_ozone_part_axp_h.bash" \
+	"MPB=./make_param_block.bash" \
+	"OZAS=as -m21164a" \
+	"OZGCC=gcc" \
+	$1 $2 $3 $4 $5 $6 $7

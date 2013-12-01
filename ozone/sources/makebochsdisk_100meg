@@ -1,0 +1,9 @@
+#!/bin/bash -v
+	dd if=/dev/zero of=../hd100meg.img bs=1024 count=102400
+	echo ../hd100meg.img:16:4:0 > hardisk.tmp
+	echo EXIT >> hardisk.tmp
+	echo set load_script make_bochsdisk_100meg.ldr >> hardisk.tmp
+	echo exit >> hardisk.tmp
+	export TTYNAME=hardisk.tmp
+	../linux/oz_loader_linux
+#	rm -f hardisk.tmp

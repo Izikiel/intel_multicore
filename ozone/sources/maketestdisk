@@ -1,0 +1,9 @@
+#!/bin/bash -v
+	echo testdisk > testdisk.tmp
+	echo EXIT >> testdisk.tmp
+	echo set load_script make_testdisk.ldr >> testdisk.tmp
+	echo exit >> testdisk.tmp
+	ln -f -s ../testdisk testdisk
+	export TTYNAME=testdisk.tmp
+	../linux/oz_loader_linux
+##	rm -f testdisk testdisk.tmp

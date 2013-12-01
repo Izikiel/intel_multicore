@@ -1,0 +1,32 @@
+ld -e _start -shared -S \
+	-Map ../objects/oz_kernel_486.map 	\
+	-o ../binaries/oz_kernel_486.elf32 	\
+	-T oz_kernel_486.t 			\
+        -u oz_dev_scsi_scan                     \
+        -u oz_knl_crash_set                     \
+        -u oz_knl_shutdown                      \
+        -u oz_knl_user_become                   \
+        -u oz_sys_fork                          \
+        -u oz_sys_gethostipaddr                 \
+        -u oz_sys_io_fs_printerror              \
+        -u oz_sys_threadlock_wait               \
+        -u oz_sys_vxscanf                       \
+        -u oz_usr_debug_init                    \
+        -u oz_freesiz                           \
+        ../objects/oz_kernel_486.o 	        \
+	../objects/oz_hw_process_486.o 	        \
+	../objects/oz_hw_thread_486.o 	        \
+	../objects/oz_sys_condhand_486.o        \
+	../objects/oz_common_486.o 	        \
+	../objects/oz_idt_init_486.o	        \
+	../objects/oz_common_486_c.o            \
+        ../objects/oz_hw_uniproc_486.o          \
+        ../libraries/oz_dev_knl486.a            \
+        ../libraries/oz_knl.a                   \
+        ../libraries/oz_sys.a                   \
+        ../libraries/oz_dev_knl486.a            \
+        ../libraries/oz_knl.a                   \
+        ../libraries/oz_sys.a                   \
+        ../libraries/oz_dev_knl486.a            \
+        ../libraries/oz_knl.a                   \
+        ../libraries/oz_sys.a

@@ -1,0 +1,10 @@
+#
+# This file creates various disk images
+# Use the 'ozmake' script to compile everything first
+#
+./makebochsdisk_10meg	# a 10meg image suitable for bochs
+./makebootcd		# a CD image that will boot with binaries
+./makebootfloppy	# a bootable floppy with binaries
+./makefullcd		# a full CD image (binaries, sources)
+##./makehardisk_full	# a full hard disk image (binaries, sources)
+			# -- too dangerous for general use - overwrites /dev/hda3

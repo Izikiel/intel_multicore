@@ -1,0 +1,12 @@
+create symbol oz_make_default_h {oz_lnm_lookup ("OZ_DEFAULT_DIR", "user")}
+create symbol oz_make_default {oz_lnm_string (oz_make_default_h, 0)}
+close handle {oz_make_default_h}
+xgcc -I. -I../includes/  -g -O2 -D_OZONE -DOZ_HW_TYPE_486 -c -o ../objects/testkimage.o ../tests/testkimage.c
+if {oz_status!=1} goto done
+ld -d -r -o ../objects/testkimage.r ../objects/testkimage.o
+if {oz_status!=1} goto done
+script elfc.cli testkimage
+if {oz_status!=1} goto done
+done: create symbol sts {oz_status}
+set default {oz_make_default}
+exit {sts}

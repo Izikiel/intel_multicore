@@ -1,0 +1,22 @@
+#
+# elfc.cli <image> [<elfconv_options>]
+#
+create symbol option "{oz_arg_2}"
+create symbol outdir "../binaries"
+create symbol outext "oz"
+create symbol shares "oz_kernel_486.oz"
+if { oz_arg_1 == "oz_kernel_486" } create symbol shares ""
+if { oz_arg_1 == "oz_kernel_smp_486" } create symbol shares ""
+if { oz_arg_1 != "oz_ldr_expand_486" } goto not_ldrexp
+  create symbol outdir "../objects"
+  create symbol outext "raw"
+  create symbol shares ""
+not_ldrexp:
+if { oz_arg_1 != "oz_loader_486" } goto not_ldr
+  create symbol outdir "../objects"
+  create symbol outext "raw"
+  create symbol shares ""
+not_ldr:
+echo elfconv {option} {outdir}/{oz_arg_1}.{outext} ../objects/{oz_arg_1}.r {shares}
+-output ../objects/{oz_arg_1}.m elfconv {option} {outdir}/{oz_arg_1}.{outext} ../objects/{oz_arg_1}.r {shares}
+-input ../objects/{oz_arg_1}.m -output ../objects/{oz_arg_1}.ms sort

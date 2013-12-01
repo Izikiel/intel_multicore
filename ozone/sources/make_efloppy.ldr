@@ -1,0 +1,30 @@
+!
+! Make a boot floppy that will download the kernel from the ethernet
+!
+
+init efloppy oz_dfs efloppy
+mount efloppy oz_dfs
+copy fs_linux:../binaries/oz_loader_486.bb efloppy.oz_dfs:/oz_loader_486.bb
+dir efloppy.oz_dfs:/
+volume efloppy.oz_dfs
+
+set load_device dectulip_0_10/65.85.95.150//255.255.255.240//65.85.95.151,2290
+set load_fstemplate oz_ip_fs
+
+set load_directory /ozone/binaries/
+set load_script ../startup/etherstartup.ldr
+set kernel_image oz_kernel_486.oz
+set startup_input ../startup/hardiskstartup.cli
+set startup_output console:
+set startup_error console:
+set startup_image oz_cli.oz
+set startup_params StartupParams
+set kernel_stack_size 12288
+set def_user_stack_size 1048576
+set nonpaged_pool_size 8388608
+set tz_offset_rtc -18000
+set monochrome 1
+show
+writeboot efloppy.oz_dfs:/oz_loader_486.bb
+dismount efloppy.oz_dfs
+barf

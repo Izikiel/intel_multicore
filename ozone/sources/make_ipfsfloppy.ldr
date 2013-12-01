@@ -1,0 +1,17 @@
+init dev_fd0 oz_dfs ipfsfloppy			! format the filesystem on the floppy
+mount dev_fd0 oz_dfs				! mount floppy
+copy fs_linux:../binaries/oz_loader_486.bb dev_fd0.oz_dfs:/oz_loader_486.bb
+copy fs_linux:../startup/ipfsfloppy.ldr    dev_fd0.oz_dfs:/ipfsfloppy.ldr
+copy fs_linux:../startup/ipfsfloppy.cli    dev_fd0.oz_dfs:/ipfsfloppy.cli
+dir dev_fd0.oz_dfs:/				! display what we put there
+volume dev_fd0.oz_dfs				! show how much space is left
+set load_device floppy.p0			! tell loader we are booting from floppy.p0
+set load_directory /				! this is what directory the 'load_script' is in when floppy boots
+set load_fstemplate oz_dfs			! this is the filesystem that 'load_device' is formatted with
+set load_script ipfsfloppy.ldr			! this is the loader script to execute when floppy boots
+set monochrome 1				! just use white for all text output
+set memory_megabytes 24				! set phys mem = 24Meg so the ramdisk will fit starting there
+writeboot dev_fd0.oz_dfs:/oz_loader_486.bb	! write floppy's bootblock with the above parameters
+show						! show what we wrote, including signature
+dismount dev_fd0.oz_dfs				! flush all floppy data out to floppy
+barf						! exit back to Linux

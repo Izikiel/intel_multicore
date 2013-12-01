@@ -1,0 +1,1 @@
+run oz_util_writeboot.oz lsil875_0_9.0.oz_dfs:/ozone/binaries/oz_loader_486.bb -set load_device dectulip_0_10/65.85.95.150//255.255.255.240//65.85.95.151,2290 -set load_fstemplate oz_ip_fs

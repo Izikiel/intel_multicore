@@ -1,0 +1,12 @@
+#!/bin/bash -v
+	dd if=/dev/zero of=../smpfloppy bs=1024 count=1440
+	ln -f -s ../smpfloppy dev_fd0
+	echo dev_fd0 > smpfloppy.tmp
+	echo EXIT >> smpfloppy.tmp
+	echo set load_script make_smpfloppy.ldr >> smpfloppy.tmp
+	echo exit >> smpfloppy.tmp
+	export TTYNAME=smpfloppy.tmp
+	../linux/oz_loader_linux
+#	rm -f smpfloppy.tmp
+	rm -f dev_fd0
+	gzip -c ../smpfloppy > ../smpfloppy.gz

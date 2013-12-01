@@ -1,0 +1,61 @@
+init dev_hda3 oz_dfs dev_hda3
+mount dev_hda3 oz_dfs
+mkdir dev_hda3.oz_dfs:/bin86/
+mkdir dev_hda3.oz_dfs:/binutils/
+mkdir dev_hda3.oz_dfs:/gcc/
+mkdir dev_hda3.oz_dfs:/glibc/
+mkdir dev_hda3.oz_dfs:/glibc/sources/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/ctype/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/locale/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/posix/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/stdlib/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/string/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/sysdeps/
+mkdir dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/sysdeps/stub/
+mkdir dev_hda3.oz_dfs:/ozone/
+
+copy fs_linux:../../bin86/binaries/    dev_hda3.oz_dfs:/bin86/binaries/
+copy fs_linux:../../binutils/binaries/ dev_hda3.oz_dfs:/binutils/binaries/
+copy fs_linux:../../gcc/binaries/      dev_hda3.oz_dfs:/gcc/binaries/
+copy fs_linux:../../gcc/includes/      dev_hda3.oz_dfs:/gcc/includes/
+copy fs_linux:../../gcc/libraries/     dev_hda3.oz_dfs:/gcc/libraries/
+copy fs_linux:../../glibc/includes/    dev_hda3.oz_dfs:/glibc/includes/
+copy fs_linux:../../glibc/sources/glibc-2.0.6/locale/C-ctype.c       dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/locale/C-ctype.c
+copy fs_linux:../../glibc/sources/glibc-2.0.6/locale/C_name.c        dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/locale/C_name.c
+copy fs_linux:../../glibc/sources/glibc-2.0.6/stdlib/bsearch.c       dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/stdlib/bsearch.c
+copy fs_linux:../../glibc/sources/glibc-2.0.6/ctype/ctype-info.c     dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/ctype/ctype-info.c
+copy fs_linux:../../glibc/sources/glibc-2.0.6/sysdeps/stub/errlist.c dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/sysdeps/stub/errlist.c
+copy fs_linux:../../glibc/sources/glibc-2.0.6/posix/fnmatch.c        dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/posix/fnmatch.c
+copy fs_linux:../../glibc/sources/glibc-2.0.6/stdlib/qsort.c         dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/stdlib/qsort.c
+copy fs_linux:../../glibc/sources/glibc-2.0.6/string/strerror.c      dev_hda3.oz_dfs:/glibc/sources/glibc-2.0.6/string/strerror.c
+copy fs_linux:../sources/              dev_hda3.oz_dfs:/ozone/sources/
+copy fs_linux:../includes/             dev_hda3.oz_dfs:/ozone/includes/
+copy fs_linux:../objects/              dev_hda3.oz_dfs:/ozone/objects/
+copy fs_linux:../libraries/            dev_hda3.oz_dfs:/ozone/libraries/
+copy fs_linux:../tests/                dev_hda3.oz_dfs:/ozone/tests/
+
+copy fs_linux:../binaries/             dev_hda3.oz_dfs:/ozone/binaries/
+copy fs_linux:../startup/              dev_hda3.oz_dfs:/ozone/startup/
+dir dev_hda3.oz_dfs:/ozone/binaries/
+dir dev_hda3.oz_dfs:/ozone/startup/
+set load_device ide_pm.3
+set load_fstemplate oz_dfs
+set load_directory /ozone/binaries/
+set load_script ../startup/hardiskstartup.ldr
+set kernel_image oz_kernel_486.oz
+set startup_input ../startup/hardiskstartup.cli
+set startup_output console:
+set startup_error console:
+set startup_image oz_cli.oz
+set startup_params StartupParams
+set kernel_stack_size 12288
+set def_user_stack_size 1048576
+set nonpaged_pool_size 8388608
+set system_pages 4096
+set tz_offset_rtc -14400
+set uniprocessor 0
+show
+writeboot dev_hda3.oz_dfs:/ozone/binaries/oz_loader_486.bb
+dismount dev_hda3.oz_dfs
+barf

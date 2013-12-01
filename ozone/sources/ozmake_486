@@ -1,0 +1,16 @@
+savewd=`pwd`
+cd ../..
+rootdir=`pwd`
+cd $savewd
+export PATH=$rootdir/linux_utils/486:$PATH
+make -f makefile_486.ozone \
+	"DEL=rm -f" \
+	"ELFC=./elfc_486.bash" \
+	"GZIP=../linux/gzipmain" \
+	"INCL=-nostdinc -I$rootdir/glibc/includes -I$rootdir/gcc/includes" \
+	"INDIR=./indir.bash" \
+	"MOP4H=./make_ozone_part_486_h.bash" \
+	"MPB=./make_param_block.bash" \
+	"OZAS=as" \
+	"OZGCC=xgcc" \
+	$1 $2 $3 $4 $5 $6 $7

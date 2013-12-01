@@ -1,0 +1,4 @@
+loop:
+	purge /ZZ*
+	wait until 0:5:0
+	goto loop
