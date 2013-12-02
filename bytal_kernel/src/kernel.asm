@@ -183,7 +183,7 @@ tarea_inicial:
     mov ax, 0xb8
     ltr ax
 tarea_idle:
-    ;jmp 0xc0:0
+    jmp 0xc0:0
 tarea1:
 ; con el scheduler recien se podra hacer el salto de modo con iret
 ;    breakpoint

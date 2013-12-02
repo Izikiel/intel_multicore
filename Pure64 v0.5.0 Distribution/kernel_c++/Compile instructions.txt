@@ -1,0 +1,6 @@
+Compile commands:
+
+
+g++ -o kernel64.o -c kernel64.c -nostdlib -nostartfiles -nodefaultlibs
+
+ld -T kernel64.ld -o kernel64.sys kernel64.o
