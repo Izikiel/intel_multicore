@@ -1,4 +1,4 @@
-megs: 64
+megs: 128
 romimage: file=run/share/BIOS-bochs-latest
 vgaromimage: file=run/share/VGABIOS-lgpl-latest
 boot: floppy
@@ -6,4 +6,4 @@ floppya: 1_44="floppy.img", status=inserted
 magic_break: enabled=1
 mouse: enabled=0
 port_e9_hack: enabled=1
-cpu: count = 1, ips=10000000, reset_on_triple_fault = 0
+cpu: count = 2, ips=10000000, reset_on_triple_fault = 0

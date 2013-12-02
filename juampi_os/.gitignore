@@ -1,0 +1,5 @@
+bochs/
+floppy.img
+*.o
+*.a
+*.bin
