@@ -1,5 +1,7 @@
 #include <scrn.h>
+#include <exception.h>
 #include <multicore.h>
+#include <asserts.h>
 #include <utils.h>
 
 typedef struct {
@@ -24,29 +26,29 @@ get_ebda_zone()
 	return res;
 }
 
-static mp_float_struct *
-check_valid_mpfs(mp_float_struct * mpfs)
+//Hace el checksum signado de los bytes. La suma tiene que dar 0, 
+//considerando suma signada de byte con overflow.
+static bool
+do_checksum(void * p, unsigned int len)
 {
-	char * bytes =(char *) mpfs;
-	//La suma de la espeficacion es con signo, considerando overflow.
+	char * bytes =(char *) p;
 	char sum = 0;
-
-	//Length es en cachos de 16 bytes
-	uint len = mpfs->length * 16;
 
 	for(uint i = 0; i < len; i++){
 		sum += bytes[i];	
 	}
-		
-	if(sum != 0){
-		scrn_printf("Checksum de MPFS invalido: %d\n",sum);
-		return NULL;
-	}
-	return mpfs;
+
+	return sum == 0;
+}
+
+static bool
+check_valid_mpfs(mp_float_struct * mpfs)
+{
+	return do_checksum(mpfs,mpfs->length * 16);
 }
 
 static mp_float_struct *
-find_floating_point_struct()
+find_floating_pointer_struct()
 {
 	//Header y zonas a revisar
 	static const char MPSIG[]	= "_MP_";
@@ -83,14 +85,107 @@ found:
 		return NULL;
 	}
 
-	scrn_printf("Candidato: %u\n",mpfs);
-	return check_valid_mpfs(mpfs);
+	if(!check_valid_mpfs(mpfs)){
+		scrn_printf("Estructura MPFS con checksum invalido");
+		return NULL;
+	}
+
+	return mpfs;
+}
+
+//Chequea que el checksum de la tabla de configuracion de Multi Processor sea
+//correcta. 
+static bool
+check_valid_mpct(mp_config_table * mpct)
+{
+	return do_checksum(mpct,mpct->length);
+}
+
+//Procesa la entrada de procesador para configurar este core
+static void
+configure_processor(processor_entry * entry)
+{
+	scrn_printf("\tEntrada de procesador: LAPIC (%d)\n",entry->local_apic_id);
+}
+
+//Tamaño de las entradas de la tabla de configuracion de MP
+static uint entry_sizes[] = {
+	[PROCESSOR]		= 20,
+	[BUS]			= 8,
+	[IOAPIC]		= 8,
+	[IOINTR]		= 8,
+	[LOCAL_IOINTR]	= 8
+};
+
+//Determinar posicion de la proxima entrada de la tabla
+static mp_entry *
+next_mp_entry(mp_config_table * mpct, mp_entry * p)
+{
+	char * ptr = (char *) p;
+	fail_unless(p->entry_type < MP_ENTRY_TYPES);
+	return (mp_entry *) (ptr + entry_sizes[p->entry_type]);
+}
+
+//Determina la configuracion del procesador si hay una tabla de configuracion
+//es decir si no hay una configuracion default en uso.
+static void 
+determine_cpu_configuration(mp_float_struct * mpfs)
+{
+	mp_config_table * mpct = mpfs->config;
+	fail_if(!check_valid_mpct(mpct));
+
+	//Seguimos las entradas de la tabla de configuracion
+	fail_unless(mpct->entry_count > 0);
+	mp_entry * entry = mpct->entries;
+
+	for(uint entryi = 0; entryi <= mpct->entry_count; entryi++){	
+		if(entry->entry_type == PROCESSOR){
+			configure_processor(&entry->chunk.processor);
+		}
+		//Por ahora ignoramos todas las demas entradas.
+		entry = next_mp_entry(mpct,entry);
+	}
+}
+
+static void
+determine_default_configuration()
+{
+}
+
+//Revisar que las estructuras sean del tamaño correcto
+static void
+check_struct_sizes()
+{
+	fail_unless(sizeof(processor_entry) != entry_sizes[PROCESSOR]);
+	fail_unless(sizeof(ioapic_entry) != entry_sizes[IOAPIC]);
+	fail_unless(sizeof(bus_entry) != entry_sizes[BUS]);
+	fail_unless(sizeof(intr_assign_entry) != entry_sizes[IOINTR]);
+	fail_unless(sizeof(local_intr_assign_entry) != entry_sizes[LOCAL_IOINTR]);
 }
 
 void multiprocessor_init()
 {
-	mp_float_struct * mpfs = find_floating_point_struct();
+	scrn_cls();
+	check_struct_sizes();
+
+	//Detectar MPFS
+	mp_float_struct * mpfs = find_floating_pointer_struct();
 	if(mpfs == NULL){
 		return;
+	}
+
+	scrn_printf("\tEstructura MPFS encontrada: %u\n", mpfs);
+
+	//Recorrer estructura y determinar los cores
+	if(mpfs->config != 0){
+		//Configuracion hay que determinarla
+		scrn_printf("\tConfiguracion a determinar\n");
+		determine_cpu_configuration(mpfs);
+	}else if(mpfs->mp_features1 != 0){
+		//La configuracion ya esta definida y es una estandar
+		scrn_printf("\tConfiguracion default numero: %d",mpfs->mp_features1);
+		determine_default_configuration(mpfs);	
+	}else{
+		kernel_panic("Configuracion MPFS invalida");	
 	}
 }

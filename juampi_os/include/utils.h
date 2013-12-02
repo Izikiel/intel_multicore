@@ -18,7 +18,7 @@ extern uint umax(uint, uint);
 
 void num_to_str(uint, uint, char *);
 
-void strncpy(char *,char *,unsigned int);
+void strncpy(char *,const char *,unsigned int);
 
 bool is_alpha(char c);
 

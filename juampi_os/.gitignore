@@ -3,3 +3,4 @@ floppy.img
 *.o
 *.a
 *.bin
+*.swp

@@ -8,9 +8,11 @@
 
 #include <types.h>
 
+#define MP_ENTRY_TYPES 5
+
 //MultiProcessor Configuration Table Entry. Table 4.3 of spec.
 typedef enum { 
-	PROCESSOR = 0, BUS, IOAPIC, IOINTR, LOCAL_IOINTR
+	PROCESSOR = 0, BUS = 1, IOAPIC = 2, IOINTR = 3, LOCAL_IOINTR = 4
 } entry_type;
 
 //MultiProcessor Configuration Table Entry for Processor. Table 4.4 of spec
@@ -103,7 +105,7 @@ typedef struct {
 		bus_entry				bus;
 		intr_assign_entry		intr_assign;
 		local_intr_assign_entry	lintr_assign;
-	};
+	} chunk;
 } __attribute__((__packed__)) mp_entry;
 
 //MultiProcessor Configuration Table. Table 4.2 of spec.
