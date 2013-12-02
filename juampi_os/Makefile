@@ -15,7 +15,7 @@ ASMSOURCES=$(wildcard src/**/*.asm src/*.asm)
 ASMOBJS=$(patsubst %.asm,%.o,$(ASMSOURCES))
 COBJS=$(patsubst %.c,%.o,$(CSOURCES))
 
-BOCHSDIR?=~/bochs/bin
+BOCHSDIR?=./bochs/bin
 BOCHSCONF?=run/bochsrc.txt
 
 %.o: %.c
@@ -31,10 +31,11 @@ all: kernel.bin Makefile
 	./make_kernel_binary.sh
 
 run: all
+	./install_bochs.sh
 	$(BOCHSDIR)/bochs -q -f $(BOCHSCONF)
 
 clean:
-	rm -rf $(ASMOBJS) $(COBJS) kernel.bin floppy.img
+	rm -rf $(ASMOBJS) $(COBJS) kernel.bin floppy.img bochs.tar.gz
 
 zipped: clean
 	tar zcvf entrega.tar.gz\
