@@ -3,7 +3,12 @@ ASM=nasm
 LINKER=ld
 LINK.o=ld
 
-CFLAGS=-m32 -O2 -std=c99 -Wall -nostdlib -fno-builtin -nostartfiles -nodefaultlibs -fno-stack-protector -I./include
+CFLAGS=-m32 -O2 -std=c11 -Wall -Wextra\
+	-Wno-unused-parameter -Wno-override-init\
+	-Wunreachable-code -Wshadow -Wcast-qual -Wunreachable-code\
+	-nostdlib\
+	-fno-builtin -nostartfiles -nodefaultlibs -fno-stack-protector\
+	-I./include
 NASMFLAGS=-i./include/ -f elf32
 LINKSCRIPT=build/linker_script.ld
 LINKERFLAGS=-melf_i386 -T $(LINKSCRIPT)

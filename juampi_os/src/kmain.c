@@ -10,6 +10,7 @@
 #include <asserts.h>
 #include <exception.h>
 #include <timer.h>
+#include <multicore.h>
 
 //Simbolo de linker para el final del kernel. La direccion que contiene es
 //un lugar despues de que termina el kernel. Esta definido en el linker script
@@ -78,6 +79,7 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	scrn_print("INICIALIZANDO LAS ESTRUCTURAS DE MEMORIA DEL KERNEL...\n");
 	module_t* grub_modules = (module_t*) mbd->mods_addr;
 	uint kernel_end_addr = grub_modules[mbd->mods_count-1].mod_end;
+	
 	//El mapa de memoria upper es a partir del primer megabyte ergo el primer
 	//lugar donde nos vamos de largo es 1024 kilobytes mas la memoria que dice GRUB
 	scrn_printf("El kernel termina en %u\n",(uint)&kernel_code_end);
@@ -90,6 +92,9 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	char * mod_end = (char *) manifesto->mod_end;
 	memcpy(buffer,mod_start,(uint)(mod_end-mod_start));
 	scrn_printf("\nEl modulo contiene: %s\n",buffer);
+
+	scrn_printf("\nIniciando procesadores...\n");
+	multiprocessor_init();
 
 	while(1);
 }

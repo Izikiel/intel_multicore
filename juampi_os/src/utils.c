@@ -97,7 +97,7 @@ void num_to_str(uint n, uint base, char* output)
 
 void strncpy(char* dst, char* src, unsigned int len)
 {
-	for(int i = 0; i < len; i++) {
+	for(uint i = 0; i < len; i++) {
 		if(src[i] == '\0') {
 			dst[i] = '\0';
 			return;

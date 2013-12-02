@@ -15,10 +15,10 @@ uint in_video_mem(uint address)
 			VIDEO_WIDTH*VIDEO_HEIGHT*sizeof(ushort);	
 }
 
-static int scrn_valid_pos(uchar cursor_r, uchar cursor_c)
+static int scrn_valid_pos(uchar cursor_row, uchar cursor_col)
 {
-	return  cursor_r <= VIDEO_HEIGHT &&
-	        cursor_c <= VIDEO_WIDTH;
+	return  cursor_row <= VIDEO_HEIGHT &&
+	        cursor_col <= VIDEO_WIDTH;
 }
 
 uchar scrn_getrow()
