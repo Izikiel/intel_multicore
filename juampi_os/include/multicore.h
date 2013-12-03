@@ -11,7 +11,7 @@
 #define MP_ENTRY_TYPES 5
 
 //MultiProcessor Configuration Table Entry. Table 4.3 of spec.
-typedef enum { 
+typedef enum {
 	PROCESSOR = 0, BUS = 1, IOAPIC = 2, IOINTR = 3, LOCAL_IOINTR = 4
 } entry_type;
 
@@ -20,14 +20,14 @@ typedef struct {
 	//ID for Local APIC of processor
 	uchar local_apic_id;
 	//Version register number
-	uchar version;	
+	uchar version;
 	//Enabled bit. Zero if unusable
 	uchar enabled : 1;
 	//Bootstrap processor. One if it is
 	uchar bootstrap : 1;
 	//Reserved bits
 	uchar __reserved : 6;
-	//CPU Signature 
+	//CPU Signature
 	//	Contains in consecutive order stepping (4 bits), model (4),	family (4)
 	//	All following bits are reserved.
 	//
@@ -40,7 +40,7 @@ typedef struct {
 //MultiProcessor Configuration Table Entry for Bus. Table 4.7 of spec.
 typedef struct {
 	//Identifier. BIOS assigns identifiers starting from zero.
-	uchar id;	
+	uchar id;
 	//String identifying the type of bus;
 	//Table 4.8 has possible values.
 	char type[6];
@@ -57,7 +57,7 @@ typedef struct {
 	void * base_address;
 } __attribute__((__packed__)) ioapic_entry;
 
-//MultiProcessor Configuration Table Entry for IO Interrupts. 
+//MultiProcessor Configuration Table Entry for IO Interrupts.
 //	Table 4.10 of Spec
 typedef struct {
 	//Type of interrupt. Values in table 4-11
@@ -67,16 +67,16 @@ typedef struct {
 	//Trigger mode of input signals. Table 4-10 has values.
 	uchar trigger_mode : 2;
 	//Identifies the bus from where this interrupt comes from.
-	uchar source_bus_id;	
+	uchar source_bus_id;
 	//Identifies the interrupt from bus. Starts at 0
 	uchar source_bus_irq;
 	//Destination IO APIC Id
 	uchar dest_apic_id;
-	//Destination IO APIC INTIn 
+	//Destination IO APIC INTIn
 	uchar dest_apic_intin;
 } __attribute__((__packed__)) intr_assign_entry;
 
-//MultiProcessor Configuration Table Entry for Local IO Interrupts. 
+//MultiProcessor Configuration Table Entry for Local IO Interrupts.
 //	Table 4.12 of Spec
 typedef struct {
 	//Type of interrupt. Values in table 4-11
@@ -86,12 +86,12 @@ typedef struct {
 	//Trigger mode of input signals. Table 4-10 has values.
 	uchar trigger_mode : 2;
 	//Identifies the bus from where this interrupt comes from.
-	uchar source_bus_id;	
+	uchar source_bus_id;
 	//Identifies the interrupt from bus. Starts at 0
 	uchar source_bus_irq;
 	//Destination IO APIC Id
 	uchar dest_apic_id;
-	//Destination IO APIC LINTIn 
+	//Destination IO APIC LINTIn
 	uchar dest_apic_lintin;
 } __attribute__((__packed__)) local_intr_assign_entry;
 
@@ -100,7 +100,7 @@ typedef struct {
 	//Entry type is a byte. Enums are ints by default in C. So no enum here.
 	uchar entry_type;
 	union {
-		processor_entry			processor;	
+		processor_entry			processor;
 		ioapic_entry			ioapic;
 		bus_entry				bus;
 		intr_assign_entry		intr_assign;
@@ -116,7 +116,7 @@ typedef struct mp_config_table{
 	ushort length;
 	//Revision of spec.  1 for 1.1, 4 for 1.4
 	uchar version;
-	//Checksum of the base configuration table. 
+	//Checksum of the base configuration table.
 	//All bytes including checksum bytes must equate zero.
 	uchar checksum;
 	//OEM ID: Name of manufacturer of system hardware. Not NULL Terminated.
@@ -165,6 +165,29 @@ typedef struct {
 	//MP Features 3: Reserved, must be zero.
 	uchar mp_features3[3];
 } __attribute__((__packed__)) mp_float_struct;
+
+
+//Interrupt Command Register (ICR)
+typedef struct {
+	char vector; //The vector number of the interrupt being sent.
+	char delivery_mode:3; //Specifies the type of IPI to be sent.
+	char destination_mode:1; // Selects either physical (0) or logical (1) destination mode (see Section 10.6.2, “Determining IPI Destination”).
+	char delivery_status:1; // Indicates the IPI delivery status: 0(idle) indicates the local apic has completed sending any previous IPIs.
+							// 1 (send pending) Indicates that this local apic has not completed sending the last IPI.
+	char reserved1:1;
+	char level:1; //For the INIT level de-assert delivery mode this flag must be set to 0; for all other delivery modes it must be set to 1.
+	char trigger_mode:1; //Selects the trigger mode when using the INIT level de-assert delivery mode: edge (0) or level (1)
+	char reserved2:2;
+	char destination_shorthand:2; /* Shorthands are defined for the following cases: No shorthand(00) (Destination specified in destination field),
+									software self interrupt (01), IPIs to all processors in the system including the sender (10),
+									IPIs to all processors in the system excluding the sender (11). */
+	short reserved12:12;
+	int  reserved24:24;
+	char destination_field; /* Specifies the target processor or processors.
+							This field is only used when the destination
+							shorthand field is set to 00B. */
+} __attribute__((__packed__)) interrupt_command_register;
+
 
 //Kernel entry point for multiprocessor inicialization
 void multiprocessor_init();
