@@ -162,6 +162,19 @@ check_struct_sizes()
 	fail_unless(sizeof(intr_assign_entry) != entry_sizes[IOINTR]);
 	fail_unless(sizeof(local_intr_assign_entry) != entry_sizes[LOCAL_IOINTR]);
 }
+//Nos puede servir para prender las otras
+static void
+turn_on_apic(int * apic)
+{
+    *(apic+0xF0)= *(apic+0xF0) | 0x100;
+}
+
+//El local apic siempre esta en la misma direccion
+static void
+turn_on_local_apic()
+{
+    turn_on_apic((int *)0xFEE00000);
+}
 
 void multiprocessor_init()
 {
