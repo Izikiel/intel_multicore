@@ -77,8 +77,8 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	}
 
 	scrn_print("INICIALIZANDO LAS ESTRUCTURAS DE MEMORIA DEL KERNEL...\n");
-	module_t* grub_modules = (module_t*) mbd->mods_addr;
-	uint kernel_end_addr = grub_modules[mbd->mods_count-1].mod_end;
+	//module_t* grub_modules = (module_t*) mbd->mods_addr;
+	//uint kernel_end_addr = grub_modules[mbd->mods_count-1].mod_end;
 	
 	//El mapa de memoria upper es a partir del primer megabyte ergo el primer
 	//lugar donde nos vamos de largo es 1024 kilobytes mas la memoria que dice GRUB

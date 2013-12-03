@@ -11,6 +11,7 @@ fi
 
 URL="http://downloads.sourceforge.net/project/bochs/bochs/2.6.2/bochs-2.6.2.tar.gz"
 
+dpkg -l | grep -qw libgtk2.0-dev || sudo apt-get libgtk2.0-dev
 wget -O bochs.tar.gz $URL
 mkdir bochs-installation
 mkdir bochs

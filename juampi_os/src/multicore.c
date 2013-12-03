@@ -105,7 +105,11 @@ check_valid_mpct(mp_config_table * mpct)
 static void
 configure_processor(processor_entry * entry)
 {
-	scrn_printf("\tEntrada de procesador: LAPIC (%d)\n",entry->local_apic_id);
+	scrn_printf("\tEntrada de procesador: \n"
+		"\tLAPIC (%d)\n"
+		"\tFLAGS (%u - %u)\n"
+		"\tIS BP: %b\n",
+		entry->local_apic_id,entry->model,entry->family,entry->bootstrap);
 }
 
 //Tamaño de las entradas de la tabla de configuracion de MP
@@ -126,10 +130,17 @@ next_mp_entry(mp_config_table * mpct, mp_entry * p)
 	return (mp_entry *) (ptr + entry_sizes[p->entry_type]);
 }
 
+//Inicializa a modo APIC el IMCR del BSP
+static void
+start_icmr_apic_mode()
+{
+	scrn_printf("\tInicializar APIC del IMCR\n");
+}
+
 //Determina la configuracion del procesador si hay una tabla de configuracion
 //es decir si no hay una configuracion default en uso.
 static void 
-determine_cpu_configuration(mp_float_struct * mpfs)
+determine_cpu_configuration(const mp_float_struct * mpfs)
 {
 	mp_config_table * mpct = mpfs->config;
 	fail_if(!check_valid_mpct(mpct));
@@ -138,12 +149,17 @@ determine_cpu_configuration(mp_float_struct * mpfs)
 	fail_unless(mpct->entry_count > 0);
 	mp_entry * entry = mpct->entries;
 
-	for(uint entryi = 0; entryi <= mpct->entry_count; entryi++){	
+	for(uint entryi = 0; entryi < mpct->entry_count; entryi++){	
 		if(entry->entry_type == PROCESSOR){
 			configure_processor(&entry->chunk.processor);
 		}
 		//Por ahora ignoramos todas las demas entradas.
 		entry = next_mp_entry(mpct,entry);
+	}
+
+	if(mpfs->mp_features2 & IMCRP_BIT){
+		//ICMR presente, hay que levantarlo a modo APIC
+		start_icmr_apic_mode();	
 	}
 }
 

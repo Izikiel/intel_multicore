@@ -32,7 +32,13 @@ typedef struct {
 	//	All following bits are reserved.
 	//
 	//	Table 4.5 has values.
-	uint signature;
+	uchar stepping : 4;
+	uchar model : 4;
+	uchar family : 4;
+	//Reserved bits of CPU signature flag
+	uchar __reserved_signature_high_nibble : 4;
+	uchar __reserved_signature_byte : 4;
+	ushort __reserved_signature_word;
 	//Feature flags as returned by CPUID instruction. Table 4.6 has values.
 	uint features;
 } __attribute__((__packed__)) processor_entry;
@@ -129,7 +135,7 @@ typedef struct mp_config_table{
 	ushort oem_table_length;
 	//Entries following this base header in memory.
 	ushort entry_count;
-	//Base address by which each processor acceses the local apic
+	//Base address by which each processor acceses the local apic. 
 	void * local_apic_addr;
 	//Length in bytes of the extended table entries. Zero if there are none.
 	ushort extended_table_length;
@@ -165,6 +171,10 @@ typedef struct {
 	//MP Features 3: Reserved, must be zero.
 	uchar mp_features3[3];
 } __attribute__((__packed__)) mp_float_struct;
+
+//IMCRP bit: Determines if Interrupt Mode Configuration Register is present.
+//If so, the processor must initialize the IMCR to APIC Mode.
+#define IMCRP_BIT (1 << 7)
 
 //Kernel entry point for multiprocessor inicialization
 void multiprocessor_init();
