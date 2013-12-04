@@ -90,4 +90,12 @@ extern void _irq15();
 //Handler de syscalls
 extern void _isr0x80();
 
+//Handler de ignorar interrupciones espurias
+//	De acuerdo a la APIC spec, los 4 bits de abajo deben estar en 1.
+//	Lo demas lo seteamos nosotros. 
+#define SPURIOUS_VEC_NUM ((1 << 3) & 0xF)
+#define SPURIOUS_INTR_NUM ((SPURIOUS_VEC_NUM << 4) | 0xF)
+
+extern void _irq_ignore_handler();
+
 #endif

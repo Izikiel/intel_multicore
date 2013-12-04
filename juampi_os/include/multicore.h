@@ -136,7 +136,7 @@ typedef struct mp_config_table{
 	//Entries following this base header in memory.
 	ushort entry_count;
 	//Base address by which each processor acceses the local apic. 
-	void * local_apic_addr;
+	uint local_apic_addr;
 	//Length in bytes of the extended table entries. Zero if there are none.
 	ushort extended_table_length;
 	//Extended table checksum. All bytes of the extended table must sum to this
@@ -176,25 +176,49 @@ typedef struct {
 //If so, the processor must initialize the IMCR to APIC Mode.
 #define IMCRP_BIT (1 << 7)
 
-//Interrupt Command Register (ICR)
+//Interrupt Command Register (ICR). See Section 10.6
 typedef struct {
-	char vector; //The vector number of the interrupt being sent.
-	char delivery_mode:3; //Specifies the type of IPI to be sent.
-	char destination_mode:1; // Selects either physical (0) or logical (1) destination mode (see Section 10.6.2, “Determining IPI Destination”).
-	char delivery_status:1; // Indicates the IPI delivery status: 0(idle) indicates the local apic has completed sending any previous IPIs.
-							// 1 (send pending) Indicates that this local apic has not completed sending the last IPI.
-	char reserved1:1;
-	char level:1; //For the INIT level de-assert delivery mode this flag must be set to 0; for all other delivery modes it must be set to 1.
-	char trigger_mode:1; //Selects the trigger mode when using the INIT level de-assert delivery mode: edge (0) or level (1)
-	char reserved2:2;
-	char destination_shorthand:2; /* Shorthands are defined for the following cases: No shorthand(00) (Destination specified in destination field),
-									software self interrupt (01), IPIs to all processors in the system including the sender (10),
-									IPIs to all processors in the system excluding the sender (11). */
-	short reserved12:12;
-	int  reserved24:24;
-	char destination_field; /* Specifies the target processor or processors.
-							This field is only used when the destination
-							shorthand field is set to 00B. */
+	//The vector number of the interrupt being sent.
+	char vector; 
+	//Specifies the type of IPI to be sent.
+	char delivery_mode:3; 
+	//Selects either physical (0) or logical (1) destination mode 
+	//(see Section 10.6.2, “Determining IPI Destination”).
+	char destination_mode:1;		
+	// Indicates the IPI delivery status: 
+	//
+	// 0(idle) indicates the local 
+	// apic has completed sending any previous IPIs.
+	//
+	// 1 (send pending) Indicates that this local apic has not completed 
+	// sending the last IPI.
+	char delivery_status:1; 
+	char __reserved1:1;
+	//For the INIT level de-assert delivery mode this flag must be set to 0; 
+	//for all other delivery modes it must be set to 1.
+	char level:1; 
+	//Selects the trigger mode when using the INIT level de-assert delivery 
+	//mode: edge (0) or level (1)
+	char trigger_mode:1; 
+	char __reserved2:2;
+	// Shorthands are defined for the following cases: 
+	//	No shorthand(00) (Destination specified in destination field),
+	//	Software self interrupt (01), 
+	//	IPIs to all processors in the system including the sender (10), 
+	//	IPIs to all processors in the system excluding the sender (11).
+	char destination_shorthand:2; 
+	//Specifies the target processor or processors.
+	//This field is only used when the destination shorthand field is set 
+	//to 00B.	
+	char __reserved3 :4;
+	char __reserved4[4];
+	// Destination field
+	//	00: if the destination mode is physical, the destination field
+	//		contains the APIC ID of the destination
+	//
+	//	when the mode is logical, the interpretation of this field can be
+	//	found in Intel SDM Vol 3 Chapter 10
+	char destination_field; 
 } __attribute__((__packed__)) interrupt_command_register;
 
 //Kernel entry point for multiprocessor inicialization

@@ -2,7 +2,7 @@
 #include <utils.h>
 #include <gdt.h>
 #include <tss.h>
-#include <exception.h>
+#include <asserts.h>
 #include <irq.h>
 
 seg_desc gdt[GDT_COUNT];

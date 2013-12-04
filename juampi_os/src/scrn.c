@@ -135,7 +135,8 @@ void scrn_vprintf(char* msg, varg_list l)
 				scrn_putc(msg[i], format);
 				break;
 			case 'u':
-				num_to_str(varg_yield(l,uint), 16, buffer);
+				buffer[0] = '0'; buffer[1] = 'x';
+				num_to_str(varg_yield(l,uint), 16, buffer+2);
 				scrn_print(buffer);
 				break;
 			case 'd':

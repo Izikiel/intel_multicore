@@ -3,6 +3,12 @@
 ;Handler general
 extern irq_common_handler;
 
+;Ignorar la interrupcion
+;Sirve para evitar interrupciones espurias
+global _irq_ignore_handler
+_irq_ignore_handler:
+	iret
+
 ;Handlers de interrupcciones
 ;Macro que genera un handler de interrupcion. Lo que hace es pushear el codigo de la interrupcion
 ;antes de saltar al handler comun.

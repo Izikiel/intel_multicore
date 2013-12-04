@@ -134,7 +134,34 @@ next_mp_entry(mp_config_table * mpct, mp_entry * p)
 static void
 start_icmr_apic_mode()
 {
+	//TODO
 	scrn_printf("\tInicializar APIC del IMCR\n");
+}
+
+//Prende un APIC escribiendo el bit 8 contando desde 0 del Spurious Vector 
+//Register en el  offset F0 en bytes.
+//Nos puede servir para prender las otras.
+static void
+turn_on_apic(uint * apic)
+{
+	//0xF0 en bytes, pero usamos arreglo de int32 para poder hacer bien el
+	//offset lo dividimos por el tamaño de un int32
+    apic[0xF0 >> 2] |= (1 << 8);
+}
+
+#define DEFAULT_APIC_ADDR 0xFEE00000
+
+//Prende el Local APIC. Es necesario para el BSP para poder empezar a mandar
+//IPIs. El local apic siempre esta en la misma direccion: 0xFEE00000
+static void
+turn_on_local_apic(const mp_config_table * mpct)
+{
+	fail_if(mpct->local_apic_addr != DEFAULT_APIC_ADDR);
+	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
+    turn_on_apic(local_apic);
+	//Poner el valor de la entrada de la IDT para el 
+	//Spurious Vector Interrupt.
+	local_apic[0xF0 >> 2] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
 }
 
 //Determina la configuracion del procesador si hay una tabla de configuracion
@@ -149,7 +176,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	fail_unless(mpct->entry_count > 0);
 	mp_entry * entry = mpct->entries;
 
-	for(uint entryi = 0; entryi < mpct->entry_count; entryi++){	
+	for(uint entryi = 0; entryi < mpct->entry_count; entryi++){
 		if(entry->entry_type == PROCESSOR){
 			configure_processor(&entry->chunk.processor);
 		}
@@ -161,10 +188,12 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 		//ICMR presente, hay que levantarlo a modo APIC
 		start_icmr_apic_mode();	
 	}
+
+	turn_on_local_apic(mpct);
 }
 
 static void
-determine_default_configuration()
+determine_default_configuration(mp_float_struct * mpfs)
 {
 }
 
@@ -177,19 +206,6 @@ check_struct_sizes()
 	fail_unless(sizeof(bus_entry) != entry_sizes[BUS]);
 	fail_unless(sizeof(intr_assign_entry) != entry_sizes[IOINTR]);
 	fail_unless(sizeof(local_intr_assign_entry) != entry_sizes[LOCAL_IOINTR]);
-}
-//Nos puede servir para prender las otras
-static void
-turn_on_apic(int * apic)
-{
-    *(apic+0xF0)= *(apic+0xF0) | 0x100;
-}
-
-//El local apic siempre esta en la misma direccion
-static void
-turn_on_local_apic()
-{
-    turn_on_apic((int *)0xFEE00000);
 }
 
 void multiprocessor_init()

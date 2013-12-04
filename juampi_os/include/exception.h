@@ -19,9 +19,4 @@ void initialize_exception_handlers();
 //Pantalla azul clasica
 extern void blue_screen(exception_trace);
 
-#define kernel_panic(m,...)\
-	do{ irq_cli(); scrn_cls();\
-		scrn_printf("KERNEL PANIC (%s:%d):\n\t " m,\
-			__FILE__,__LINE__,## __VA_ARGS__); while(1); }while(0)
-
 #endif

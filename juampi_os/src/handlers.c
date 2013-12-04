@@ -2,7 +2,7 @@
 #include <idt.h>
 #include <utils.h>
 #include <scrn.h>
-#include <exception.h>
+#include <asserts.h>
 
 //Punteros con las funciones de atencion de interrupcciones.
 static irq_handler irq_handlers[MAX_INTS];

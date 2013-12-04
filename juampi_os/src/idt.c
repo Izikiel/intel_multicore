@@ -1,11 +1,16 @@
 #include <idt.h>
 #include <utils.h>
 #include <gdt.h>
+#include <asserts.h>
 
 idt_entry idt[256];
 idt_desc IDT_DESC = {.idt_base = (uint)& idt, .idt_limit = sizeof(idt)-1};
 
-void idt_load_desc(uint i, uint offset, ushort sel, idt_entry_flags flags)
+uint RESERVED[] = {SPURIOUS_INTR_NUM, -1};
+#define RESERVEDENTR (sizeof(RESERVED)/sizeof(RESERVED[0]))
+
+static void 
+idt_load_desc_unsafe(uint i, uint offset, ushort sel, idt_entry_flags flags)
 {
 	idt[i].offset_l = (ushort)(offset & 0xFFFF);
 	idt[i].offset_h = (ushort)((offset >> 16) & 0xFFFF);
@@ -15,8 +20,24 @@ void idt_load_desc(uint i, uint offset, ushort sel, idt_entry_flags flags)
 	idt[i].dpl = flags.dpl;
 	idt[i].p = 1;
 }
+
+void idt_load_desc(uint i, uint offset, ushort sel, idt_entry_flags flags)
+{
+	//No pasarse de largo de la idt
+	fail_if(i >= 256);
+	//Revisar que no estemos usando una entrada reservada de la IDT.
+	for(uint k = 0; k < RESERVEDENTR; k++){
+		fail_unless(i != RESERVED[k]);
+	}
+
+	idt_load_desc_unsafe(i,offset,sel,flags);
+}
 #define IDT_LOAD_DESC(i,o,s,...) \
         idt_load_desc(i,o,s,(idt_entry_flags) { \
+            .dpl = 0, .d = 1, .type = IDT_INT_GATE, __VA_ARGS__ })
+
+#define IDT_LOAD_DESC_UNSAFE(i,o,s,...) \
+        idt_load_desc_unsafe(i,o,s,(idt_entry_flags) { \
             .dpl = 0, .d = 1, .type = IDT_INT_GATE, __VA_ARGS__ })
 
 static uint excph_addresses[] = {
@@ -47,4 +68,9 @@ void idt_init_interrupts()
 	for(uint i = 0; i < 16; i++) {
 		IDT_LOAD_DESC(32+i, inter_handlers[i], CODE_SEGMENT_KERNEL);
 	}
+
+	//Evitar interrupciones spurias usando el spurious intr number. Esto se
+	//usa para el APIC en el vector.
+	IDT_LOAD_DESC_UNSAFE(SPURIOUS_INTR_NUM, (uint)&_irq_ignore_handler,\
+		CODE_SEGMENT_KERNEL);
 }
