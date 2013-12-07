@@ -41,7 +41,7 @@ BOCHSCONF?=run/bochsrc.txt
 kernel.bin: $(COBJS) $(ASMOBJS)
 	$(LINKER) $(LINKERFLAGS) -o $@ $^
 
-all: kernel.bin Makefile
+all: kernel.bin Makefile build/linker_script.ld
 	./make_kernel_binary.sh
 
 run: all

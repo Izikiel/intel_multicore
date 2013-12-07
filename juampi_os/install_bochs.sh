@@ -4,7 +4,7 @@
 # soporte para SMP y demas chiches. Lo hace automaticamente para evitar 
 # problemas de versiones.
 
-if [[ -d bochs ]]; then
+if [[ -f ./bochs/bin/bochs ]]; then
 	echo "Bochs ya esta instalado"
 	exit 0
 fi

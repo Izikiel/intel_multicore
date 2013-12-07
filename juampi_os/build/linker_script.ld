@@ -40,5 +40,9 @@ SECTIONS
 		ebss = .;
 	}
 
-	kernel_end = .; 
+	.__apStartup : {
+		ap_startup_code_start = .;
+		* (.__apStartupCode*);
+		ap_startup_code_end = .;
+	}
 }

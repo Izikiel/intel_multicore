@@ -16,10 +16,17 @@
 //un lugar despues de que termina el kernel. Esta definido en el linker script
 extern uint kernel_code_end;
 
-//Simbolo de linker para el lugar donde empieza la pagina de codigo en 16
+//Simbolos de linker para el lugar donde empieza la pagina de codigo en 16
 //bits para modo real de inicio de los Application Processors. Necesitamos
-//saberla para habilitar multicore
-extern uint ap_startup_code_page;
+//saberla para habilitar multicore. Tambien buscamos la seccion donde inician
+//y terminan los codigos 16 bits con los que linkeamos.
+
+//Inicio de donde queremos el codigo de mp para APs
+extern ushort ap_startup_code_page;
+//Codigo donde inicia el mp linkeado
+extern ushort ap_startup_code_start;
+//Fin del codigo linkeado
+extern ushort ap_startup_code_end;
 
 //Encontrar un modulo dado su path. No estoy seguro de que tan portable
 //es pero simplifica bastante la vida.
@@ -98,11 +105,20 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	memcpy(buffer,mod_start,(uint)(mod_end-mod_start));
 	scrn_printf("\nEl modulo contiene: %s\n",buffer);
 
+	
 	scrn_printf("\nIniciando procesadores...\n");
 	scrn_printf("\nEl codigo de inicio de APs esta en: %u\n",
 		(uint)&ap_startup_code_page);
 
-	multiprocessor_init();
+	uint aps = (uint) &ap_startup_code_start;
+	uint ape = (uint) &ap_startup_code_end;
 
+	scrn_printf("Codigo MP AP START: %u\n",(uint) &ap_startup_code_start);
+	scrn_printf("Codigo MP AP END: %u\n",(uint) &ap_startup_code_end);
+
+	//Copiar el codigo de inicio de procesador MP a la direccion indicada
+	memcpy(&ap_startup_code_page,(void *)aps,ape-aps);
+
+	multiprocessor_init();
 	while(1);
 }
