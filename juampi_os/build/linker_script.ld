@@ -1,8 +1,10 @@
 ENTRY(loader)
 SECTIONS
 {
-	. = 0x00100000;
+	. = 0x2000;
+	ap_startup_code_page = .;
 
+	. = 0x00100000;
 	.__mbHeader : {
 		*(.__mbHeader)
 	}

@@ -14,8 +14,12 @@
 
 //Simbolo de linker para el final del kernel. La direccion que contiene es
 //un lugar despues de que termina el kernel. Esta definido en el linker script
-extern uint kernel_end;
 extern uint kernel_code_end;
+
+//Simbolo de linker para el lugar donde empieza la pagina de codigo en 16
+//bits para modo real de inicio de los Application Processors. Necesitamos
+//saberla para habilitar multicore
+extern uint ap_startup_code_page;
 
 //Encontrar un modulo dado su path. No estoy seguro de que tan portable
 //es pero simplifica bastante la vida.
@@ -57,7 +61,7 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	scrn_print("OK\nINICIALIZANDO IDT PARA LAS INTERRUPCIONES Y SYSCALLS...");
 
 	irq_init_handlers();
-	init_timer(250);
+	init_timer(1000);
 	idt_init_interrupts();
 	idt_flush();
 	irq_sti_force();
@@ -87,6 +91,7 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 
 	char buffer[32];
 	memset(buffer,0,sizeof(buffer));
+
 	module_t * manifesto = module_by_path(mbd,"/manifesto.txt");
 	char * mod_start = (char *) manifesto->mod_start;
 	char * mod_end = (char *) manifesto->mod_end;
@@ -94,6 +99,9 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	scrn_printf("\nEl modulo contiene: %s\n",buffer);
 
 	scrn_printf("\nIniciando procesadores...\n");
+	scrn_printf("\nEl codigo de inicio de APs esta en: %u\n",
+		(uint)&ap_startup_code_page);
+
 	multiprocessor_init();
 
 	while(1);

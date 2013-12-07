@@ -101,6 +101,10 @@ check_valid_mpct(mp_config_table * mpct)
 	return do_checksum(mpct,mpct->length);
 }
 
+#define MAX_PROCESSORS 16
+static processor_entry processors[MAX_PROCESSORS];
+static uint processor_count = 0;
+
 //Procesa la entrada de procesador para configurar este core
 static void
 configure_processor(processor_entry * entry)
@@ -110,6 +114,12 @@ configure_processor(processor_entry * entry)
 		"\tFLAGS (%u - %u)\n"
 		"\tIS BP: %b\n",
 		entry->local_apic_id,entry->model,entry->family,entry->bootstrap);
+
+	//Agregar el procesador a la lista de procesadores. Que por ahora es un
+	//arreglo fijo.
+	fail_if(processor_count == MAX_PROCESSORS);
+	memcpy(&processors[processor_count],entry,sizeof(processor_entry));
+	processor_count++;
 }
 
 //Tamaño de las entradas de la tabla de configuracion de MP
@@ -151,6 +161,63 @@ turn_on_apic(uint * apic)
 
 #define DEFAULT_APIC_ADDR 0xFEE00000
 
+//Flag correspondiente a cada delivery mode
+static uint delivery_mode_flag[] = {
+	[FIXED]			= 0,
+	[LOWEST]		= 1,
+	[SMI]			= 2,
+	[NMI]			= 4,
+	[INIT]			= 5,
+	[INIT_DASSERT]	= 5,
+	[STARTUP]		= 6
+};
+
+//Inicializar IPI options
+static void
+initialize_ipi_options(	intr_command_register * options,
+						delivery_mode_type delivery_mode,
+						uint vector,
+						uint destination)
+{
+	//Ponemos todo en cero para asegurar que los reserved bits esten en zero.
+	memset(options,0,sizeof(*options));
+
+	options->destination_field = destination;
+	options->delivery_mode = delivery_mode_flag[delivery_mode];
+	options->vector = vector;
+	
+	//Para distinguir INIT y INIT DeAssert se usan flags distintos en otros
+	//lados. Para eso utilizamos un modo separado de envio.
+	if(delivery_mode == INIT_DASSERT){
+		options->level = 0;
+		options->trigger_mode = 1;
+	}else{
+		options->level = 1;
+		options->trigger_mode = 0;
+	}
+}
+
+
+//Enviar un IPI a un procesador dado su numero de local APIC
+/*static void
+send_ipi(intr_command_register * options)
+{
+	uchar * local_apic = (uchar *) DEFAULT_APIC_ADDR;
+	//Revisar que no le estemos mandando una IPI al BSP. 
+	uchar my_local_apic_id = local_apic[0x20];
+	if(options->destination_field == my_local_apic_id)
+		return;
+
+	//Copiar opciones al mensaje que vamos a utilizar.
+	intr_command_register *icr = (intr_command_register *) &local_apic[0x310];
+	memcpy(icr,options,sizeof(*options));
+
+	//Esperar a la recepcion de la IPI
+	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
+	for(uchar recv = icr->delivery_status; recv; recv = icr->delivery_status);
+}*/
+
+
 //Prende el Local APIC. Es necesario para el BSP para poder empezar a mandar
 //IPIs. El local apic siempre esta en la misma direccion: 0xFEE00000
 static void
@@ -162,6 +229,30 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//Poner el valor de la entrada de la IDT para el 
 	//Spurious Vector Interrupt.
 	local_apic[0xF0 >> 2] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
+}
+
+//Enciende todos los APs
+static void
+turn_on_aps()
+{
+	//TODO: Terminar esto.
+	for(uint proci = 0; proci < processor_count; proci++){
+		processor_entry * p = &processors[proci];
+
+		//No despertar al bootstrap porque no es AP
+		if(p->bootstrap) return;
+
+		//Crear mensaje de INIT IPI
+		intr_command_register init_ipi;
+		initialize_ipi_options(&init_ipi,INIT,0,p->local_apic_id);
+
+		//Crear mensaje de STARTUP IPI
+		intr_command_register startup_ipi;
+		//En vector para startup ipi hay que enviar la pagina fisica donde 
+		//va a empezar a ejecutar 
+		initialize_ipi_options(&startup_ipi,STARTUP,
+			0,p->local_apic_id);
+	}
 }
 
 //Determina la configuracion del procesador si hay una tabla de configuracion
@@ -190,6 +281,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	}
 
 	turn_on_local_apic(mpct);
+	turn_on_aps();
 }
 
 static void

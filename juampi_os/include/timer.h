@@ -9,5 +9,6 @@
 
 extern void init_timer(uint);
 extern void timer_tick(uint,gen_regs);
+extern void core_sleep(uint);
 
 #endif
