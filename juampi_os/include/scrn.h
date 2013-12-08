@@ -30,15 +30,15 @@ void scrn_setcursor(uchar, uchar);
 void scrn_putc(char, ushort);
 void scrn_move_back();
 //Imprime el mensaje, si es posible hacerlo
-void scrn_print(char*);
+void scrn_print(const char*);
 //Imprime el mensaje, con formato estilo printf de C. 
 //PRE: La cantidad de parametros pasados DEBE ser correcta
-void scrn_printf(char*,...);
+void scrn_printf(const char*,...);
 //Imprime el mensaje en la direccion indicada. Devuelve 0
 //si esta todo bien, -1 en caso de error. Se usa en la syscall
 //de impresion directa a pantalla
-int scrn_pos_print(uchar row, uchar col, char * msg);
+int scrn_pos_print(uchar row, uchar col, const char * msg);
 //Como scrn_pos_print pero printf
-int scrn_pos_printf(uchar row, uchar col, char * msg,...);
+int scrn_pos_printf(uchar row, uchar col, const char * msg,...);
 bool in_video_mem(uint address);
 #endif

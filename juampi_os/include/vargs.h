@@ -1,10 +1,10 @@
 #ifndef __VARGS_H
 #define __VARGS_H
 
-typedef void * varg_list;
-
-#define varg_set(list, last) list = &(last)
-#define varg_yield(list, type) *((type *) (list+=(sizeof(type) < 4 ? 4 : sizeof(type))))
-#define varg_end(list) list = 0
+#define va_start(v,l) __builtin_va_start(v,l)
+#define va_arg(v,l)   __builtin_va_arg(v,l)
+#define va_end(v)     __builtin_va_end(v)
+#define va_copy(d,s)  __builtin_va_copy(d,s)
+typedef __builtin_va_list va_list;
 
 #endif
