@@ -252,11 +252,14 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//
 	//Estos valores los leo asi en base al manual Intel 3A Capitulo 10, donde
 	//especifica como estan armados.
-	uchar version_number = local_apic[0x30 >> 2] & 0x7F;
 	uchar id = (local_apic[0x20 >> 2] >> 24);
 
 	fail_if(id != processors[bootstrap_index].local_apic_id);
-	fail_if(version_number != processors[bootstrap_index].version);
+	//Tengo que comentar esta linea porque en Bochs los ids estan mal
+	//asignados. No se porque.
+	//
+	//uchar version_number = local_apic[0x30 >> 2] & 0x7F;
+	//fail_if(version_number != processors[bootstrap_index].version);
 }
 
 //Enciende todos los APs
