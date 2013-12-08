@@ -300,11 +300,10 @@ set_warm_reset_vector(uint address)
 
 static bool is_82489()
 {
-/*	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
+	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
 	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar 
-	//usando el bit mas signitificativo del byte del registro de version;
-	return !(local_apic[0x30 >> 2] & (1 << 7));*/
-	return false;
+	//usando el bit 4 del byte del registro de version;
+	return !(local_apic[0x30 >> 2] & (1 << 4));
 }
 
 //Enciende todos los APs
@@ -356,13 +355,13 @@ turn_on_aps(uint ap_startup_code_page)
 			scrn_printf("\tEnviando IPIs de startup\n");
 			//Enviar las STARTUP ipis, dormir y esperar.
 			send_ipi(&startup_ipi);	
-			core_sleep(20); //200 ms
+			core_sleep(20); //Dormir 200 microsegundos
 			wait_for_ipi_reception();
 			send_ipi(&startup_ipi);
+			core_sleep(20); //Dormir 200 microsegundos
 			wait_for_ipi_reception();
 		}
 		scrn_printf("\tPrendi el core %u\n",proci);
-		scrn_printf("\tModo: %u\n",scrn_getmode());
 		//TODO: Verificar que el core haya levantado programaticamente.
 	}
 }
