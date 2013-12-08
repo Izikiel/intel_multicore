@@ -9,6 +9,10 @@
 # Son accesibles entonces como modulos con el mismo nombre que el nombre de
 # base del archivo
 
+pushd build/grub_modules_build
+make
+popd
+
 cp floppy_raw.img floppy.img
  
 #Copiar todos los modulos de grub al floppy y marcarlos como modulos en el

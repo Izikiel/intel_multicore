@@ -23,10 +23,6 @@ extern uint kernel_code_end;
 
 //Inicio de donde queremos el codigo de mp para APs
 extern ushort ap_startup_code_page;
-//Codigo donde inicia el mp linkeado
-extern ushort ap_startup_code_start;
-//Fin del codigo linkeado
-extern ushort ap_startup_code_end;
 
 //Encontrar un modulo dado su path. No estoy seguro de que tan portable
 //es pero simplifica bastante la vida.
@@ -69,10 +65,10 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 
 	irq_init_handlers();
 	
-	//Frecuencia de 1 interrupccion cada 20 microsegundos
+	//Frecuencia de 1 interrupccion cada 10 microsegundos
 	//Esto se usa en el codigo de inicializacion de APs porque hay delays
 	//necesarios para las IPIs.
-	init_timer(50000);
+	init_timer(25000);
 
 	idt_init_interrupts();
 	idt_flush();
@@ -115,14 +111,11 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	scrn_printf("\nEl codigo de inicio de APs esta en: %u\n",
 		(uint)&ap_startup_code_page);
 
-	uint aps = (uint) &ap_startup_code_start;
-	uint ape = (uint) &ap_startup_code_end;
-
-	scrn_printf("Codigo MP AP START: %u\n",(uint) &ap_startup_code_start);
-	scrn_printf("Codigo MP AP END: %u\n",(uint) &ap_startup_code_end);
+	module_t * aps = module_by_path(mbd,"/ap_startup_code");
 
 	//Copiar el codigo de inicio de procesador MP a la direccion indicada
-	memcpy(&ap_startup_code_page,(void *)aps,ape-aps);
+	memcpy(&ap_startup_code_page,(void *)aps->mod_start,
+		aps->mod_end - aps->mod_start);
 
 	multiprocessor_init();
 	while(1);

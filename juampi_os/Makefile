@@ -52,8 +52,9 @@ run-qemu: all
 	qemu -smp 2 -cpu pentium -fda floppy.img
 
 clean:
+	cd build/grub_modules_build && make clean
 	rm -rf $(ASMOBJS) $(COBJS) $(CDEPS)\
-	   	kernel.bin floppy.img bochs.tar.gz 
+	   	kernel.bin floppy.img bochs.tar.gz
 
 zipped: clean
 	tar zcvf entrega.tar.gz\

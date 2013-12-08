@@ -12,4 +12,7 @@ extern void outb (ushort, uchar);
 //Escribe un short a un puerto un valor
 extern void outw (ushort, ushort);
 
+//Escribe al CMOS
+extern void cmos_writeb(uint,uint);
+
 #endif

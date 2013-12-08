@@ -2,5 +2,6 @@ title JuampiOS
 root (fd0)
 kernel /kernel.bin
 
+module /ap_startup_code
 module /manifesto.txt
 boot

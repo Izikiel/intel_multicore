@@ -173,6 +173,7 @@ turn_on_apic(volatile uint * apic)
     apic[0xF0 >> 2] |= (1 << 8);
 }
 
+//Direccion donde encontrar el local APIC de mi procesador
 #define DEFAULT_APIC_ADDR 0xFEE00000
 
 //Flag correspondiente a cada delivery mode
@@ -199,6 +200,13 @@ initialize_ipi_options(	intr_command_register * options,
 	options->destination_field = destination;
 	options->delivery_mode = delivery_mode_flag[delivery_mode];
 	options->vector = vector;
+
+	if(delivery_mode == INIT_DASSERT){
+		options->destination_shorthand = 2; //All including self.
+	}else{
+		options->destination_shorthand = 0;
+	}
+	
 	
 	//Para distinguir INIT y INIT DeAssert se usan flags distintos en otros
 	//lados. Para eso utilizamos un modo separado de envio.
@@ -211,27 +219,34 @@ initialize_ipi_options(	intr_command_register * options,
 	}
 }
 
+#define ICR_DWORD0_32POS (0x300 >> 2)
+#define ICR_DWORD1_32POS (0x310 >> 2)
 
-//Enviar un IPI a un procesador dado su numero de local APIC
+//Enviar un IPI a un procesador dado su numero de local APIC. No confirma
+//recepcion de la misma.
 static void
 send_ipi(intr_command_register * options)
 {
-	volatile uchar * local_apic = (volatile uchar *) DEFAULT_APIC_ADDR;
-	//Revisar que no le estemos mandando una IPI al BSP. 
-	uchar my_local_apic_id = local_apic[0x20];
-	if(options->destination_field == my_local_apic_id)
-		return;
+	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
+	uint * opts = (uint *) options;
 
 	//Copiar opciones al mensaje que vamos a utilizar.
-	volatile intr_command_register 
-		*icr = (volatile intr_command_register *) &local_apic[0x310];
-	*icr = *options;
-
-	//Esperar a la recepcion de la IPI
-	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
-	for(uchar recv = icr->delivery_status; recv; recv = icr->delivery_status);
+	//Se tiene que hacer de a 32 bits alineado a 16 bytes. Por eso el ICR
+	//esta roto en dos pedazos.
+	local_apic[ICR_DWORD1_32POS] = opts[1];
+	//De acuerdo a Intel 3A 10.6.1, escribir la parte baja de este registro
+	//hace que se envie la interrupcion. Lo escribimos la final por eso.
+	local_apic[ICR_DWORD0_32POS] = opts[0];
 }
 
+static void
+wait_for_ipi_reception()
+{
+	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
+	//Esperar a la recepcion de la IPI.
+	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
+	for(;local_apic[ICR_DWORD0_32POS] & (1 << 12););
+}
 
 //Prende el Local APIC. Es necesario para el BSP para poder empezar a mandar
 //IPIs. El local apic siempre esta en la misma direccion: 0xFEE00000
@@ -252,31 +267,72 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//
 	//Estos valores los leo asi en base al manual Intel 3A Capitulo 10, donde
 	//especifica como estan armados.
-	uchar id = (local_apic[0x20 >> 2] >> 24);
+	uint id = local_apic[0x20 >> 2];
+	id = (id >> 24) & 0xFF;
 
 	fail_if(id != processors[bootstrap_index].local_apic_id);
 	//Tengo que comentar esta linea porque en Bochs los ids estan mal
-	//asignados. No se porque.
+	//asignados. No se porque. Pero en el codigo de hecho se puede ver, y en
+	//qemu anda.
 	//
 	//uchar version_number = local_apic[0x30 >> 2] & 0x7F;
 	//fail_if(version_number != processors[bootstrap_index].version);
+}
+
+//Limpia el registro de errores del APIC
+static void
+clear_apic_errors()
+{
+	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
+	local_apic[0x280 >> 2] = 0x0;
+}
+
+//Levanta la posicion de memoria a la que vamos a saltar por el codigo de 
+//reset
+static void
+set_warm_reset_vector(uint address)
+{
+	//Seteamos al BIOS para que el shutdown sea reset warm por jump
+	cmos_writeb(0xF,0xA);
+	//Le ponemos a que direccion saltar en la posicion 40:67h en modo real.
+	*((uint *) (0x40*16 +0x67)) = address;
+}
+
+static bool is_82489()
+{
+/*	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
+	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar 
+	//usando el bit mas signitificativo del byte del registro de version;
+	return !(local_apic[0x30 >> 2] & (1 << 7));*/
+	return false;
 }
 
 //Enciende todos los APs
 static void
 turn_on_aps(uint ap_startup_code_page)
 {
-	return;
+	//De acuerdo a http://www.cheesecake.org/sac/smp.html, primero hay que
+	//poner Warm Reset with far jump en el CMOS y poner la direccion a la que
+	//va a saltar en ese lugar.
+	//
+	//Adicionalmente hay que limpiar los errores del registro de local APIC
+	set_warm_reset_vector(ap_startup_code_page);
+	clear_apic_errors();
+
+	//Hay que enviar las STARTUP Ipis solamente si el local APIC no es un
+	//82489DX.
+	bool send_startup_ipis = !is_82489(); 
 	for(uint proci = 0; proci < processor_count; proci++){
 		processor_entry * p = &processors[proci];
 
-		//No despertar al bootstrap porque no es AP
-		if(p->bootstrap) return;
+		//No despertar al BSP, porque no es AP
+		if(p->bootstrap) continue;
+		scrn_printf("\tProcesador %u - %u\n",proci,p->local_apic_id);
 
-		//Crear mensaje de INIT IPI
-		intr_command_register init_ipi;
+		//Crear mensaje de INIT e INIT Deasserted inicial para IPI
+		intr_command_register init_ipi,init_ipi_doff;
 		initialize_ipi_options(&init_ipi,INIT,0,p->local_apic_id);
-
+		initialize_ipi_options(&init_ipi_doff,INIT_DASSERT,0,p->local_apic_id);
 		//Crear mensaje de STARTUP IPI
 		intr_command_register startup_ipi;
 
@@ -286,7 +342,28 @@ turn_on_aps(uint ap_startup_code_page)
 		initialize_ipi_options(&startup_ipi,STARTUP,
 			ap_startup_code_page >> 12,p->local_apic_id);
 
+		//Enviar las ipis de inicio
+		scrn_printf("\tEnviando IPI de inicio\n");
 		send_ipi(&init_ipi);
+		wait_for_ipi_reception();
+		send_ipi(&init_ipi_doff);
+		wait_for_ipi_reception();
+		core_sleep(1); //Dormir 10 microsegundos
+
+		scrn_printf("\tIPI de inicio enviada\n");
+		if(send_startup_ipis){
+			clear_apic_errors();
+			scrn_printf("\tEnviando IPIs de startup\n");
+			//Enviar las STARTUP ipis, dormir y esperar.
+			send_ipi(&startup_ipi);	
+			core_sleep(20); //200 ms
+			wait_for_ipi_reception();
+			send_ipi(&startup_ipi);
+			wait_for_ipi_reception();
+		}
+		scrn_printf("\tPrendi el core %u\n",proci);
+		scrn_printf("\tModo: %u\n",scrn_getmode());
+		//TODO: Verificar que el core haya levantado programaticamente.
 	}
 }
 
@@ -334,6 +411,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 static void
 determine_default_configuration(mp_float_struct * mpfs)
 {
+	//TODO: Conseguir maquina donde probar esto, determinar si es necesario.
 }
 
 //Revisar que las estructuras sean del tamaño correcto
