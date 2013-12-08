@@ -3,9 +3,6 @@
 #include <proc.h>
 #include <asserts.h>
 
-static char clk[] = {'-','\\','|','/'};
-static uchar clk_place;
-
 #define MAX_POLLS 32
 static volatile uint * polls[MAX_POLLS];
 static volatile uint poll_count;
@@ -14,10 +11,6 @@ static volatile uint poll_count;
 void timer_tick(uint irq_code, gen_regs regs)
 {
     uint flags = irq_cli(); 
-	scrn_pos_printf(VIDEO_HEIGHT-1,
-					VIDEO_WIDTH-1-strlen("TICK _"),
-					"TICK: %c",clk[clk_place]);
-	clk_place = (clk_place+1)%4;
 	//Actualizamos todos los polls para que entonces los que estan durmiendo
 	//sepan cuanto tiempo paso.
 	for(uint i = 0; i < poll_count; i++){
@@ -34,6 +27,9 @@ void timer_tick(uint irq_code, gen_regs regs)
 void init_timer(uint freq)
 {
 	uint div = 1193180/freq;
+	//El valor debe entrar en un entero de 16 bits
+	fail_if(div > (ushort)-1);
+
 	outb(0x43,0x36);
 	uchar l = (uchar)(div & 0xFF);
 	uchar h = (uchar)((div>>8)&0xFF);

@@ -44,9 +44,12 @@ kernel.bin: $(COBJS) $(ASMOBJS)
 all: kernel.bin Makefile build/linker_script.ld
 	./make_kernel_binary.sh
 
-run: all
+run-bochs: all
 	./install_bochs.sh
 	$(BOCHSDIR)/bochs -q -f $(BOCHSCONF)
+
+run-qemu: all
+	qemu -smp 2 -cpu pentium -fda floppy.img
 
 clean:
 	rm -rf $(ASMOBJS) $(COBJS) $(CDEPS)\
@@ -67,5 +70,3 @@ types.vim: $(CSOURCES) $(CHEADERS)
 	ctags --c-kinds=gstu -o- $^ |\
 		awk 'BEGIN{printf("syntax keyword Type\t")}\
 			{printf("%s ", $$1)}END{print ""}' > $@
-
-.DEFAULT_GOAL := run

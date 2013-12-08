@@ -6,4 +6,5 @@ section .__apStartupCode
 global mp_ap_start
 
 mp_ap_start:
+	cli
 	jmp $

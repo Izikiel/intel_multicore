@@ -7,3 +7,4 @@ magic_break: enabled=1
 mouse: enabled=0
 port_e9_hack: enabled=1
 cpu: count = 2, ips=10000000, reset_on_triple_fault = 0
+cpuid: level=6, mmx=1, sep=1, sse=sse4_2, apic=legacy, aes=1, movbe=1, xsave=1

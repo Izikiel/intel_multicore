@@ -3,6 +3,7 @@
 #include <multicore.h>
 #include <asserts.h>
 #include <utils.h>
+#include <timer.h>
 
 typedef struct {
 	uint start, end;
@@ -44,6 +45,9 @@ do_checksum(void * p, unsigned int len)
 static bool
 check_valid_mpfs(mp_float_struct * mpfs)
 {
+	if(memcmp(mpfs->signature,"_MP_",strlen("_MP_"))){
+		return false;
+	}
 	return do_checksum(mpfs,mpfs->length * 16);
 }
 
@@ -98,27 +102,37 @@ found:
 static bool
 check_valid_mpct(mp_config_table * mpct)
 {
+	if(memcmp(mpct->signature,"PCMP",strlen("PCMP")) != 0){
+		return false;
+	}
 	return do_checksum(mpct,mpct->length);
 }
 
 #define MAX_PROCESSORS 16
 static processor_entry processors[MAX_PROCESSORS];
 static uint processor_count = 0;
+//Indice del bootstrap processor
+static int bootstrap_index = -1;
 
 //Procesa la entrada de procesador para configurar este core
 static void
 configure_processor(processor_entry * entry)
 {
 	scrn_printf("\tEntrada de procesador: \n"
-		"\tLAPIC (%d)\n"
-		"\tFLAGS (%u - %u)\n"
+		"\tLAPIC (%u / %u)\n"
+		"\tFLAGS (%u / %u)\n"
 		"\tIS BP: %b\n",
-		entry->local_apic_id,entry->model,entry->family,entry->bootstrap);
+		entry->local_apic_id,entry->version,
+		entry->model,entry->family,
+		entry->bootstrap);
 
 	//Agregar el procesador a la lista de procesadores. Que por ahora es un
 	//arreglo fijo.
 	fail_if(processor_count == MAX_PROCESSORS);
 	memcpy(&processors[processor_count],entry,sizeof(processor_entry));
+	if(entry->bootstrap){
+		bootstrap_index = processor_count;
+	}
 	processor_count++;
 }
 
@@ -152,7 +166,7 @@ start_icmr_apic_mode()
 //Register en el  offset F0 en bytes.
 //Nos puede servir para prender las otras.
 static void
-turn_on_apic(uint * apic)
+turn_on_apic(volatile uint * apic)
 {
 	//0xF0 en bytes, pero usamos arreglo de int32 para poder hacer bien el
 	//offset lo dividimos por el tamaño de un int32
@@ -199,23 +213,24 @@ initialize_ipi_options(	intr_command_register * options,
 
 
 //Enviar un IPI a un procesador dado su numero de local APIC
-/*static void
+static void
 send_ipi(intr_command_register * options)
 {
-	uchar * local_apic = (uchar *) DEFAULT_APIC_ADDR;
+	volatile uchar * local_apic = (volatile uchar *) DEFAULT_APIC_ADDR;
 	//Revisar que no le estemos mandando una IPI al BSP. 
 	uchar my_local_apic_id = local_apic[0x20];
 	if(options->destination_field == my_local_apic_id)
 		return;
 
 	//Copiar opciones al mensaje que vamos a utilizar.
-	intr_command_register *icr = (intr_command_register *) &local_apic[0x310];
-	memcpy(icr,options,sizeof(*options));
+	volatile intr_command_register 
+		*icr = (volatile intr_command_register *) &local_apic[0x310];
+	*icr = *options;
 
 	//Esperar a la recepcion de la IPI
 	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
 	for(uchar recv = icr->delivery_status; recv; recv = icr->delivery_status);
-}*/
+}
 
 
 //Prende el Local APIC. Es necesario para el BSP para poder empezar a mandar
@@ -224,18 +239,31 @@ static void
 turn_on_local_apic(const mp_config_table * mpct)
 {
 	fail_if(mpct->local_apic_addr != DEFAULT_APIC_ADDR);
-	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
-    turn_on_apic(local_apic);
+	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
+
 	//Poner el valor de la entrada de la IDT para el 
-	//Spurious Vector Interrupt.
+	//Spurious Vector Interrupt y prendemos el local APIC.
 	local_apic[0xF0 >> 2] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
+	turn_on_apic(local_apic);
+
+	//Sanity check: Leemos el local apic para saber que estamos bien.
+	//Para eso nos fijamos que el version number sea identico al del boostrap
+	//processor (porque estamos en el bootstrap processor);
+	//
+	//Estos valores los leo asi en base al manual Intel 3A Capitulo 10, donde
+	//especifica como estan armados.
+	uchar version_number = local_apic[0x30 >> 2] & 0x7F;
+	uchar id = (local_apic[0x20 >> 2] >> 24);
+
+	fail_if(id != processors[bootstrap_index].local_apic_id);
+	fail_if(version_number != processors[bootstrap_index].version);
 }
 
 //Enciende todos los APs
 static void
-turn_on_aps()
+turn_on_aps(uint ap_startup_code_page)
 {
-	//TODO: Terminar esto.
+	return;
 	for(uint proci = 0; proci < processor_count; proci++){
 		processor_entry * p = &processors[proci];
 
@@ -248,10 +276,14 @@ turn_on_aps()
 
 		//Crear mensaje de STARTUP IPI
 		intr_command_register startup_ipi;
+
 		//En vector para startup ipi hay que enviar la pagina fisica donde 
-		//va a empezar a ejecutar 
+		//va a empezar a ejecutar. Para eso hay que shiftear 12 bits porque
+		//el valor del startup IPI ya se considera alineado a pagina.
 		initialize_ipi_options(&startup_ipi,STARTUP,
-			0,p->local_apic_id);
+			ap_startup_code_page >> 12,p->local_apic_id);
+
+		send_ipi(&init_ipi);
 	}
 }
 
@@ -263,6 +295,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	mp_config_table * mpct = mpfs->config;
 	fail_if(!check_valid_mpct(mpct));
 
+	scrn_printf("\tMPCT TABLE: %u\n",(uint) mpct);
 	//Seguimos las entradas de la tabla de configuracion
 	fail_unless(mpct->entry_count > 0);
 	mp_entry * entry = mpct->entries;
@@ -275,13 +308,24 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 		entry = next_mp_entry(mpct,entry);
 	}
 
+	//Si no encontramos boostrap processor estamos en un serio problema.
+	//Porque no hay chance que podamos prender el resto de los cores.
+	fail_if(bootstrap_index < 0);
+
 	if(mpfs->mp_features2 & IMCRP_BIT){
 		//ICMR presente, hay que levantarlo a modo APIC
 		start_icmr_apic_mode();	
 	}
 
 	turn_on_local_apic(mpct);
-	turn_on_aps();
+
+	extern uint ap_startup_code_page;
+	uint ap_symb = (uint) &ap_startup_code_page;
+
+	//Se require que la pagina donde se inicia a ejecutar el codigo 16 bits
+	//de modo real del AP este alineada a pagina.
+	fail_unless((ap_symb & 0xFFF) == 0);
+	turn_on_aps(ap_symb);
 }
 
 static void

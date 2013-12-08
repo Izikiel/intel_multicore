@@ -150,7 +150,7 @@ typedef struct mp_config_table{
 
 //MultiProcessor Floating Point Structure. Table 4.1 of spec.
 typedef struct {
-	//Signature. Should be equal to __MP__
+	//Signature. Should be equal to _MP_
 	char signature[4];
 	//Configuration pointer: Contais information of the multiprocessor
 	//configuration. All zeros if the configuration table does not exist.

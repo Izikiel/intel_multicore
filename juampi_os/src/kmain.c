@@ -68,7 +68,12 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 	scrn_print("OK\nINICIALIZANDO IDT PARA LAS INTERRUPCIONES Y SYSCALLS...");
 
 	irq_init_handlers();
-	init_timer(1000);
+	
+	//Frecuencia de 1 interrupccion cada 20 microsegundos
+	//Esto se usa en el codigo de inicializacion de APs porque hay delays
+	//necesarios para las IPIs.
+	init_timer(50000);
+
 	idt_init_interrupts();
 	idt_flush();
 	irq_sti_force();
