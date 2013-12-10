@@ -1,5 +1,0 @@
-
-[ build library { target = "pager",
-  		  cFiles = [ "pager.c" ]
-                }
-]

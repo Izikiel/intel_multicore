@@ -3,7 +3,7 @@ ASM=nasm
 LINKER=ld
 LINK.o=ld
 
-CFLAGS=-m32 -O2 -std=c11 -Werror -Wall -Wextra\
+CFLAGS=-m32 -O2 -std=c99 -Werror -Wall -Wextra\
 	-Wno-unused-parameter -Wno-override-init\
 	-Wunreachable-code -Wshadow -Wcast-qual \
 	-nostdlib -fno-builtin -nostartfiles\
