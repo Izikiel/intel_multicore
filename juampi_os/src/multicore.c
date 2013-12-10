@@ -170,7 +170,7 @@ turn_on_apic(volatile uint * apic)
 {
 	//0xF0 en bytes, pero usamos arreglo de int32 para poder hacer bien el
 	//offset lo dividimos por el tamaño de un int32
-    apic[0xF0 >> 2] |= (1 << 8);
+    apic[LAPIC_SPVEC_REG] |= (1 << 8);
 }
 
 //Direccion donde encontrar el local APIC de mi procesador
@@ -219,9 +219,6 @@ initialize_ipi_options(	intr_command_register * options,
 	}
 }
 
-#define ICR_DWORD0_32POS (0x300 >> 2)
-#define ICR_DWORD1_32POS (0x310 >> 2)
-
 //Enviar un IPI a un procesador dado su numero de local APIC. No confirma
 //recepcion de la misma.
 static void
@@ -233,10 +230,10 @@ send_ipi(const intr_command_register * options)
 	//Copiar opciones al mensaje que vamos a utilizar.
 	//Se tiene que hacer de a 32 bits alineado a 16 bytes. Por eso el ICR
 	//esta roto en dos pedazos.
-	local_apic[ICR_DWORD1_32POS] = opts[1];
+	local_apic[LAPIC_ICR_DWORD1] = opts[1];
 	//De acuerdo a Intel 3A 10.6.1, escribir la parte baja de este registro
 	//hace que se envie la interrupcion. Lo escribimos la final por eso.
-	local_apic[ICR_DWORD0_32POS] = opts[0];
+	local_apic[LAPIC_ICR_DWORD0] = opts[0];
 }
 
 static void
@@ -245,7 +242,7 @@ wait_for_ipi_reception(void)
 	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
 	//Esperar a la recepcion de la IPI.
 	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
-	for(;local_apic[ICR_DWORD0_32POS] & (1 << 12););
+	for(;local_apic[LAPIC_ICR_DWORD0] & (1 << 12););
 }
 
 //Prende el Local APIC. Es necesario para el BSP para poder empezar a mandar
@@ -258,7 +255,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 
 	//Poner el valor de la entrada de la IDT para el 
 	//Spurious Vector Interrupt y prendemos el local APIC.
-	local_apic[0xF0 >> 2] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
+	local_apic[LAPIC_SPVEC_REG] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
 	turn_on_apic(local_apic);
 
 	//Sanity check: Leemos el local apic para saber que estamos bien.
@@ -267,7 +264,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//
 	//Estos valores los leo asi en base al manual Intel 3A Capitulo 10, donde
 	//especifica como estan armados.
-	uint id = local_apic[0x20 >> 2];
+	uint id = local_apic[LAPIC_ID_REG];
 	id = (id >> 24) & 0xFF;
 
 	fail_if(id != processors[bootstrap_index].local_apic_id);
@@ -284,7 +281,7 @@ static void
 clear_apic_errors(void)
 {
 	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
-	local_apic[0x280 >> 2] = 0x0;
+	local_apic[LAPIC_ERR_REG] = 0x0;
 }
 
 //Levanta la posicion de memoria a la que vamos a saltar por el codigo de 
@@ -303,7 +300,7 @@ static bool is_82489(void)
 	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
 	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar 
 	//usando el bit 4 del byte del registro de version;
-	return !(local_apic[0x30 >> 2] & (1 << 4));
+	return !(local_apic[LAPIC_VER_REG] & (1 << 4));
 }
 
 //Enciende todos los APs
@@ -347,7 +344,8 @@ turn_on_aps(uint ap_startup_code_page)
 		wait_for_ipi_reception();
 		send_ipi(&init_ipi_doff);
 		wait_for_ipi_reception();
-		core_sleep(1); //Dormir 10 microsegundos
+		core_sleep(1000); //Dormir 10 millisegundos = 10000 microseg 
+						  //(1000 10 microseg con la unidad considerada).
 
 		scrn_printf("\tIPI de inicio enviada\n");
 		if(send_startup_ipis){
