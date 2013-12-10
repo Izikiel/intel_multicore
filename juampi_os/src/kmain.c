@@ -26,7 +26,7 @@ extern ushort ap_startup_code_page;
 
 //Encontrar un modulo dado su path. No estoy seguro de que tan portable
 //es pero simplifica bastante la vida.
-module_t * module_by_path(multiboot_info_t * mbd, const char * path){
+module_t * module_by_path(const multiboot_info_t * mbd, const char * path){
 	module_t * modules = (module_t *) mbd->mods_addr;
 	for(uint i = 0; i < mbd->mods_count; i++){
 		char * str = (char *) modules[i].string;
@@ -39,7 +39,7 @@ module_t * module_by_path(multiboot_info_t * mbd, const char * path){
 	return NULL;
 }
 
-void kmain(multiboot_info_t* mbd, unsigned long magic)
+void kmain(const multiboot_info_t* mbd, unsigned long magic)
 {
 	if(magic != MULTIBOOT_BOOTLOADER_MAGIC) {
 		scrn_setmode(GREEN,BLACK);
@@ -112,6 +112,7 @@ void kmain(multiboot_info_t* mbd, unsigned long magic)
 		(uint)&ap_startup_code_page);
 
 	module_t * aps = module_by_path(mbd,"/ap_startup_code");
+	scrn_printf("Posicion del modulo: %u\n",aps->mod_start);
 
 	//Copiar el codigo de inicio de procesador MP a la direccion indicada
 	memcpy(&ap_startup_code_page,(void *)aps->mod_start,

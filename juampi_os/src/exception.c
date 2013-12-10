@@ -4,7 +4,7 @@
 #include <proc.h>
 
 #define EXCEPTIONS 19
-static char* msgs[]= {
+static const char* msgs[]= {
 	"DIVISION BY ZERO",
 	"DEBUG",
 	"NMI",

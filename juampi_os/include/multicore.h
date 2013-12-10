@@ -10,6 +10,17 @@
 
 #define MP_ENTRY_TYPES 5
 
+//Ids of different Local Apic register positions (looking at the APIC as a 32
+//bit array).
+typedef enum{
+	LAPIC_ID_REG		= 0x20 >> 2,
+	LAPIC_VER_REG		= 0x30 >> 2,
+	LAPIC_SPVEC_REG		= 0xF0 >> 2,
+	LAPIC_ERR_REG		= 0x280 >> 2,
+	LAPIC_ICR_DWORD0	= 0x300 >> 2,
+	LAPIC_ICR_DWORD1	= 0x310 >> 2,
+} local_apic_regs;
+
 //MultiProcessor Configuration Table Entry. Table 4.3 of spec.
 typedef enum {
 	PROCESSOR = 0, BUS = 1, IOAPIC = 2, IOINTR = 3, LOCAL_IOINTR = 4
@@ -226,6 +237,6 @@ typedef enum {
 } delivery_mode_type;
 
 //Kernel entry point for multiprocessor inicialization
-void multiprocessor_init();
+void multiprocessor_init(void);
 
 #endif

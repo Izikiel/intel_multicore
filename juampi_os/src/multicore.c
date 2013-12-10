@@ -10,7 +10,7 @@ typedef struct {
 } mem_zone;
 
 static mem_zone
-get_ebda_zone() 
+get_ebda_zone(void) 
 {
 	//De acuerdo a OSDEV, y en GRUB parece asumir lo mismo
 	//	http://linux4u.jinr.ru/pub/misc/sys/grub/SVN/grub/grub2/commands/i386/pc/acpi.c	
@@ -30,9 +30,9 @@ get_ebda_zone()
 //Hace el checksum signado de los bytes. La suma tiene que dar 0, 
 //considerando suma signada de byte con overflow.
 static bool
-do_checksum(void * p, unsigned int len)
+do_checksum(const void * p, unsigned int len)
 {
-	char * bytes =(char *) p;
+	const char * bytes =(const char *) p;
 	char sum = 0;
 
 	for(uint i = 0; i < len; i++){
@@ -43,7 +43,7 @@ do_checksum(void * p, unsigned int len)
 }
 
 static bool
-check_valid_mpfs(mp_float_struct * mpfs)
+check_valid_mpfs(const mp_float_struct * mpfs)
 {
 	if(memcmp(mpfs->signature,"_MP_",strlen("_MP_"))){
 		return false;
@@ -52,7 +52,7 @@ check_valid_mpfs(mp_float_struct * mpfs)
 }
 
 static mp_float_struct *
-find_floating_pointer_struct()
+find_floating_pointer_struct(void)
 {
 	//Header y zonas a revisar
 	static const char MPSIG[]	= "_MP_";
@@ -100,7 +100,7 @@ found:
 //Chequea que el checksum de la tabla de configuracion de Multi Processor sea
 //correcta. 
 static bool
-check_valid_mpct(mp_config_table * mpct)
+check_valid_mpct(const mp_config_table * mpct)
 {
 	if(memcmp(mpct->signature,"PCMP",strlen("PCMP")) != 0){
 		return false;
@@ -116,7 +116,7 @@ static int bootstrap_index = -1;
 
 //Procesa la entrada de procesador para configurar este core
 static void
-configure_processor(processor_entry * entry)
+configure_processor(const processor_entry * entry)
 {
 	scrn_printf("\tEntrada de procesador: \n"
 		"\tLAPIC (%u / %u)\n"
@@ -146,20 +146,20 @@ static uint entry_sizes[] = {
 };
 
 //Determinar posicion de la proxima entrada de la tabla
-static mp_entry *
-next_mp_entry(mp_config_table * mpct, mp_entry * p)
+static const mp_entry *
+next_mp_entry(const mp_config_table * mpct, const mp_entry * p)
 {
-	char * ptr = (char *) p;
+	const char * ptr = (const char *) p;
 	fail_unless(p->entry_type < MP_ENTRY_TYPES);
-	return (mp_entry *) (ptr + entry_sizes[p->entry_type]);
+	return (const mp_entry *) (ptr + entry_sizes[p->entry_type]);
 }
 
 //Inicializa a modo APIC el IMCR del BSP
 static void
-start_icmr_apic_mode()
+start_icmr_apic_mode(void)
 {
-	//TODO
-	scrn_printf("\tInicializar APIC del IMCR\n");
+	//TODO: Conseguir maquina donde probar esto
+	fail_unless(false);
 }
 
 //Prende un APIC escribiendo el bit 8 contando desde 0 del Spurious Vector 
@@ -170,7 +170,7 @@ turn_on_apic(volatile uint * apic)
 {
 	//0xF0 en bytes, pero usamos arreglo de int32 para poder hacer bien el
 	//offset lo dividimos por el tamaño de un int32
-    apic[0xF0 >> 2] |= (1 << 8);
+    apic[LAPIC_SPVEC_REG] |= (1 << 8);
 }
 
 //Direccion donde encontrar el local APIC de mi procesador
@@ -219,33 +219,30 @@ initialize_ipi_options(	intr_command_register * options,
 	}
 }
 
-#define ICR_DWORD0_32POS (0x300 >> 2)
-#define ICR_DWORD1_32POS (0x310 >> 2)
-
 //Enviar un IPI a un procesador dado su numero de local APIC. No confirma
 //recepcion de la misma.
 static void
-send_ipi(intr_command_register * options)
+send_ipi(const intr_command_register * options)
 {
 	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
-	uint * opts = (uint *) options;
+	const uint * opts = (const uint *) options;
 
 	//Copiar opciones al mensaje que vamos a utilizar.
 	//Se tiene que hacer de a 32 bits alineado a 16 bytes. Por eso el ICR
 	//esta roto en dos pedazos.
-	local_apic[ICR_DWORD1_32POS] = opts[1];
+	local_apic[LAPIC_ICR_DWORD1] = opts[1];
 	//De acuerdo a Intel 3A 10.6.1, escribir la parte baja de este registro
 	//hace que se envie la interrupcion. Lo escribimos la final por eso.
-	local_apic[ICR_DWORD0_32POS] = opts[0];
+	local_apic[LAPIC_ICR_DWORD0] = opts[0];
 }
 
 static void
-wait_for_ipi_reception()
+wait_for_ipi_reception(void)
 {
 	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
 	//Esperar a la recepcion de la IPI.
 	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
-	for(;local_apic[ICR_DWORD0_32POS] & (1 << 12););
+	for(;local_apic[LAPIC_ICR_DWORD0] & (1 << 12););
 }
 
 //Prende el Local APIC. Es necesario para el BSP para poder empezar a mandar
@@ -258,7 +255,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 
 	//Poner el valor de la entrada de la IDT para el 
 	//Spurious Vector Interrupt y prendemos el local APIC.
-	local_apic[0xF0 >> 2] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
+	local_apic[LAPIC_SPVEC_REG] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
 	turn_on_apic(local_apic);
 
 	//Sanity check: Leemos el local apic para saber que estamos bien.
@@ -267,7 +264,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//
 	//Estos valores los leo asi en base al manual Intel 3A Capitulo 10, donde
 	//especifica como estan armados.
-	uint id = local_apic[0x20 >> 2];
+	uint id = local_apic[LAPIC_ID_REG];
 	id = (id >> 24) & 0xFF;
 
 	fail_if(id != processors[bootstrap_index].local_apic_id);
@@ -281,10 +278,10 @@ turn_on_local_apic(const mp_config_table * mpct)
 
 //Limpia el registro de errores del APIC
 static void
-clear_apic_errors()
+clear_apic_errors(void)
 {
 	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
-	local_apic[0x280 >> 2] = 0x0;
+	local_apic[LAPIC_ERR_REG] = 0x0;
 }
 
 //Levanta la posicion de memoria a la que vamos a saltar por el codigo de 
@@ -298,12 +295,12 @@ set_warm_reset_vector(uint address)
 	*((uint *) (0x40*16 +0x67)) = address;
 }
 
-static bool is_82489()
+static bool is_82489(void)
 {
 	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
 	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar 
 	//usando el bit 4 del byte del registro de version;
-	return !(local_apic[0x30 >> 2] & (1 << 4));
+	return !(local_apic[LAPIC_VER_REG] & (1 << 4));
 }
 
 //Enciende todos los APs
@@ -347,7 +344,8 @@ turn_on_aps(uint ap_startup_code_page)
 		wait_for_ipi_reception();
 		send_ipi(&init_ipi_doff);
 		wait_for_ipi_reception();
-		core_sleep(1); //Dormir 10 microsegundos
+		core_sleep(1000); //Dormir 10 millisegundos = 10000 microseg 
+						  //(1000 10 microseg con la unidad considerada).
 
 		scrn_printf("\tIPI de inicio enviada\n");
 		if(send_startup_ipis){
@@ -366,6 +364,9 @@ turn_on_aps(uint ap_startup_code_page)
 	}
 }
 
+//Pagina de codigo donde esta el codigo que van a ejecutar los cores
+extern uint ap_startup_code_page;
+
 //Determina la configuracion del procesador si hay una tabla de configuracion
 //es decir si no hay una configuracion default en uso.
 static void 
@@ -377,7 +378,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	scrn_printf("\tMPCT TABLE: %u\n",(uint) mpct);
 	//Seguimos las entradas de la tabla de configuracion
 	fail_unless(mpct->entry_count > 0);
-	mp_entry * entry = mpct->entries;
+	const mp_entry * entry = mpct->entries;
 
 	for(uint entryi = 0; entryi < mpct->entry_count; entryi++){
 		if(entry->entry_type == PROCESSOR){
@@ -398,7 +399,6 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 
 	turn_on_local_apic(mpct);
 
-	extern uint ap_startup_code_page;
 	uint ap_symb = (uint) &ap_startup_code_page;
 
 	//Se require que la pagina donde se inicia a ejecutar el codigo 16 bits
@@ -411,11 +411,13 @@ static void
 determine_default_configuration(mp_float_struct * mpfs)
 {
 	//TODO: Conseguir maquina donde probar esto, determinar si es necesario.
+	//NOT IMPLEMENTED
+	fail_unless(false);
 }
 
 //Revisar que las estructuras sean del tamaño correcto
 static void
-check_struct_sizes()
+check_struct_sizes(void)
 {
 	fail_unless(sizeof(processor_entry) != entry_sizes[PROCESSOR]);
 	fail_unless(sizeof(ioapic_entry) != entry_sizes[IOAPIC]);

@@ -6,6 +6,9 @@ LINK.o=ld
 CFLAGS=-m32 -O2 -std=c99 -Werror -Wall -Wextra\
 	-Wno-unused-parameter -Wno-override-init\
 	-Wunreachable-code -Wshadow -Wcast-qual \
+	-Wformat=2 -Wwrite-strings -Wstrict-prototypes\
+ 	-Wredundant-decls -Wnested-externs -Wmissing-include-dirs\
+	-Wjump-misses-init -Wlogical-op\
 	-nostdlib -fno-builtin -nostartfiles\
 	-nodefaultlibs -fno-stack-protector -I./include
 NASMFLAGS=-i./include/ -f elf32
@@ -54,7 +57,8 @@ run-qemu: all
 clean:
 	cd build/grub_modules_build && make clean
 	rm -rf $(ASMOBJS) $(COBJS) $(CDEPS)\
-	   	kernel.bin floppy.img bochs.tar.gz
+	   	kernel.bin floppy.img bochs.tar.gz\
+		types.vim
 
 zipped: clean
 	tar zcvf entrega.tar.gz\
@@ -71,3 +75,5 @@ types.vim: $(CSOURCES) $(CHEADERS)
 	ctags --c-kinds=gstu -o- $^ |\
 		awk 'BEGIN{printf("syntax keyword Type\t")}\
 			{printf("%s ", $$1)}END{print ""}' > $@
+
+.DEFAULT_GOAL := all

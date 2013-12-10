@@ -72,9 +72,9 @@ extern gdt_desc GDT_DESC;
 //Cargar una nueva entrada en la gdt, dada su base, limite y datos.
 extern void gdt_load_desc(uint, uint, uint, seg_flags);
 //Instala la nueva GDT. Esta en assembler, porque si o si tiene que hacerse en assembler. Esta en kernel.c
-extern void gdt_flush();
+extern void gdt_flush(void);
 //Inicializa la nueva gdt
-extern void gdt_init();
+extern void gdt_init(void);
 
 #define GDT_LOAD_DESC(i,base,limit,...)\
 		gdt_load_desc(i,base,limit,\

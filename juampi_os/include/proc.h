@@ -33,10 +33,10 @@ typedef struct {
 } exception_trace;
 
 //Setter y getter para la task register (tr)
-short get_tr();
+short get_tr(void);
 void set_tr(short);
 
-short get_cs();
-uint get_eflags();
+short get_cs(void);
+uint get_eflags(void);
 
 #endif
