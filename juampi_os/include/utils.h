@@ -3,7 +3,7 @@
 
 #include <types.h>
 
-extern void memcpy(void *dest, void *src, uint count);
+extern void memcpy(void *dest, const void *src, uint count);
 extern void memset(void *dest, uchar val, uint count);
 
 extern uint strlen(const char *str);

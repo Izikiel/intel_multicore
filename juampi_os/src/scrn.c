@@ -71,7 +71,7 @@ void scrn_move_back()
 	scrn_set_blink_indicator(cursor_r,cursor_c);
 }
 
-void scrn_shift_up()
+void scrn_shift_up(void)
 {
 	ushort backup_buffer[VIDEO_HEIGHT][VIDEO_WIDTH];
 	memcpy(backup_buffer,video_mem,sizeof(backup_buffer));

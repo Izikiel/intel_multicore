@@ -11,10 +11,10 @@
 typedef void (*irq_handler) (uint,gen_regs);
 
 //Remapeo del PIC
-extern void remap_pic();
+extern void remap_pic(void);
 
 //Cargar los handlers de irq y amigas
-extern void irq_init_handlers();
+extern void irq_init_handlers(void);
 
 //Handler general interrupcciones por PIC
 extern void irq_common_handler(gen_regs,uint,int_trace);
@@ -23,9 +23,9 @@ extern void irq_common_handler(gen_regs,uint,int_trace);
 //irq_sti decide si tiene que activar o no segun eflags
 extern void irq_sti(uint eflags);
 //Activa si o si interrupciones
-extern void irq_sti_force();
+extern void irq_sti_force(void);
 //Desactiva interrupciones, devuelve el eflags anterior
-extern uint irq_cli();
+extern uint irq_cli(void);
 
 //Registrar handler
 extern void register_irq_handler(irq_handler e, uint code);

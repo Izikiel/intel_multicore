@@ -14,21 +14,21 @@ enum color {
 	LIGHTRED, LIGHTMAGENTA, LIGHTBROWN, WHITE};
 typedef enum color color;
 //Limpia la pantalla
-void scrn_cls();
+void scrn_cls(void);
 //Coloca el color de fondo y la fuente.
 void scrn_setmode(color,color);
 //Devuelve el formato de fondo y fuente
-ushort scrn_getmode();
+ushort scrn_getmode(void);
 //Devuelve la fila del cursor
-uchar scrn_getrow();
+uchar scrn_getrow(void);
 //Devuelve la columna del cursor
-uchar scrn_getcol();
+uchar scrn_getcol(void);
 //Coloca el cursor en un lugar. 
 //PRE: Las coordenadas pasadas son validas dentro de la memoria de video
 void scrn_setcursor(uchar, uchar);
 //Imprime un caracter a memoria de video. No utiliza format.
 void scrn_putc(char, ushort);
-void scrn_move_back();
+void scrn_move_back(void);
 //Imprime el mensaje, si es posible hacerlo
 void scrn_print(const char*);
 //Imprime el mensaje, con formato estilo printf de C. 

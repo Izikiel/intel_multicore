@@ -226,6 +226,6 @@ typedef enum {
 } delivery_mode_type;
 
 //Kernel entry point for multiprocessor inicialization
-void multiprocessor_init();
+void multiprocessor_init(void);
 
 #endif

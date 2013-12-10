@@ -14,7 +14,7 @@ extern exception_handler exception_handlers[];
 void register_exception_handler(exception_handler,uint);
 
 //Inicializa los handlers de excepcion a un default
-void initialize_exception_handlers();
+void initialize_exception_handlers(void);
 
 //Pantalla azul clasica
 extern void blue_screen(exception_trace);
