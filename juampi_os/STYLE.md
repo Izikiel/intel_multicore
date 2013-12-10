@@ -6,14 +6,15 @@ evaluaran los _commits_ de codigo realizados.
 
 Son abiertas a discusion excepto donde se indica, 
 y puede haber secciones del codigo actual que no la cumplan. Avisen y se 
-modifica
+modifica esas secciones del codigo para que cumplan la guía.
 
 Guia de estilo
 --------------
 
 0. 80 caracteres por linea, 4 espacios por tab. Esto si no se discute.
 1. Evite _assembly_ tanto como pueda. Si se puede escribir en C SE DEBE escribir
-en C. Las excepciones aceptables deben ser pensadas con mucho cuidado.
+en C. Escribir en _assembly_ tiene extremos problemas. 
+Las excepciones aceptables deben ser pensadas con mucho cuidado.
 2. Usar ANSI C99. Especialmente estudien la bibliografía que incluyo al final
 porque hay cosas MUY importantes para usar como las macros variadicas, los
 iniciadores de structs, etc.
@@ -23,11 +24,13 @@ actuales son suficientes y realmente el compilador esta en modo gorra.
 4. Si un puntero no debe ser modificado, PONER SI O SI  _const_. Si un valor
 es polleado por el codigo, PONER SI O SI _volatile_.
 5. En lo potencial, escribir el codigo tal que toda función pueda ser probada
-separada de lo demas. Más aun, ningun módulo que contenga lógica no relacionada
-con hardware DEBE SER testeado aparte (despues voy a definir como hacer esto).
-6. Usar nombres largos y declarativos. Usar constantes con nombre y no numeros
+separada de lo demas. Más aun, en lo posible todo módulo que contenga lógica 
+no relacionada con hardware DEBE SER testeado aparte (despues voy a definir 
+como hacer esto).
+6. Usar nombres largos y declarativos. Usar constantes con nombre y no números
 magicos. Escribir funciones cortas (que entre en una pantalla de editor es el
-limite, menos de 30 lineas es deseable).
+limite, menos de 30 lineas es deseable). Evitar ifs o switchs largos usando 
+_table driven dispatching_.
 7. Comentar el código. Si se escribe código en base a una fuente, incluir la
 fuente (link o pagina de libro). Toda linea no obvia debe tener su comentario.
 Esto NO ES SUBSTITUTO de escribir código claro o nombres declarativos.
@@ -41,7 +44,7 @@ memoria). _ASSUME NOTHING_ como dice Mike Abash.
 11. DELEGAR TANTO COMO SE PUEDA AL COMPILADOR. ES MUY DIFICIL TESTEAR UN KERNEL.
 12. Todo el codigo esta en ingles. Los comentarios en español (preferentemente).
 13. Respete las licencias. No incluya codigo GPL o LGPL porque esto es MIT. 
-Incluya fuente de todo codigo que ponga.
+Incluya fuente de origen (link, libro) de todo codigo que se copie.
 
 Fuentes
 -------
