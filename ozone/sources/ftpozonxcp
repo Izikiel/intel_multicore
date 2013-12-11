@@ -1,4 +1,0 @@
-binary
-cd /ozone/binaries/
-put ../binaries/oz_dev_comport_486.oz
-quit

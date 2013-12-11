@@ -1,4 +1,0 @@
-cd /ozone/binaries/
-binary
-put ../binaries/ixdebtest.oz
-quit
