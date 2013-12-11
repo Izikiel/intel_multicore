@@ -27,8 +27,8 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* s: 1 code or data  */
         (unsigned char)     0x00,           /* descriptor privilege level: nivel 0 -> kernel*/
         (unsigned char)     0x01,           /* segment present :si, presente y puede ser usado*/
-        (unsigned char)     0x06,           /* limit[16:19] = 0x06 */
-        (unsigned char)     0x00,           /* available for use by system software: no */
+        (unsigned char)     0x0F,           /* limit[16:19] = 0x0F */
+        (unsigned char)     0x00,           /* available for use by system software */
         (unsigned char)     0x00,           /* l: bit code segment, NO, estoy en 32 bits */
         (unsigned char)     0x01,           /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
         (unsigned char)     0x01,           /* g:1 granularidad 4K */
@@ -43,8 +43,8 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned char)     0x01,           /* s: 1 code or data  */
         (unsigned char)     0x00,           /* descriptor privilege level: nivel 0 -> kernel*/
         (unsigned char)     0x01,           /* segment present :si, presente y puede ser usado*/
-        (unsigned char)     0x06,           /* limit[16:19] = 0x06 */
-        (unsigned char)     0x00,           /* available for use by system software: no */
+        (unsigned char)     0x0F,           /* limit[16:19] = 0x0F */
+        (unsigned char)     0x00,           /* available for use by system software */
         (unsigned char)     0x00,           /* l: bit code segment, NO, estoy en 32 bits */
         (unsigned char)     0x01,           /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
         (unsigned char)     0x01,           /* g:1 granularidad 4K */
