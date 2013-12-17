@@ -24,7 +24,7 @@ void idt_inicializar() {
     IDT_ENTRY(6, KERNEL_TRAP_GATE_TYPE);//invalid opcode
     IDT_ENTRY(7, KERNEL_TRAP_GATE_TYPE);//device not available(math processor)
     IDT_ENTRY(8, KERNEL_TRAP_GATE_TYPE);//double fault ==================================>>>>>>>>>>>>>>>>> pushea error code 0
-    //IDT_ENTRY(9, *);//coprocessor segment overrun(reserved) ==> desp del intel 386 no se genera esta excepcion
+    IDT_ENTRY(9, KERNEL_TRAP_GATE_TYPE);//coprocessor segment overrun(reserved) ==> desp del intel 386 no se genera esta excepcion
     IDT_ENTRY(10, KERNEL_TRAP_GATE_TYPE);//invalid tss ==================================>>>>>>>>>>>>>>>>> pushea error code
     IDT_ENTRY(11, KERNEL_TRAP_GATE_TYPE);//segment not present ==================================>>>>>>>>>>>>>>>>> pushea error code
     IDT_ENTRY(12, KERNEL_TRAP_GATE_TYPE);//stack segment fault ==================================>>>>>>>>>>>>>>>>> pushea error code
@@ -43,7 +43,12 @@ void idt_inicializar() {
     IDT_ENTRY(32, KERNEL_INT_GATE_TYPE);//clock
     IDT_ENTRY(33, KERNEL_INT_GATE_TYPE);//keyboard
 
-    //IDT_ENTRY(80/*0x50*/, SERVICE_INT_GATE_TYPE);//syscalls
-    //IDT_ENTRY(102/*0x66*/, SERVICE_INT_GATE_TYPE);//syscall_bandera_fin
+
+    //;;;;;;;;;;;;;;;;;;;;;;;;;
+    //;;;;;Syscall examples;;;;
+    //;;;;;;;;;;;;;;;;;;;;;;;;;
+
+    //IDT_ENTRY(80/*0x50*/, SERVICE_INT_GATE_TYPE);
+    //IDT_ENTRY(102/*0x66*/, SERVICE_INT_GATE_TYPE);
 
 }

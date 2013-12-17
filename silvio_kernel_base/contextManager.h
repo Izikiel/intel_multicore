@@ -5,7 +5,9 @@
 #define __CONTEXT_MANAGER_H__
 
 ///es llamada por la isr cuando salta excepcion
-void notificarExcepcion(int errorCode, unsigned int EFLAGS, unsigned int EDI, unsigned int ESI, unsigned int EBP, unsigned int ESP, unsigned int EBX, unsigned int EDX, unsigned int ECX, unsigned int EAX, unsigned int EIP);
+void notificarExcepcion(int errorCode, unsigned int EFLAGS, unsigned int EDI,
+	unsigned int ESI, unsigned int EBP, unsigned int ESP, unsigned int EBX, 
+	unsigned int EDX, unsigned int ECX, unsigned int EAX, unsigned int EIP);
 ///es llamada por la isr cuando salta clock
 void notificarRelojTick();
 //es llamada por isr cuando se presiona teclado

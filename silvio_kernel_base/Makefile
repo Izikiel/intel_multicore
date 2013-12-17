@@ -7,10 +7,14 @@ KERNEL_BIN=kernel.bin
 DEPEND = Makefile \
 	kernel.asm isr.asm \
 	imprimir.mac \
-	gdt.c gdt.h pic.c pic.h idt.c idt.h isr.h mmu.c mmu.h contextManager.h contextManager.c\
-	syscall_wrapper.h utils.h utils.c asmutils.asm syscall_impl.h syscall_impl.c 
+	gdt.c gdt.h pic.c pic.h idt.c idt.h isr.h mmu.c mmu.h \
+	contextManager.h contextManager.c \
+	syscall_wrapper.h utils.h utils.c asmutils.asm\
+	syscall_impl.h syscall_impl.c 
 
-OBJ=$(KERNEL_OBJ) gdt.o pic.o idt.o isr.o mmu.o utils.o asmutils.o syscall_impl.o contextManager.o
+OBJ=$(KERNEL_OBJ) gdt.o pic.o idt.o isr.o mmu.o utils.o \
+	asmutils.o syscall_impl.o contextManager.o
+
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
 

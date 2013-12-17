@@ -2,7 +2,7 @@
 #define __ISR_H__
 
 //excepciones:
-//las interrupciones 1,9,15 y [20,31] estan reservadas por intel
+//las interrupciones 1, 15 y [20,31] estan reservadas por intel
 void _isr0();
 //void _isr1();
 void _isr2();
@@ -12,7 +12,7 @@ void _isr5();
 void _isr6();
 void _isr7();
 void _isr8();
-//void _isr9();
+void _isr9();
 void _isr10();
 void _isr11();
 void _isr12();
@@ -29,7 +29,5 @@ void _isr32();
 void _isr33();
 
 //system services interrupts
-void _isr80();
-void _isr102();
-
+//...
 #endif  /* !__ISR_H__ */
