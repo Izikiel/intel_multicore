@@ -23,7 +23,7 @@ gdt_entry gdt[GDT_COUNT] = {
         (unsigned short)    0xFFFF,         /* limit[0:15] = 0xFFFF  */
         (unsigned short)    0x0000,         /* base[0:15]:0x00   */
         (unsigned char)     0x00,           /* base[23:16]:0x00  */
-        (unsigned char)     0x09,           /* type: 9h-1001b execute only, accessed  */
+        (unsigned char)     0x08,           /* type: 8h-1000b execute only  */
         (unsigned char)     0x01,           /* s: 1 code or data  */
         (unsigned char)     0x00,           /* descriptor privilege level: nivel 0 -> kernel*/
         (unsigned char)     0x01,           /* segment present :si, presente y puede ser usado*/
@@ -57,3 +57,8 @@ gdt_descriptor GDT_DESC = {
     (unsigned int) &gdt
 };
 
+void cambiarSegmentosA64Bits(){
+    //enciendo los bits l de 64 bits del modo ia32e!
+    gdt[1].l = 1;//segmento de codigo
+    gdt[2].l = 1;//segmento de datos
+}

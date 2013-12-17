@@ -14,6 +14,7 @@
 #define VIDEO                   0x000B8000 /* direccion fisica del buffer de video */
 
 #define KERNEL_PAGEDIR_POINTER 0x00027000
+#define KERNEL_STACK_PTR 0x00027000
 #define KERNEL_FIRST_PAGETABLE_POINTER 0x00028000
 #define KERNEL_SECOND_PAGETABLE_POINTER 0x00029000
 

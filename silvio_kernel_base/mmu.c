@@ -38,6 +38,8 @@ pagedir_entry* krnPageDir = (pagedir_entry*) KERNEL_PAGEDIR_POINTER;
 pagetable_entry* krnFirstPageTable = (pagetable_entry*) KERNEL_FIRST_PAGETABLE_POINTER;
 pagetable_entry* krnSecondPageTable = (pagetable_entry*) KERNEL_SECOND_PAGETABLE_POINTER;
 
+void* kernelStackPtr = (void*)KERNEL_STACK_PTR;
+
 //esta funcion inicializa el directorio de paginas y las 2 tablas de paginas necesarias que se piden por enunciado en el ej 3b.
 //para el ejercicio 3b del tp me piden mapear los primeros 7.5mb entre 0x00000000 y 0x0077FFFF, necesito 2 entradas en el directorio de paginas, 
 //la primera de 1024 entradas de 4k => 4mb y la segunda con 896 entradas de 4k => 3584 = 3.5mb

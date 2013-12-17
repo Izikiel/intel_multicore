@@ -38,5 +38,6 @@ unsigned int changePaginationContext(pagedir_entry* newDirContext);
 unsigned int mmu_virtual2physic(unsigned int virtual, pagedir_entry* pageDirBase);
 
 extern pagedir_entry* krnPageDir;
+extern void* kernelStackPtr;
 
 #endif	/* !__MMU_H__ */

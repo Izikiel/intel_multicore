@@ -13,28 +13,28 @@ char* getError(int codError);
 #define MAX(a,b) (((a)>(b))?(a):(b))
 
 /*
- * Definiciones de funciones hibridas entre C y ASM en asmutils.asm
+ * Definiciones de funciones hibridas entre C y ASM en asmutils.asm                   --- DESACTIVADAS TEMPORALMENTE POR PASAJE A 64 BITS!
  */
-extern unsigned int getEAX();
-extern unsigned int getEBX();
-extern unsigned int getECX();
-extern unsigned int getEDX();
-extern unsigned int getESI();
-extern unsigned int getEDI();
-extern unsigned int getEBP();
-extern unsigned int getESP();
-extern unsigned int getEIP();
-extern unsigned int getCS();
-extern unsigned int getDS();
-extern unsigned int getES();
-extern unsigned int getFS();
-extern unsigned int getGS();
-extern unsigned int getSS();
-extern unsigned int getCR0();
-extern unsigned int getCR2();
-extern unsigned int getCR3();
-extern unsigned int getCR4();
-extern unsigned int getEFLAGS();
-extern void waitClock();//haltea el cpu hasta la proxima interrupcion de reloj
+//extern unsigned int getEAX();
+//extern unsigned int getEBX();
+//extern unsigned int getECX();
+//extern unsigned int getEDX();
+//extern unsigned int getESI();
+//extern unsigned int getEDI();
+//extern unsigned int getEBP();
+//extern unsigned int getESP();
+//extern unsigned int getEIP();
+//extern unsigned int getCS();
+//extern unsigned int getDS();
+//extern unsigned int getES();
+//extern unsigned int getFS();
+//extern unsigned int getGS();
+//extern unsigned int getSS();
+//extern unsigned int getCR0();
+//extern unsigned int getCR2();
+//extern unsigned int getCR3();
+//extern unsigned int getCR4();
+//extern unsigned int getEFLAGS();
+//extern void waitClock();//haltea el cpu hasta la proxima interrupcion de reloj
 
 #endif  /* !__utils_H__ */

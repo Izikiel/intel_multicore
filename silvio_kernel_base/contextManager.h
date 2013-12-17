@@ -20,7 +20,6 @@ void notificarCambioContexto(pagedir_entry *newDirContext);
 //utiles en asmutils
 void haltCpu();
 void sleepClock();
-void jmpToTask(unsigned short int selector);
 
 #endif  /* !__CONTEXT_MANAGER_H__*/
 
