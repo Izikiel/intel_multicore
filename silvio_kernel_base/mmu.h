@@ -1,10 +1,6 @@
 #ifndef __MMU_H__
 #define __MMU_H__
 
-#define KERNEL_PAGEDIR_POINTER 0x00027000
-#define KERNEL_FIRST_PAGETABLE_POINTER 0x00028000
-#define KERNEL_SECOND_PAGETABLE_POINTER 0x00029000
-
 typedef struct str_page_dir {
     unsigned char present:1;
     unsigned char readWrite:1;
