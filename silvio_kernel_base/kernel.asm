@@ -42,6 +42,9 @@ mensaje_inicio64real_len      equ $ - mensaje_inicio64real_msg
 mensaje_64bitserr_msg:     db 'FAIL! 64 bits mode unavailable! -> Kernel Halted.'
 mensaje_64bitserr_len      equ $ - mensaje_64bitserr_msg
 
+mensaje_cpuiderr_msg:     db 'FAIL! CPUID unavailable! -> Kernel Halted.'
+mensaje_cpuiderr_len        equ $ - mensaje_cpuiderr_msg
+
 mensaje_ok_msg:             db 'OK!'
 mensaje_ok_len              equ $ - mensaje_ok_msg
 
@@ -102,7 +105,27 @@ protected_mode:
     LIDT [IDT_DESC]
 
     imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x07, 3, 0    
-    
+
+    ;Chequeo de disponibilidad de uso de CPUID
+
+    pushfd               ; Store the FLAGS-register.
+    pop eax              ; Restore the A-register.
+    mov ecx, eax         ; Set the C-register to the A-register.
+    xor eax, 1 << 21     ; Flip the ID-bit, which is bit 21.
+    push eax             ; Store the A-register.
+    popfd                ; Restore the FLAGS-register.
+    pushfd               ; Store the FLAGS-register.
+    pop eax              ; Restore the A-register.
+    push ecx             ; Store the C-register.
+    popfd                ; Restore the FLAGS-register.
+    xor eax, ecx         ; Do a XOR-operation on the A-register and the C-register.
+    jz .NoCPUID          ; The zero flag is set, no CPUID.
+    ; CPUID is available for use.
+
+    ;Hay que chequear virtualizacion por hardware, sino crashea en mi notebook por ejemplo(Intel T4400)
+    ;el SO es 64 bits pero bochs no tiene virtualizacion por hardware y no puede emular long mode
+    ;esto esta en el bit 5 de cpuid en ECX
+
     ;Deteccion de modo 64 bits y mensaje de error sino esta disponible halteamos.
     mov eax, 0x80000000    ; Set the A-register to 0x80000000.
     cpuid                  ; CPU identification.
@@ -111,7 +134,6 @@ protected_mode:
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
     ;pasaje a 64 bits!
-
 
 ;mapeamos los primeros 2 megas con id mapping y PAE.
 
@@ -171,6 +193,13 @@ protected_mode:
 ;    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
 
     HLT; DESCOMENTAR ESTO SI HACEN EL JMP A 64 BITS
+
+.NoCPUID:
+imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
+    
+    CLI
+    HLT
+    jmp .NoCPUID
 
 .NoLongMode:    
     imprimir_texto_mp mensaje_64bitserr_msg, mensaje_64bitserr_len, 0x0C, 3, mensaje_inicio64_len
