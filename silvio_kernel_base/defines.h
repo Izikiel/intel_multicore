@@ -13,7 +13,7 @@
 #define KERNEL                  0x00001200 /* direccion fisica de comienzo del kernel */
 #define VIDEO                   0x000B8000 /* direccion fisica del buffer de video */
 
-#define KERNEL_PAGEDIR_POINTER 0x00027000
+#define KERNEL_PML4T_POINTER 0x00040000
 #define KERNEL_STACK_PTR 0x00027000
 #define KERNEL_FIRST_PAGETABLE_POINTER 0x00028000
 #define KERNEL_SECOND_PAGETABLE_POINTER 0x00029000

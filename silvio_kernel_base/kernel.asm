@@ -8,12 +8,7 @@ extern GDT_DESC
 extern cambiarSegmentosA64Bits
 
 ;; STACK
-
 extern kernelStackPtr
-
-;; IDT
-extern IDT_DESC
-extern idt_inicializar
 
 ;; PIC
 extern deshabilitar_pic
@@ -21,7 +16,7 @@ extern resetear_pic
 extern habilitar_pic
 
 ;;paginacion
-extern krnPageDir
+extern krnPML4T
 extern mmu_inicializar_dir_kernel
 
 ;; Saltear seccion de datos(para que no se ejecute supongo)
@@ -56,57 +51,52 @@ mensaje_ok_len              equ $ - mensaje_ok_msg
 BITS 16
 start:
     ; Deshabilitar interrupciones
-    CLI
+    cli
 
     ; habilitar A20    
     call habilitar_A20
 
     ;desaparecer cursor en pantalla
     mov BL, 0
-    DEC BL
+    dec BL
     mov BH, 0
-    DEC BH
+    dec BH
     set_cursor
 
     ; cargar la GDT    
-    LGDT [GDT_DESC];cargo posicion de la gdt en el registro
+    lgdt [GDT_DESC];cargo posicion de la gdt en el registro
 
     imprimir_texto_mr mensaje_inicioprot_msg, mensaje_inicioprot_len, 0x07, 0, 320
 
     ; setear el bit PE del registro CR0
-    MOV EAX, CR0;levanto registro CR0 para pasar a modo protegido
-    OR EAX, 1;hago un or con una mascara de 0...1 para setear el bit de modo protegido
-    MOV CR0, EAX
-    ; pasar a modo protegido
+    mov EAX, CR0;levanto registro CR0 para pasar a modo protegido
+    or EAX, 1;hago un or con una mascara de 0...1 para setear el bit de modo protegido
+    mov CR0, EAX
 
-    JMP 0x08:protected_mode; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
+    ; pasar a modo protegido
+    jmp 0x08:protected_mode; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
     ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
     ;aca setie el selector de segmento cs al segmento de codigo del kernel
 
 BITS 32;modo de programacion en 32 bits(compila en 32 bits)
 protected_mode:    
     ;cargo los selectores de segmento de modo protegido
-    XOR eax, eax
-    MOV ax, 00010000b;{index:2 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
-    MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
-    MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
-    MOV ss, ax;cargo el selector de pila en el segmento de datos del kernel
+    xor eax, eax
+    mov ax, 00010000b;{index:2 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
+    mov ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
+    mov es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
+    mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
+    mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
+    mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
     ;setear la pila en 0x27000 para el kernel
-    MOV esp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
-    MOV ebp, esp;pongo base y tope juntos.
+    mov esp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
+    mov ebp, esp;pongo base y tope juntos.
 
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x0A, 2, mensaje_inicioprot_len
 
-    ; inicializar la IDT para manejar solo excepciones por ahora
-    CALL idt_inicializar
-    ;poner en ldtr
-    LIDT [IDT_DESC]
-
     imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x07, 3, 0    
 
-    ;Chequeo de disponibilidad de uso de CPUID
+    ; Chequeo de disponibilidad de uso de CPUID
 
     pushfd               ; Store the FLAGS-register.
     pop eax              ; Restore the A-register.
@@ -119,21 +109,24 @@ protected_mode:
     push ecx             ; Store the C-register.
     popfd                ; Restore the FLAGS-register.
     xor eax, ecx         ; Do a XOR-operation on the A-register and the C-register.
-    jz .NoCPUID          ; The zero flag is set, no CPUID.
-    ; CPUID is available for use.
+    jz .CPUIDNoDisponible; The zero flag is set, no CPUID.
+    ; here CPUID is available for use.
 
-    ;Hay que chequear virtualizacion por hardware, sino crashea en mi notebook por ejemplo(Intel T4400)
+    ;//TODO: Hay que chequear virtualizacion por hardware, sino crashea en mi notebook por ejemplo(Intel T4400)
     ;el SO es 64 bits pero bochs no tiene virtualizacion por hardware y no puede emular long mode
-    ;esto esta en el bit 5 de cpuid en ECX
+    ;esto esta en el bit 5 de cpuid en ECX 
 
     ;Deteccion de modo 64 bits y mensaje de error sino esta disponible halteamos.
-    mov eax, 0x80000000    ; Set the A-register to 0x80000000.
-    cpuid                  ; CPU identification.
-    cmp eax, 0x80000001    ; Compare the A-register with 0x80000001.
-    jb .NoLongMode         ; It is less, there is no long mode.
+    mov eax, 0x80000000    ; pasamos parametros 0x80000000.
+    cpuid                  
+    cmp eax, 0x80000001    ; 0x80000001 significa que esta habilitado.
+    jb .ModoLargoNoDisp    ; si es menor, modo largo no esta disponible
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
-    ;pasaje a 64 bits!
+    
+    ;comienza el pasaje a 64 bits! :D
+
+                                ;------------------ Hardcode --------------------------
 
 ;mapeamos los primeros 2 megas con id mapping y PAE.
 
@@ -142,7 +135,7 @@ protected_mode:
 ;PDT - 0x42000.
 ;PT - 0x43000.
 
-    mov edi, 0x40000    ; Set the destination index to 0x40000.
+    mov edi, [krnPML4T];cargar directorio de paginas del kernel
     mov cr3, edi       ; Set control register 3 to the destination index.
     xor eax, eax       ; Nullify the A-register.
     mov ecx, 4096      ; Set the C-register to 4096.
@@ -169,44 +162,51 @@ protected_mode:
     or eax, 1 << 5               ; Set the PAE-bit, which is the 6th bit (bit 5).
     mov cr4, eax                 ; Set control register 4 to the A-register.
 
+
+                                ;--------------- Fin Hardcode --------------------------
+
+
+
 ;fin activacion PAE y mapeo!, todo listo para levantar 64 bits modo compatibilidad con 32 bits!
 
-    mov ecx, 0xC0000080          ; Set the C-register to 0xC0000080, which is the EFER MSR.
-    rdmsr                        ; Read from the model-specific register.
-    or eax, 1 << 8               ; Set the LM-bit which is the 9th bit (bit 8).
-    wrmsr                        ; Write to the model-specific register.
+    mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
+    rdmsr                        ; Leemos el registro en EDX:EAX.
+    or eax, 1 << 8               ; Seteamos el bit de modo largo que es el noveno bit (contando desde 0) osea el bit 8.
+    wrmsr                        ; Escribimos nuevamente al registro.
 
-    mov eax, cr0                 ; Set the A-register to control register 0.
-    or eax, 1 << 31              ; Set the PG-bit, which is the 32nd bit (bit 31).
-    mov cr0, eax                 ; Set control register 0 to the A-register.
+    mov eax, cr0                 ; Obtenemos el registro de control 0 actual.
+    or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
+    mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
 
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x0A, 3, mensaje_inicio64_len
 
     imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x07, 4, 0
-    ;comienzo pasaje a 64 bits nativo
+    
+    ;estamos en modo ia32e compatibilidad con 32 bits
+    ;comienzo pasaje a 64 bits puro
 
-;    ;habilito los bits l de los segmentos de la GDT
-;    call cambiarSegmentosA64Bits
+                                    ;habilito los bits l de los segmentos de la GDT
+    call cambiarSegmentosA64Bits    ;esto enciende los bits "l" de las entradas de la GDT de codigo y datos de kernel
 ;
 ;    JMP 0x08:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
 ;    ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
 ;    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
 
-    HLT; DESCOMENTAR ESTO SI HACEN EL JMP A 64 BITS
+    HLT; DESCOMENTAR ESTO SI HACEN EL JMP A 64 BITS(igual no deberia ejecutarse nunca si hace el jmp)
 
-.NoCPUID:
+.CPUIDNoDisponible:
 imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
     
     CLI
     HLT
-    jmp .NoCPUID
+    jmp .CPUIDNoDisponible
 
-.NoLongMode:    
+.ModoLargoNoDisp:    
     imprimir_texto_mp mensaje_64bitserr_msg, mensaje_64bitserr_len, 0x0C, 3, mensaje_inicio64_len
     
     CLI
     HLT
-    jmp .NoLongMode
+    jmp .ModoLargoNoDisp
 
 ;BITS 64
 ; 
@@ -239,21 +239,19 @@ imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_i
 ;    mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
 ;    mov ecx, 500                  ; Set the C-register to 500.
 ;
-;    xchg bx, bx
 
-;    hlt                           ; Halt the processor.
 ;
-    ;fin inicio kernel!
+
+    ;para habilitar las interrupciones NECESITO una IDT de 64 bits!
+    ;aparentemente para setear la pila tambien necesito la idt por un tema de manejo de excepciones
     
+    ;fin inicio kernel en 64 bits!
+    xchg bx, bx
+    hlt
 
 
-
-;    ;configurar controlador de interrupciones enmascarables(teclado, reloj, etc)
-;    CALL deshabilitar_pic
-;    CALL resetear_pic
-;    CALL habilitar_pic    
-;
-;    ;habilito las interrupciones! :D
+    ;inicializar la idt de 64 bits y bla
+    ;habilito las interrupciones! :D
 ;    STI
 
     ; inicializar el directorio de paginas de kernel

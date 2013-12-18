@@ -34,7 +34,7 @@
 //asi tambien a la base de donde voy a mapear inicialmente las tareas en el mar
 //y despues asigno a lo cavernicola las direcciones en donde tienen que comenzar
 //notar que las definiciones extern necesarias de los punteros y las constantes estan en mmu.h
-pagedir_entry* krnPageDir = (pagedir_entry*) KERNEL_PAGEDIR_POINTER;
+pagedir_entry* krnPML4T = (pagedir_entry*) KERNEL_PML4T_POINTER;
 pagetable_entry* krnFirstPageTable = (pagetable_entry*) KERNEL_FIRST_PAGETABLE_POINTER;
 pagetable_entry* krnSecondPageTable = (pagetable_entry*) KERNEL_SECOND_PAGETABLE_POINTER;
 
@@ -47,7 +47,7 @@ void* kernelStackPtr = (void*)KERNEL_STACK_PTR;
 //las proximas 896 las voy a poner momentaneamente a partir de KERNEL_SECOND_PAGETABLE_POINTER por lo consultado a los ayudantes que realizaron el mapa de memoria
 void mmu_inicializar_dir_kernel() {
 	//marco todas como no presentes en el directorio de paginas, son 1024 entradas
-	pageDirectoryInitialize(krnPageDir, 0, 0, 1023);
+	pageDirectoryInitialize(krnPML4T, 0, 0, 1023);
 	//inicializo 1024 paginas con direcciones entre 0 y 1023*4096 marcandolas como presentes
 	pageTableInitialize(krnFirstPageTable, 1, 0, 1023, 0);
 	//marco las 1024 paginas como no presentes en la segunda tabla de paginas
@@ -56,8 +56,8 @@ void mmu_inicializar_dir_kernel() {
 	pageTableInitialize(krnSecondPageTable, 1, 0, 895, 1024/*comenzar a mapear desde 1024 inclusive*/);
 	
 	//activo las primeras 2 paginas del directorio y les seteo las direcciones de las 2 tablas de paginas
-	PAGEDIR_ENTRY(krnPageDir, 0/*index*/, 1/*present*/, 1/*read+write*/, 0/*supervisor*/, 0, 0, 0, 0, 0, 0, 0, (((unsigned int)(krnFirstPageTable))  >> 12) );
-	PAGEDIR_ENTRY(krnPageDir, 1/*index*/, 1/*present*/, 1/*read+write*/, 0/*supervisor*/, 0, 0, 0, 0, 0, 0, 0, (((unsigned int)(krnSecondPageTable))  >> 12) );	
+	PAGEDIR_ENTRY(krnPML4T, 0/*index*/, 1/*present*/, 1/*read+write*/, 0/*supervisor*/, 0, 0, 0, 0, 0, 0, 0, (((unsigned int)(krnFirstPageTable))  >> 12) );
+	PAGEDIR_ENTRY(krnPML4T, 1/*index*/, 1/*present*/, 1/*read+write*/, 0/*supervisor*/, 0, 0, 0, 0, 0, 0, 0, (((unsigned int)(krnSecondPageTable))  >> 12) );	
     //invalido la cache de traduccion de direcciones
     tlbflush();    
 }

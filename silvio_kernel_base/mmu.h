@@ -37,7 +37,7 @@ void mmu_unmapear_pagina(unsigned int virtual, pagedir_entry* pageDirBase);
 unsigned int changePaginationContext(pagedir_entry* newDirContext);
 unsigned int mmu_virtual2physic(unsigned int virtual, pagedir_entry* pageDirBase);
 
-extern pagedir_entry* krnPageDir;
+extern pagedir_entry* krnPML4T;
 extern void* kernelStackPtr;
 
 #endif	/* !__MMU_H__ */
