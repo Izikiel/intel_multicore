@@ -45,7 +45,7 @@ gdt_entry gdt[GDT_COUNT] = {
         .limit_16_19 = 0x0F,        /* limit[16:19] = 0x0F */
         .avl = 0x00,                /* available for use by system software */
         .l = 0x01,                  /* l: bit code segment 64 bits mode ON! */
-        .db = 0x01,                 /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
+        .db = 0x00,                 /* 64 bits mode on!*/
         .g = 0x01,                  /* g:1 granularidad 4K */
         .base_31_24 = 0x00          /* base[31:24]  */
     },
