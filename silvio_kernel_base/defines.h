@@ -3,9 +3,10 @@
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_IDX_NULL_DESC           0
-#define GDT_IDX_SEGCODE_LEVEL0_DESC 1
-#define GDT_IDX_SEGDATA_LEVEL0_DESC 2
+#define GDT_IDX_NULL_DESC           	0
+#define GDT_IDX_SEGCODE_LEVEL0_DESC_32 	1
+#define GDT_IDX_SEGCODE_LEVEL0_DESC_64 	2
+#define GDT_IDX_SEGDATA_LEVEL0_DESC 	3
 
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */

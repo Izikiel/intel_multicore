@@ -5,7 +5,6 @@ global start
 
 ;; GDT
 extern GDT_DESC
-extern cambiarSegmentosA64Bits
 
 ;; STACK
 extern kernelStackPtr
@@ -17,7 +16,6 @@ extern habilitar_pic
 
 ;;paginacion
 extern krnPML4T
-extern mmu_inicializar_dir_kernel
 
 ;; Saltear seccion de datos(para que no se ejecute supongo)
 JMP start
@@ -74,7 +72,7 @@ start:
     mov CR0, EAX
 
     ; pasar a modo protegido
-    jmp 0x08:protected_mode; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
+    jmp 00001000b:protected_mode; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
     ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
     ;aca setie el selector de segmento cs al segmento de codigo del kernel
 
@@ -82,7 +80,7 @@ BITS 32;modo de programacion en 32 bits(compila en 32 bits)
 protected_mode:    
     ;cargo los selectores de segmento de modo protegido
     xor eax, eax
-    mov ax, 00010000b;{index:2 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
+    mov ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
     mov ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     mov es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
@@ -185,27 +183,24 @@ protected_mode:
     ;estamos en modo ia32e compatibilidad con 32 bits
     ;comienzo pasaje a 64 bits puro
 
-                                    ;habilito los bits l de los segmentos de la GDT
-    call cambiarSegmentosA64Bits    ;esto enciende los bits "l" de las entradas de la GDT de codigo y datos de kernel
-;
-;    JMP 0x08:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
-;    ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
+;    jmp 00010000b:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
+;    ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
 ;    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
 
-    HLT; DESCOMENTAR ESTO SI HACEN EL JMP A 64 BITS(igual no deberia ejecutarse nunca si hace el jmp)
+    hlt; DESCOMENTAR ESTO SI HACEN EL JMP A 64 BITS(igual no deberia ejecutarse nunca si hace el jmp)
 
 .CPUIDNoDisponible:
 imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
     
-    CLI
-    HLT
+    cli
+    hlt
     jmp .CPUIDNoDisponible
 
 .ModoLargoNoDisp:    
     imprimir_texto_mp mensaje_64bitserr_msg, mensaje_64bitserr_len, 0x0C, 3, mensaje_inicio64_len
     
-    CLI
-    HLT
+    cli
+    hlt
     jmp .ModoLargoNoDisp
 
 ;BITS 64
@@ -215,7 +210,7 @@ imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_i
 ;
 ;
 ;XOR eax, eax
-;    MOV ax, 00010000b;{index:2 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
+;    MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
 ;    MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
 ;    MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
 ;    MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel

@@ -4,51 +4,66 @@ gdt_entry gdt[GDT_COUNT] = {
     /* Descriptor nulo*/
     /* Offset = 0x00 */
     [GDT_IDX_NULL_DESC] = (gdt_entry) {
-        (unsigned short)    0x0000,         /* limit[0:15]  */
-        (unsigned short)    0x0000,         /* base[0:15]   */
-        (unsigned char)     0x00,           /* base[23:16]  */
-        (unsigned char)     0x00,           /* type         */
-        (unsigned char)     0x00,           /* s            */
-        (unsigned char)     0x00,           /* dpl          */
-        (unsigned char)     0x00,           /* p            */
-        (unsigned char)     0x00,           /* limit[16:19] */
-        (unsigned char)     0x00,           /* avl          */
-        (unsigned char)     0x00,           /* l            */
-        (unsigned char)     0x00,           /* db           */
-        (unsigned char)     0x00,           /* g            */
-        (unsigned char)     0x00,           /* base[31:24]  */
+        .limit_0_15 = 0x0000,       /* limit[0:15]  */
+        .base_0_15 = 0x0000,        /* base[0:15]   */
+        .base_23_16 = 0x00,         /* base[23:16]  */
+        .type = 0x00,               /* type         */
+        .s = 0x00,                  /* s            */
+        .dpl = 0x00,                /* dpl          */
+        .p = 0x00,                  /* p            */
+        .limit_16_19 = 0x00,        /* limit[16:19] */
+        .avl = 0x00,                /* avl          */
+        .l = 0x00,                  /* l            */
+        .db = 0x00,                 /* db           */
+        .g = 0x00,                  /* g            */
+        .base_31_24 = 0x00          /* base[31:24]  */
     },
-    /* [1]Descriptor de codigo de nivel 0 */
-    [GDT_IDX_SEGCODE_LEVEL0_DESC] = (gdt_entry) {
-        (unsigned short)    0xFFFF,         /* limit[0:15] = 0xFFFF  */
-        (unsigned short)    0x0000,         /* base[0:15]:0x00   */
-        (unsigned char)     0x00,           /* base[23:16]:0x00  */
-        (unsigned char)     0x08,           /* type: 8h-1000b execute only  */
-        (unsigned char)     0x01,           /* s: 1 code or data  */
-        (unsigned char)     0x00,           /* descriptor privilege level: nivel 0 -> kernel*/
-        (unsigned char)     0x01,           /* segment present :si, presente y puede ser usado*/
-        (unsigned char)     0x0F,           /* limit[16:19] = 0x0F */
-        (unsigned char)     0x00,           /* available for use by system software */
-        (unsigned char)     0x00,           /* l: bit code segment, NO, estoy en 32 bits */
-        (unsigned char)     0x01,           /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
-        (unsigned char)     0x01,           /* g:1 granularidad 4K */
-        (unsigned char)     0x00,           /* base[31:24]  */
+    /* [1]Descriptor de codigo de nivel 0 en 32 bits! */
+    [GDT_IDX_SEGCODE_LEVEL0_DESC_32] = (gdt_entry) {
+        .limit_0_15 = 0xFFFF,       /* limit[0:15] = 0xFFFF  */
+        .base_0_15 = 0x0000,        /* base[0:15]:0x00   */
+        .base_23_16 = 0x00,         /* base[23:16]:0x00  */
+        .type = 0x08,               /* type: 8h-1000b execute only  */
+        .s = 0x01,                  /* s: 1 code or data  */
+        .dpl = 0x00,                /* descriptor privilege level: nivel 0 -> kernel*/
+        .p = 0x01,                  /* segment present :si, presente y puede ser usado*/
+        .limit_16_19 = 0x0F,        /* limit[16:19] = 0x0F */
+        .avl = 0x00,                /* available for use by system software */
+        .l = 0x00,                  /* l: bit code segment */
+        .db = 0x01,                 /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
+        .g = 0x01,                  /* g:1 granularidad 4K */
+        .base_31_24 = 0x00,         /* base[31:24]  */
+    },/* [2]Descriptor de codigo de nivel 0 en 64 bits! */
+    [GDT_IDX_SEGCODE_LEVEL0_DESC_64] = (gdt_entry) {
+        .limit_0_15 = 0xFFFF,       /* limit[0:15] = 0xFFFF  */
+        .base_0_15 = 0x0000,        /* base[0:15]:0x00   */
+        .base_23_16 = 0x00,         /* base[23:16]:0x00  */
+        .type = 0x08,               /* type: 8h-1000b execute only  */
+        .s = 0x01,                  /* s: 1 code or data  */
+        .dpl = 0x00,                /* descriptor privilege level: nivel 0 -> kernel*/
+        .p = 0x01,                  /* segment present :si, presente y puede ser usado*/
+        .limit_16_19 = 0x0F,        /* limit[16:19] = 0x0F */
+        .avl = 0x00,                /* available for use by system software */
+        .l = 0x01,                  /* l: bit code segment 64 bits mode ON! */
+        .db = 0x01,                 /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
+        .g = 0x01,                  /* g:1 granularidad 4K */
+        .base_31_24 = 0x00,         /* base[31:24]  */
     },
-    /* [2]Descriptor de datos de nivel 0 */
+    /* [3]Descriptor de datos de nivel 0 */
     [GDT_IDX_SEGDATA_LEVEL0_DESC] = (gdt_entry) {
-        (unsigned short)    0xFFFF,         /* limit[0:15] = 0xFFFF  */
-        (unsigned short)    0x0000,         /* base[0:15]:0x00   */
-        (unsigned char)     0x00,           /* base[23:16]:0x00  */
-        (unsigned char)     0x02,           /* type: 2h-0010b data read write  */
-        (unsigned char)     0x01,           /* s: 1 code or data  */
-        (unsigned char)     0x00,           /* descriptor privilege level: nivel 0 -> kernel*/
-        (unsigned char)     0x01,           /* segment present :si, presente y puede ser usado*/
-        (unsigned char)     0x0F,           /* limit[16:19] = 0x0F */
-        (unsigned char)     0x00,           /* available for use by system software */
-        (unsigned char)     0x00,           /* l: bit code segment, NO, estoy en 32 bits */
-        (unsigned char)     0x01,           /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
-        (unsigned char)     0x01,           /* g:1 granularidad 4K */
-        (unsigned char)     0x00,           /* base[31:24]  */
+        .limit_0_15 = 0xFFFF,       /* limit[0:15] = 0xFFFF  */
+        .base_0_15 = 0x0000,        /* base[0:15]:0x00   */
+        .base_23_16 = 0x00,         /* base[23:16]:0x00  */
+        .type = 0x02,               /* type: 2h-0010b data read write  */
+        .s = 0x01,                  /* s: 1 code or data  */
+        .dpl = 0x00,                /* descriptor privilege level: nivel 0 -> kernel*/
+        .p = 0x01,                  /* segment present :si, presente y puede ser usado*/
+        .limit_16_19 = 0x0F,        /* limit[16:19] = 0x0F */
+        .avl = 0x00,                /* available for use by system software */
+        .l = 0x00,                  /* l: bit code segment*/
+        .db = 0x01,                 /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
+        .g = 0x01,                  /* g:1 granularidad 4K */
+        .base_31_24 = 0x00,         /* base[31:24]  */
     }
 };
 
@@ -56,9 +71,3 @@ gdt_descriptor GDT_DESC = {
     sizeof(gdt) - 1,
     (unsigned int) &gdt
 };
-
-void cambiarSegmentosA64Bits(){
-    //enciendo los bits l de 64 bits del modo ia32e!
-    gdt[1].l = 1;//segmento de codigo
-    gdt[2].l = 1;//segmento de datos
-}
