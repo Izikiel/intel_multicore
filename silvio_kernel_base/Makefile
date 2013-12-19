@@ -18,7 +18,7 @@ OBJ=$(KERNEL_OBJ) gdt.o pic.o idt.o isr.o mmu.o utils.o \
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
 
-CFLAGS=-m32 -g -ggdb -Wall -Werror -O0 \
+CFLAGS=-std=c99 -m32 -g -ggdb -Wall -Werror -O0 \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding
 
 CODESIZE=60928 # = 65536 - 0x1200 = 64KB - 0x1200
@@ -37,7 +37,7 @@ QUIET = @
 all: genbin image
 
 genbin: genbin.c
-	$(CC) -m32 -g -ggdb -Wall -Werror -o genbin genbin.c
+	$(CC) -std=c99 -m32 -g -ggdb -Wall -Werror -o genbin genbin.c
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^

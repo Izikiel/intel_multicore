@@ -5,9 +5,9 @@ void resetear_pic(void);
 void habilitar_pic();
 void deshabilitar_pic();
 
-static __inline __attribute__((always_inline)) void outb(int port, unsigned char data);
+__attribute__((always_inline)) void outb(int port, unsigned char data);
 
-__inline __attribute__((always_inline)) void fin_intr_pic1(void);
-__inline __attribute__((always_inline)) void fin_intr_pic2(void);
+__attribute__((always_inline)) void fin_intr_pic1();
+__attribute__((always_inline)) void fin_intr_pic2();
 
 #endif	/* !__PIC_H__ */

@@ -3,7 +3,7 @@
 gdt_entry gdt[GDT_COUNT] = {
     /* Descriptor nulo*/
     /* Offset = 0x00 */
-    [GDT_IDX_NULL_DESC] = (gdt_entry) {
+    [GDT_IDX_NULL_DESC] = {
         .limit_0_15 = 0x0000,       /* limit[0:15]  */
         .base_0_15 = 0x0000,        /* base[0:15]   */
         .base_23_16 = 0x00,         /* base[23:16]  */
@@ -19,7 +19,7 @@ gdt_entry gdt[GDT_COUNT] = {
         .base_31_24 = 0x00          /* base[31:24]  */
     },
     /* [1]Descriptor de codigo de nivel 0 en 32 bits! */
-    [GDT_IDX_SEGCODE_LEVEL0_DESC_32] = (gdt_entry) {
+    [GDT_IDX_SEGCODE_LEVEL0_DESC_32] = {
         .limit_0_15 = 0xFFFF,       /* limit[0:15] = 0xFFFF  */
         .base_0_15 = 0x0000,        /* base[0:15]:0x00   */
         .base_23_16 = 0x00,         /* base[23:16]:0x00  */
@@ -32,9 +32,9 @@ gdt_entry gdt[GDT_COUNT] = {
         .l = 0x00,                  /* l: bit code segment */
         .db = 0x01,                 /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
         .g = 0x01,                  /* g:1 granularidad 4K */
-        .base_31_24 = 0x00,         /* base[31:24]  */
+        .base_31_24 = 0x00          /* base[31:24]  */
     },/* [2]Descriptor de codigo de nivel 0 en 64 bits! */
-    [GDT_IDX_SEGCODE_LEVEL0_DESC_64] = (gdt_entry) {
+    [GDT_IDX_SEGCODE_LEVEL0_DESC_64] = {
         .limit_0_15 = 0xFFFF,       /* limit[0:15] = 0xFFFF  */
         .base_0_15 = 0x0000,        /* base[0:15]:0x00   */
         .base_23_16 = 0x00,         /* base[23:16]:0x00  */
@@ -47,10 +47,10 @@ gdt_entry gdt[GDT_COUNT] = {
         .l = 0x01,                  /* l: bit code segment 64 bits mode ON! */
         .db = 0x01,                 /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
         .g = 0x01,                  /* g:1 granularidad 4K */
-        .base_31_24 = 0x00,         /* base[31:24]  */
+        .base_31_24 = 0x00          /* base[31:24]  */
     },
     /* [3]Descriptor de datos de nivel 0 */
-    [GDT_IDX_SEGDATA_LEVEL0_DESC] = (gdt_entry) {
+    [GDT_IDX_SEGDATA_LEVEL0_DESC] = {
         .limit_0_15 = 0xFFFF,       /* limit[0:15] = 0xFFFF  */
         .base_0_15 = 0x0000,        /* base[0:15]:0x00   */
         .base_23_16 = 0x00,         /* base[23:16]:0x00  */
@@ -63,7 +63,7 @@ gdt_entry gdt[GDT_COUNT] = {
         .l = 0x00,                  /* l: bit code segment*/
         .db = 0x01,                 /* default operation size: 32 bits, osea 1 , de esta forma se interpretaran las instrucciones*/
         .g = 0x01,                  /* g:1 granularidad 4K */
-        .base_31_24 = 0x00,         /* base[31:24]  */
+        .base_31_24 = 0x00          /* base[31:24]  */
     }
 };
 
