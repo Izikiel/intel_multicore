@@ -34,6 +34,14 @@ gdt_entry gdt[GDT_COUNT] = {
         .g = 0x01,                  /* g:1 granularidad 4K */
         .base_31_24 = 0x00          /* base[31:24]  */
     },/* [2]Descriptor de codigo de nivel 0 en 64 bits! */
+        /*
+        http://wiki.osdev.org/X86-64
+        
+        Now the CPU will be in compatibility mode, and instructions are still 32-bit. 
+        To enter long mode, the D/B bit (bit 22, 2nd dword) of the GDT code segment must
+         be clear (as it would be for a 16-bit code segment), and the L bit (bit 21, 2nd dword)
+          of the GDT code segment must be set. Once that is done, the CPU is in 64-bit long mode.
+        */
     [GDT_IDX_SEGCODE_LEVEL0_DESC_64] = {
         .limit_0_15 = 0xFFFF,       /* limit[0:15] = 0xFFFF  */
         .base_0_15 = 0x0000,        /* base[0:15]:0x00   */

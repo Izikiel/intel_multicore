@@ -235,14 +235,15 @@ long_mode:
     MOV rsp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
 
-    
+    ;arithmetic 64 bits testing!
     mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
     mov ecx, 500                  ; Set the C-register to 500.
-
+    mov rbx, 0x0123456789ABCDEF
+    mov rcx, 0xF000000000000000
+    add rcx, rbx
+    mov rdx, rcx
 
     ;para habilitar las interrupciones NECESITO una IDT de 64 bits!
-    ;aparentemente para setear la pila tambien necesito la idt por un tema de manejo de excepciones
-    
     ;fin inicio kernel en 64 bits!
     xchg bx, bx
     hlt
