@@ -1,4 +1,4 @@
-%include "imprimir.mac"
+%include "asm_screen_utils.mac"
 BITS 64
 
 ;; PIC

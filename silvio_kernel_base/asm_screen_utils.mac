@@ -1,5 +1,5 @@
-%ifndef __IMPRIMIR_MAC__
-%define __IMPRIMIR_MAC__
+%ifndef __asm_screen_utils.mac__
+%define __asm_screen_utils.mac__
 
 ;; imprimir_texto_ml:
 ;;  Description:
@@ -205,4 +205,4 @@
     popa
 %endmacro
 
-%endif  ;; !__IMPRIMIR_MAC__ ;;
+%endif  ;; !__asm_screen_utils.mac__ ;;

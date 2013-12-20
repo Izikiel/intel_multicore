@@ -12,7 +12,7 @@
 /* -------------------------------------------------------------------------- */
 #define BOOTSECTOR              0x0000000000001000 /* direccion fisica de comienzo del bootsector (copiado) */
 #define KERNEL                  0x0000000000001200 /* direccion fisica de comienzo del kernel */
-#define VIDEO                   0x00000000000B8000 /* direccion fisica del buffer de video */
+#define VIDEO_MEMORY            0x00000000000B8000 /* direccion fisica del buffer de video */
 
 #define KERNEL_PML4T_POINTER 0x0000000000040000
 #define KERNEL_STACK_PTR 0x0000000000027000

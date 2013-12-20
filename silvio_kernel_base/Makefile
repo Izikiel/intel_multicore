@@ -6,10 +6,13 @@ KERNEL_BIN=kernel.bin
 
 DEPEND = Makefile \
 	kernel.asm \
-	imprimir.mac \
-	gdt.c gdt.h pic.c pic.h mmu.h mmu.c idt.h idt.c isr.asm contextManager.h contextManager.c\
+	asm_screen_utils.mac \
+	gdt.c gdt.h pic.c pic.h \
+	mmu.h mmu.c idt.h idt.c \
+	isr.asm contextManager.h \
+	contextManager.c screen.h screen.c \
 
-OBJ=$(KERNEL_OBJ) gdt.o pic.o mmu.o idt.o isr.o contextManager.o
+OBJ=$(KERNEL_OBJ) gdt.o pic.o mmu.o idt.o isr.o contextManager.o screen.o
 
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
