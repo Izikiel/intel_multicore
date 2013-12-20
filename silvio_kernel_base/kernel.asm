@@ -6,6 +6,10 @@ global start
 ;; GDT
 extern GDT_DESC
 
+;; IDT
+extern IDT_DESC
+extern idt_inicializar
+
 ;; STACK
 extern kernelStackPtr
 
@@ -218,7 +222,7 @@ imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_i
 
 BITS 64
 long_mode:
-    cli     ; Mato las interrupciones          OJO QUE NECESITO UNA IDT DE 64 BITS!!!    
+    cli     ; Mato las interrupciones hasta armar la IDT de 64 bits!
 
     ;levanto segmentos con valores iniciales
     XOR eax, eax
@@ -234,23 +238,32 @@ long_mode:
     ;setear la pila en para el kernel
     MOV rsp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
+    
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x0A, 4, mensaje_inicio64real_len
 
     ;arithmetic 64 bits testing!
-    mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
-    mov ecx, 500                  ; Set the C-register to 500.
-    mov rbx, 0x0123456789ABCDEF
-    mov rcx, 0xF000000000000000
-    add rcx, rbx
-    mov rdx, rcx
+;    mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
+;    mov ecx, 500                  ; Set the C-register to 500.
+;    mov rbx, 0x0123456789ABCDEF
+;    mov rcx, 0xF000000000000000
+;    add rcx, rbx
+;    mov rdx, rcx
 
-    ;para habilitar las interrupciones NECESITO una IDT de 64 bits!
+    ;levanto la IDT
+    lidt [IDT_DESC]
+    call idt_inicializar
+
+    ;configurar controlador de interrupciones
+    CALL deshabilitar_pic
+    CALL resetear_pic
+    CALL habilitar_pic  
+
+    ;habilito las interrupciones! :D
+    ;STI
+
     ;fin inicio kernel en 64 bits!
-    xchg bx, bx
     hlt
 
-    ;inicializar la idt de 64 bits y bla
-    ;habilito las interrupciones! :D
-;    STI
 
 ;; -------------------------------------------------------------------------- ;;
 

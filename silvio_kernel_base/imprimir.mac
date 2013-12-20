@@ -1,6 +1,76 @@
 %ifndef __IMPRIMIR_MAC__
 %define __IMPRIMIR_MAC__
 
+;; imprimir_texto_ml:
+;;  Description:
+;;      Imprime un string en la seccion especificada de la memoria de Video.
+;;
+;;  Parametros:
+;;      %1: Puntero al mensaje
+;;      %2: Longitud del mensaje
+;;      %3: Color
+;;      %4: Fila
+;;      %5: Columna
+;;
+;;  Color:
+;;      * Bit #: 7 6 5 4 3 2 1 0
+;;               | | | | | | | |
+;;               | | | | | ^-^-^-- Fore color
+;;               | | | | ^-------- Fore color bright bit
+;;               | ^-^-^---------- Back color
+;;               ^---------------- Back color bright bit OR enables blinking text
+;;
+;;  Nota:
+;;      * Solo funciona en MODO PROTEGIDO.
+;;      * TODOS los parámetros son de 32 BITS.
+;;
+%macro imprimir_texto_ml 5    
+    push rax
+    push rbx
+    push rcx
+    push rdi
+
+    push %3             ; %3 = color
+    push %2             ; %2 = longitud del mensaje
+    push %1             ; %1 = puntero al mensaje
+    push %5             ; %5 = columna
+    push %4             ; %4 = fila
+
+    ; Calcular offset para imprimir en pantalla
+    ; offset = fila * 80 + columna
+    pop rax             ; rax = fila
+    mov rbx, 80
+    imul rbx            ; rax = fila * 80
+    pop rbx             ; rbx = columna
+    add rax, rbx        ; rax = fila * 80 + columna
+
+    ; Establecer el puntero al buffer de pantalla en (fila, columna)
+    mov rbx, 0xb8000    ; rbx = puntero a la base del buffer de video
+    shl rax, 1          ; Cada posicion de la memoria de video ocupa un word
+    add rbx, rax        ; rbx = puntero a la posicion (fila, columna)
+
+    ; Cargar mensaje, longitud y color
+    pop rdi             ; edi = puntero al mensaje
+    pop rcx             ; ecx = longitud del mensaje
+    pop rax             ; rax = color
+
+    ; Acomodar color en la parte alta de ax
+    shl ax, 8           ; ah = color
+
+    ; Imprimir cadena
+    %%ciclo_cadenal:
+        mov     al, [rdi]       ; al = caracter
+        mov     [rbx], ax       ; Escribir en pantalla
+        add     rbx, 2          ; Avanzar el puntero de la memoria de video
+        inc     rdi             ; Avanzar el puntero de la cadena
+        loop    %%ciclo_cadenal
+
+    pop rdi
+    pop rcx
+    pop rbx
+    pop rax
+%endmacro
+
 ;; imprimir_texto_mp:
 ;;  Description:
 ;;      Imprime un string en la seccion especificada de la memoria de Video.
@@ -55,12 +125,12 @@
     shl ax, 8           ; ah = color
 
     ; Imprimir cadena
-    %%ciclo_cadena:
+    %%ciclo_cadenap:
         mov     al, [edi]       ; al = caracter
         mov     [ebx], ax       ; Escribir en pantalla
         add     ebx, 2          ; Avanzar el puntero de la memoria de video
         inc     edi             ; Avanzar el puntero de la cadena
-        loop    %%ciclo_cadena
+        loop    %%ciclo_cadenap
 
     popad
 %endmacro
@@ -123,12 +193,12 @@
     shl ax, 8           ; ah = color
 
     ; Imprimir cadena
-    %%ciclo_cadena:
+    %%ciclo_cadenar:
         mov     al, [di]        ; al = caracter
         mov     [es:bx], ax     ; Escribir en pantalla
         add     bx, 2           ; Avanzar el puntero de la memoria de video
         inc     di              ; Avanzar el puntero de la cadena
-        loop    %%ciclo_cadena
+        loop    %%ciclo_cadenar
 
     pop es
 

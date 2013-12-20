@@ -1,18 +1,19 @@
 #include "idt.h"
 #include "isr.h"
 
-idt_entry idt[255] = { };
+idt_entry idt[IDT_ENTRIES_COUNT] = { };
 
 idt_descriptor IDT_DESC = {
-    sizeof(idt) - 1,
-    (unsigned int) &idt
+    .idt_length = sizeof(idt) - 1,
+    .idt_addr = (uint64_t) &idt
 };
 
-#define IDT_ENTRY(numero, attrsShort)                                                                            \
-    idt[numero].offset_0_15 = (unsigned short) ((unsigned int)(&_isr ## numero) & (unsigned int) 0xFFFF);        \
-    idt[numero].segsel = (unsigned short) 0x08;                                                                  \
-    idt[numero].attr = (unsigned short) attrsShort;                                                              \
-    idt[numero].offset_16_31 = (unsigned short) ((unsigned int)(&_isr ## numero) >> 16 & (unsigned int) 0xFFFF);
+#define IDT_ENTRY(numero, attrsShort)                                                                               \
+    idt[numero].segsel = (uint16_t) 0x10;/*64 bits code segment*/                                                   \
+    idt[numero].attr = (uint16_t) attrsShort;                                                                       \
+    idt[numero].offset_0_15 = (uint16_t) ((uint64_t)(&_isr ## numero) & (uint64_t) 0xFFFF);                         \
+    idt[numero].offset_16_31 = (uint16_t) ((uint64_t)(&_isr ## numero) >> 16 & (uint64_t) 0xFFFF);                  \
+    idt[numero].offset_32_63 = (uint32_t) ((uint64_t)(&_isr ## numero) >> 32 & (uint64_t) 0xFFFFFFFF);        
 
 void idt_inicializar() {
     IDT_ENTRY(0, KERNEL_TRAP_GATE_TYPE);//division por cero(instr div, idiv)

@@ -1,7 +1,7 @@
 #ifndef __GDT_H__
 #define __GDT_H__
 
-#define GDT_COUNT 41
+#define GDT_COUNT 4
 
 #include <stdint.h>
 #include "defines.h"

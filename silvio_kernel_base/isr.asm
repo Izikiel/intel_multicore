@@ -1,5 +1,5 @@
 %include "imprimir.mac"
-BITS 32
+BITS 64
 
 ;; PIC
 extern fin_intr_pic1
@@ -18,34 +18,12 @@ extern notificarTecla
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
-            add esp, 4;desapilo (e ignoro)serror code.        
-            imprimir_texto_mp interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
-            ;wrapper en contextManager
-            ;notificarExcepcion(unsigned int errorCode, unsigned int EFLAGS, unsigned int EDI,
-            ; unsigned int ESI, unsigned int EBP, unsigned int ESP, unsigned int EBX, 
-            ; unsigned int EDX, unsigned int ECX, unsigned int EAX, unsigned int EIP);
-            ;pasaje de parametros
-            ;EIP esta pusheado por convencion.
-            pushad;Push all double-word (32-bit) registers onto stack
-            pushfd;Push EFLAGS register onto stack       
-            ;pushad is equivalent to 
-            ;PUSH EAX
-            ;PUSH ECX
-            ;PUSH EDX
-            ;PUSH EBX
-            ;PUSH ESP
-            ;PUSH EBP
-            ;PUSH ESI
-            ;PUSH EDI
-            push %1;error code
-            call notificarExcepcion
-            add esp, 4;desapilo parametro extra            
+            add rsp, 8;desapilo (e ignoro)serror code.
+            imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
             
-            popfd
-            popad
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
-            ;y debugear el iret y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
-        iret
+            ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
+        iretq
 %endmacro
 
 
@@ -57,33 +35,10 @@ extern notificarTecla
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
-            imprimir_texto_mp interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
-            ;wrapper en contextManager
-            ;notificarExcepcion(unsigned int errorCode, unsigned int EFLAGS, unsigned int EDI,
-            ; unsigned int ESI, unsigned int EBP, unsigned int ESP, unsigned int EBX, 
-            ; unsigned int EDX, unsigned int ECX, unsigned int EAX, unsigned int EIP);
-            ;pasaje de parametros
-            ;EIP esta pusheado por convencion.
-            pushad;Push all double-word (32-bit) registers onto stack
-            pushfd;Push EFLAGS register onto stack       
-            ;pushad is equivalent to 
-            ;PUSH EAX
-            ;PUSH ECX
-            ;PUSH EDX
-            ;PUSH EBX
-            ;PUSH ESP
-            ;PUSH EBP
-            ;PUSH ESI
-            ;PUSH EDI
-            push %1;error code
-            call notificarExcepcion
-            add esp, 4;desapilo parametro extra            
-            
-            popfd
-            popad
-            xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar
-            ;aca y debugear el iret y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
-        iret
+            imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
+            xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
+            ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
+        iretq
 %endmacro
 
 ;;
@@ -120,15 +75,12 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 _isr32:
-        pushfd;Push EFLAGS register onto stack
-        pushad;Push all double-word (32-bit) registers onto stack
+        xchg bx, bx
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción        
         ;wrapper en contextManager
         ;void notificarRelojTick()
-        call notificarRelojTick
-        popad
-        popfd
-    iret
+        ;call notificarRelojTick
+    iretq
 
 ;;
 ;; Rutina de atención del TECLADO
@@ -136,18 +88,14 @@ _isr32:
 
 global _isr33
 _isr33:
-        pushfd;Push EFLAGS register onto stack
-        pushad;Push all double-word (32-bit) registers onto stack
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción
         ;obtenemos el scan code
         in al, 0x60
 
         ;wrapper en contextManager
         ;void notificarTecla(unsigned char keyCode);
-        push ax;8 bits(unsigned char) --> no me deja pushear al
-        call notificarTecla
-        pop ax
+        ;push ax;8 bits(unsigned char) --> no me deja pushear al
+        ;call notificarTecla
+        ;pop ax
         
-        popad
-        popfd
-    iret
+    iretq
