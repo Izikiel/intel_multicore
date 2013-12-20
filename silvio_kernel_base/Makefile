@@ -11,8 +11,9 @@ DEPEND = Makefile \
 	mmu.h mmu.c idt.h idt.c \
 	isr.asm contextManager.h \
 	contextManager.c screen.h screen.c \
+	utils.h utils.c
 
-OBJ=$(KERNEL_OBJ) gdt.o pic.o mmu.o idt.o isr.o contextManager.o screen.o
+OBJ=$(KERNEL_OBJ) gdt.o pic.o mmu.o idt.o isr.o contextManager.o screen.o utils.o
 
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
@@ -25,7 +26,7 @@ KERNELSIZE=60928 # = CODESIZE
 
 #Section offsets
 SECTION_TEXT_START_OFFSET = 0x1200
-SECTION_DATA_START_OFFSET = 0x3000
+SECTION_DATA_START_OFFSET = 0x8000
 
 
 CC=gcc

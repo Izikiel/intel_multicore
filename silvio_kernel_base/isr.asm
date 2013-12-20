@@ -3,12 +3,7 @@ BITS 64
 
 ;; PIC
 extern fin_intr_pic1
-
-;; contextManager
-extern notificarExcepcion
-extern notificarRelojTick
-extern notificarTecla
-
+extern test
 
 %macro ISR_GENERIC_HANDLER_ERR_CODE 2
         global _isr%1
@@ -108,6 +103,7 @@ _isr33:
         in al, 0x60
 
         ;TODO alinear pila!!
+        call test
 
         ;wrapper en contextManager
         ;void notificarTecla(unsigned char keyCode);

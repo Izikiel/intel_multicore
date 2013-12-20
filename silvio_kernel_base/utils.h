@@ -1,13 +1,15 @@
 #ifndef __utils_H__
 #define __utils_H__
 
-void memcpy(void* dst, void*src, unsigned int byteCount);
-void fillString(char* toFill, char character, unsigned int length);
-unsigned int strlen(char* str);
+#include <stdint.h>
+
+void memcpy(void* dst, void*src, uint32_t byteCount);
+void fillString(char* toFill, char character, uint32_t length);
+uint32_t strlen(char* str);
 void strrev(char s[]);
-void itoa(int n, char s[]);
-void decToHexStr(unsigned int num, char* output, char* title, unsigned int hasHexPrefix);
-char* getError(int codError);
+void itoa(uint32_t n, char s[]);
+void decToHexStr(uint32_t num, char* output, char* title, uint8_t hasHexPrefix);
+char* getError(uint32_t codError);
 
 #define min(a,b) (((a)<(b))?(a):(b))
 #define max(a,b) (((a)>(b))?(a):(b))

@@ -1,6 +1,6 @@
 #include "utils.h"
 
-void memcpy(void* dst, void* src, unsigned int byteCount){	
+void memcpy(void* dst, void* src, uint32_t byteCount){	
 	char* dst8 = (char*)dst;
 	char* src8 = (char*)src;
 	while(byteCount--){
@@ -8,25 +8,25 @@ void memcpy(void* dst, void* src, unsigned int byteCount){
 	}
 }
 
-void fillString(char* toFill, char character, unsigned int length){
+void fillString(char* toFill, char character, uint32_t length){
 	do{
 		toFill[length--] = character;
 	}while(length);
 }
 
-unsigned int strlen(char* str){
-	unsigned int overflowThreshold = 2000;//cualquier string con mas de este largo es truncada a 2000, igualmente no entran mas caracteres en la pantalla
-	unsigned int result=0;
+uint32_t strlen(char* str){
+	uint32_t overflowThreshold = 2000;//cualquier string con mas de este largo es truncada a 2000, igualmente no entran mas caracteres en la pantalla
+	uint32_t result=0;
 	while((result<overflowThreshold) && (*(str + result)!='\0')){
 		result++;
 	}
 	return result;
 }
 
- void itoa(int number, char s[])
+ void itoa(uint32_t number, char s[])
  {
- 	int idx = 0;
- 	int sign = number;
+ 	uint32_t idx = 0;
+ 	uint32_t sign = number;
     if (sign < 0){
     	number = -number;   
     }     
@@ -43,8 +43,8 @@ unsigned int strlen(char* str){
 
 void strrev(char s[])
 {
-	int i=0;
-	int j=0;
+	uint32_t i=0;
+	uint32_t j=0;
 	char c=0;
 	//hace un swap con dos indices, uno creciente y otro decreciente
 	for (i=0,j=strlen(s)-1; i<j;i++,j--) {
@@ -54,10 +54,10 @@ void strrev(char s[])
 	}
 }
 
-void decToHexStr(unsigned int num, char* output, char* title, unsigned int hasHexPrefix){
-	int idx = 0;
+void decToHexStr(uint32_t num, char* output, char* title, uint8_t hasHexPrefix){
+	uint32_t idx = 0;
 	while(num>0){
-		int remainder = num%16;
+		uint32_t remainder = num%16;
 		switch(remainder){
 			      case 10:
 			          output[idx] = 'A';
@@ -81,7 +81,7 @@ void decToHexStr(unsigned int num, char* output, char* title, unsigned int hasHe
 			         output[idx] = remainder + 48;//48 es el ascii de 0
 			         break;
 		}
-		num=(int) (num/16);
+		num=(uint32_t) (num/16);
 		idx++;		
 	}
 	
@@ -99,7 +99,7 @@ void decToHexStr(unsigned int num, char* output, char* title, unsigned int hasHe
 	output[idx++] = ' ';	
 	
 	//imprimo epigrafe del hexa
-	int lenTitle=strlen(title);
+	uint32_t lenTitle=strlen(title);
 	while(lenTitle--){
 		output[idx++] = title[lenTitle];
 	}
@@ -110,7 +110,7 @@ void decToHexStr(unsigned int num, char* output, char* title, unsigned int hasHe
 	strrev(output);
 }
 
-char* getError(int codError){
+char* getError(uint32_t codError){
 char* descripcion;
 	switch(codError)
 	{

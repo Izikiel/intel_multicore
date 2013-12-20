@@ -4,8 +4,8 @@
 
 /* Definicion de limites */
 /* -------------------------------------------------------------------------- */
-#define VIDEO_COLS 80
 #define VIDEO_FILS 25
+#define VIDEO_COLS 80
 
 /* Definicion de colores */
 /* -------------------------------------------------------------------------- */
@@ -50,5 +50,9 @@
 
 void printChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
 void printString(char* caracter, uint8_t format, uint8_t posX, uint8_t posY);
+void printInteger(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
+void clrscr();
+
+void test();
 
 #endif  /* !__screen_H__ */
