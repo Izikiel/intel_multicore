@@ -87,7 +87,7 @@ start:
 ;------------------------------- comienzo modo protegido ----------------------------------------------
 ;------------------------------------------------------------------------------------------------------
 
-BITS 32;modo de programacion en 32 bits(compila en 32 bits)
+BITS 32
 protected_mode:    
     ;cargo los selectores de segmento de modo protegido
     xor eax, eax
@@ -121,10 +121,6 @@ protected_mode:
     jz .CPUIDNoDisponible; The zero flag is set, no CPUID.
     ; here CPUID is available for use.
 
-    ;//TODO: Hay que chequear virtualizacion por hardware, sino crashea en mi notebook por ejemplo(Intel T4400)
-    ;el SO es 64 bits pero bochs no tiene virtualizacion por hardware y no puede emular long mode
-    ;esto esta en el bit 5 de cpuid en ECX 
-
     ;Deteccion de modo 64 bits y mensaje de error sino esta disponible halteamos.
     mov eax, 0x80000000    ; pasamos parametros 0x80000000.
     cpuid                  
@@ -133,8 +129,6 @@ protected_mode:
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
     
-    ;comienza el pasaje a 64 bits! :D
-
                                 ;------------------ Hardcode --------------------------
 
 ;mapeamos los primeros 2 megas con id mapping y PAE.
@@ -196,9 +190,7 @@ protected_mode:
     ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
     ;aca setie el selector de segmento cs al segmento de codigo del kernel 
 
-
 ; Funciones auxiliares en 32 bits!
-
 .CPUIDNoDisponible:
 imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
     
@@ -218,11 +210,10 @@ imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_i
 ;------------------------------- comienzo modo largo --------------------------------------------------
 ;------------------------------------------------------------------------------------------------------
 
-;comienzo 64 bits!!
-
 BITS 64
 long_mode:
-    cli     ; Mato las interrupciones hasta armar la IDT de 64 bits!
+    ;las desactive en modo real
+    ;cli     ; Mato las interrupciones hasta armar la IDT de 64 bits!
 
     ;levanto segmentos con valores iniciales
     XOR eax, eax
@@ -249,7 +240,7 @@ long_mode:
 ;    add rcx, rbx
 ;    mov rdx, rcx
 
-    ;levanto la IDT
+    ;levanto la IDT de 64 bits
     lidt [IDT_DESC]
     call idt_inicializar
 
@@ -259,10 +250,12 @@ long_mode:
     CALL habilitar_pic  
 
     ;habilito las interrupciones! :D
-    ;STI
+    STI
 
     ;fin inicio kernel en 64 bits!
-    hlt
+    halt: hlt
+        jmp halt
+
 
 
 ;; -------------------------------------------------------------------------- ;;

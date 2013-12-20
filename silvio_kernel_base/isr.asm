@@ -68,6 +68,10 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 ;ISR_GENERIC_HANDLER 20//Reserved -> intel use only
 ;...//Reserved -> intel use only
 ;ISR_GENERIC_HANDLER 31//Reserved -> intel use only
+
+;...user defined data
+clock_char:     db '_'
+
 ;...user defined interrupts
 
 ;;
@@ -75,12 +79,23 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 _isr32:
-        xchg bx, bx
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción        
         ;wrapper en contextManager
         ;void notificarRelojTick()
         ;call notificarRelojTick
+        call printCursor
     iretq
+
+printCursor:
+        cmp byte [clock_char], '_'
+        je changeClock
+        mov byte [clock_char], '_'
+        jmp showClock
+changeClock:
+        mov byte [clock_char], ' '
+showClock:
+        imprimir_texto_ml clock_char, 1, 0x0C, 5, 0
+        ret
 
 ;;
 ;; Rutina de atención del TECLADO
@@ -92,10 +107,11 @@ _isr33:
         ;obtenemos el scan code
         in al, 0x60
 
+        ;TODO alinear pila!!
+
         ;wrapper en contextManager
         ;void notificarTecla(unsigned char keyCode);
-        ;push ax;8 bits(unsigned char) --> no me deja pushear al
+        ;mov di, al;8 bits
         ;call notificarTecla
-        ;pop ax
         
     iretq
