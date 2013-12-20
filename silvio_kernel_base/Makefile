@@ -20,11 +20,16 @@ CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
 CODESIZE=60928 # = 65536 - 0x1200 = 64KB - 0x1200
 KERNELSIZE=60928 # = CODESIZE
 
+#Section offsets
+SECTION_TEXT_START_OFFSET = 0x1200
+SECTION_DATA_START_OFFSET = 0x2000
+
+
 CC=gcc
 NASM=nasm
 NASMFLAGS=-felf64
 LD=ld
-LDFLAGS=-static -m elf_x86_64 --oformat binary -b elf64-x86-64 -e start -Ttext 0x1200 -Tdata 0x2000
+LDFLAGS=-static -m elf_x86_64 --oformat binary -b elf64-x86-64 -e start -Ttext $(SECTION_TEXT_START_OFFSET) -Tdata $(SECTION_DATA_START_OFFSET)
 
 QUIET = @
 

@@ -17,12 +17,12 @@ extern habilitar_pic
 ;;paginacion
 extern krnPML4T
 
-;; Saltear seccion de datos(para que no se ejecute supongo)
+;; Saltear seccion de datos(para que no se ejecute)
 BITS 16
 JMP start
 
 ;;
-;; Seccion de datos de 16.
+;; Seccion de datos
 ;; -------------------------------------------------------------------------- ;;
 mensaje_inicioprot_msg:     db 'Starting up in protected mode...'
 mensaje_inicioprot_len      equ $ - mensaje_inicioprot_msg
@@ -46,7 +46,9 @@ mensaje_ok_len              equ $ - mensaje_ok_msg
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
 
-;; Punto de entrada del kernel.
+;------------------------------------------------------------------------------------------------------
+;------------------------------- comienzo modo real ---------------------------------------------------
+;------------------------------------------------------------------------------------------------------
 BITS 16
 start:
     ; Deshabilitar interrupciones
@@ -62,10 +64,8 @@ start:
     dec BH
     set_cursor
 
-    ; cargar la GDT    
-    xchg bx, bx
-    mov eax, GDT_DESC
-    lgdt [eax];cargo posicion de la gdt en el registro
+    ; cargar la GDT        
+    lgdt [GDT_DESC]
 
     imprimir_texto_mr mensaje_inicioprot_msg, mensaje_inicioprot_len, 0x07, 0, 320
 
@@ -78,6 +78,10 @@ start:
     jmp 00001000b:protected_mode; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
     ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
     ;aca setie el selector de segmento cs al segmento de codigo del kernel
+
+;------------------------------------------------------------------------------------------------------
+;------------------------------- comienzo modo protegido ----------------------------------------------
+;------------------------------------------------------------------------------------------------------
 
 BITS 32;modo de programacion en 32 bits(compila en 32 bits)
 protected_mode:    
@@ -166,8 +170,6 @@ protected_mode:
 
                                 ;--------------- Fin Hardcode --------------------------
 
-
-
 ;fin activacion PAE y mapeo!, todo listo para levantar 64 bits modo compatibilidad con 32 bits!
 
     mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
@@ -186,11 +188,12 @@ protected_mode:
     ;estamos en modo ia32e compatibilidad con 32 bits
     ;comienzo pasaje a 64 bits puro
 
-;    jmp 00010000b:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
-;    ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
-;    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
+    jmp 00010000b:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
+    ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
+    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
 
-    hlt; DESCOMENTAR ESTO SI HACEN EL JMP A 64 BITS(igual no deberia ejecutarse nunca si hace el jmp)
+
+; Funciones auxiliares en 32 bits!
 
 .CPUIDNoDisponible:
 imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
@@ -206,39 +209,36 @@ imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_i
     hlt
     jmp .ModoLargoNoDisp
 
-;BITS 64
-; 
-;long_mode:
-;    cli                           ; Clear the interrupt flag.                   OJO QUE NECESITO UNA IDT DE 64 BITS!!!    
-;
-;
-;XOR eax, eax
-;    MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
-;    MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
-;    MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-;    MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-;    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
-;    
-;
-;    MOV ss, ax;cargo el selector de pila en el segmento de datos del kernel
-;
-;
-;    ;setear la pila en 0x27000 para el kernel
-;    MOV esp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
-;    MOV ebp, esp;pongo base y tope juntos.
-;
-;
-;    mov ax, 00010000b             ;{index:2 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel - Set the A-register to the data descriptor.
-;    mov ds, ax                    ; Set the data segment to the A-register.
-;    mov es, ax                    ; Set the extra segment to the A-register.
-;    mov fs, ax                    ; Set the F-segment to the A-register.
-;    mov gs, ax                    ; Set the G-segment to the A-register.
-;    
-;    mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
-;    mov ecx, 500                  ; Set the C-register to 500.
-;
 
-;
+;------------------------------------------------------------------------------------------------------
+;------------------------------- comienzo modo largo --------------------------------------------------
+;------------------------------------------------------------------------------------------------------
+
+;comienzo 64 bits!!
+
+BITS 64
+long_mode:
+    cli     ; Mato las interrupciones          OJO QUE NECESITO UNA IDT DE 64 BITS!!!    
+
+    ;levanto segmentos con valores iniciales
+    XOR eax, eax
+    MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
+    MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
+    MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
+    MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
+    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
+    
+    ;cargo el selector de pila en el segmento de datos del kernel
+    MOV ss, ax
+
+    ;setear la pila en para el kernel
+    MOV rsp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
+    MOV rbp, rsp;pongo base y tope juntos.
+
+    
+    mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
+    mov ecx, 500                  ; Set the C-register to 500.
+
 
     ;para habilitar las interrupciones NECESITO una IDT de 64 bits!
     ;aparentemente para setear la pila tambien necesito la idt por un tema de manejo de excepciones
@@ -247,19 +247,9 @@ imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_i
     xchg bx, bx
     hlt
 
-
     ;inicializar la idt de 64 bits y bla
     ;habilito las interrupciones! :D
 ;    STI
-
-    ; inicializar el directorio de paginas de kernel
-;    CALL mmu_inicializar_dir_kernel
-;    ; habilitar paginacion
-;    MOV EAX, [krnPageDir];cargar directorio de paginas del kernel
-;    MOV CR3, EAX
-;    MOV EAX, CR0;habilitar bit de paginacion
-;    OR EAX, 0x80000000
-;    MOV CR0, EAX
 
 ;; -------------------------------------------------------------------------- ;;
 
