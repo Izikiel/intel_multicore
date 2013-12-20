@@ -67,7 +67,7 @@ gdt_entry gdt[GDT_COUNT] = {
     }
 };
 
-gdt_descriptor GDT_DESC = {
+gdt_descriptor GDT_DESC __attribute__((section (".data"))) = {
     .gdt_length = sizeof(gdt) - 1,
     .gdt_addr = (uint64_t) &gdt
 };

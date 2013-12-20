@@ -15,7 +15,7 @@ DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
-  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -fno-common
+  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding 
 
 CODESIZE=60928 # = 65536 - 0x1200 = 64KB - 0x1200
 KERNELSIZE=60928 # = CODESIZE
@@ -24,7 +24,7 @@ CC=gcc
 NASM=nasm
 NASMFLAGS=-felf64
 LD=ld
-LDFLAGS=-static -m elf_x86_64 --oformat binary -b elf64-x86-64 -e start -Ttext 0x1200
+LDFLAGS=-static -m elf_x86_64 --oformat binary -b elf64-x86-64 -e start -Ttext 0x1200 -Tdata 0x2000
 
 QUIET = @
 
