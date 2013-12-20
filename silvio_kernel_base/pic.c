@@ -3,12 +3,12 @@
 #define PIC1_PORT 0x20
 #define PIC2_PORT 0xA0
 
-__attribute__((always_inline)) void outb(int port, unsigned char data) {
+inline void outb(int port, unsigned char data) {
     __asm __volatile("outb %0,%w1" : : "a" (data), "d" (port));
 }
 
-__attribute__((always_inline)) void fin_intr_pic1() { outb(0x20, 0x20); }
-__attribute__((always_inline)) void fin_intr_pic2() { outb(0x20, 0x20); outb(0xA0, 0x20); }
+inline void fin_intr_pic1() { outb(0x20, 0x20); }
+inline void fin_intr_pic2() { outb(0x20, 0x20); outb(0xA0, 0x20); }
 
 void resetear_pic() {
     outb(PIC1_PORT+0, 0x11); /* IRQs activas x flanco, cascada, y ICW4 */

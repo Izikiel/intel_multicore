@@ -18,10 +18,11 @@ extern habilitar_pic
 extern krnPML4T
 
 ;; Saltear seccion de datos(para que no se ejecute supongo)
+BITS 16
 JMP start
 
 ;;
-;; Seccion de datos.
+;; Seccion de datos de 16.
 ;; -------------------------------------------------------------------------- ;;
 mensaje_inicioprot_msg:     db 'Starting up in protected mode...'
 mensaje_inicioprot_len      equ $ - mensaje_inicioprot_msg
@@ -62,7 +63,9 @@ start:
     set_cursor
 
     ; cargar la GDT    
-    lgdt [GDT_DESC];cargo posicion de la gdt en el registro
+    xchg bx, bx
+    mov eax, GDT_DESC
+    lgdt [eax];cargo posicion de la gdt en el registro
 
     imprimir_texto_mr mensaje_inicioprot_msg, mensaje_inicioprot_len, 0x07, 0, 320
 

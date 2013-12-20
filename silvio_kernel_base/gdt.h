@@ -3,28 +3,29 @@
 
 #define GDT_COUNT 41
 
+#include <stdint.h>
 #include "defines.h"
 
 
 typedef struct str_gdt_descriptor {
-    unsigned short  gdt_length;
-    unsigned int    gdt_addr;
+    uint16_t  gdt_length;
+    uint64_t    gdt_addr;/*cambia 64 pero es lo mismo en little endian*/
 } __attribute__((__packed__)) gdt_descriptor;
 
 typedef struct str_gdt_entry {
-    unsigned short  limit_0_15;
-    unsigned short  base_0_15;
-    unsigned char   base_23_16;
-    unsigned char   type:4;
-    unsigned char   s:1;
-    unsigned char   dpl:2;
-    unsigned char   p:1;
-    unsigned char   limit_16_19:4;
-    unsigned char   avl:1;
-    unsigned char   l:1;
-    unsigned char   db:1;
-    unsigned char   g:1;
-    unsigned char   base_31_24;
+    uint16_t  limit_0_15;
+    uint16_t  base_0_15;
+    uint8_t   base_23_16;
+    uint8_t   type:4;
+    uint8_t   s:1;
+    uint8_t   dpl:2;
+    uint8_t   p:1;
+    uint8_t   limit_16_19:4;
+    uint8_t   avl:1;
+    uint8_t   l:1;
+    uint8_t   db:1;
+    uint8_t   g:1;
+    uint8_t   base_31_24;
 } __attribute__((__packed__, aligned (8))) gdt_entry;
 
 /* Tabla GDT */
