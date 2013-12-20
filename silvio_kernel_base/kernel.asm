@@ -232,14 +232,6 @@ long_mode:
     
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x0A, 4, mensaje_inicio64real_len
 
-    ;arithmetic 64 bits testing!
-;    mov rax, 0x1F201F201F201F20   ; Set the A-register to 0x1F201F201F201F20.
-;    mov ecx, 500                  ; Set the C-register to 500.
-;    mov rbx, 0x0123456789ABCDEF
-;    mov rcx, 0xF000000000000000
-;    add rcx, rbx
-;    mov rdx, rcx
-
     ;levanto la IDT de 64 bits
     lidt [IDT_DESC]
     call idt_inicializar
@@ -251,6 +243,15 @@ long_mode:
 
     ;habilito las interrupciones! :D
     STI
+
+    ;arithmetic 64 bits testing!
+;    mov rax, 0x1F201F201F201F20   
+;    mov ecx, 500                  
+;    mov rbx, 0x0123456789ABCDEF
+;    mov rcx, 0xF000000000000000
+;    add rcx, rbx
+;    mov rdx, rcx
+
 
     ;fin inicio kernel en 64 bits!
     halt: hlt
