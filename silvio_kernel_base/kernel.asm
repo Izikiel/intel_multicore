@@ -1,5 +1,5 @@
 %include "imprimir.mac"
-%include "disableCursor.asm"
+%include "cursor_utils.asm"
 
 global start
 
