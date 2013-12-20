@@ -13,7 +13,8 @@ idt_descriptor IDT_DESC = {
     idt[numero].attr = (uint16_t) attrsShort;                                                                       \
     idt[numero].offset_0_15 = (uint16_t) ((uint64_t)(&_isr ## numero) & (uint64_t) 0xFFFF);                         \
     idt[numero].offset_16_31 = (uint16_t) ((uint64_t)(&_isr ## numero) >> 16 & (uint64_t) 0xFFFF);                  \
-    idt[numero].offset_32_63 = (uint32_t) ((uint64_t)(&_isr ## numero) >> 32 & (uint64_t) 0xFFFFFFFF);        
+    idt[numero].offset_32_63 = (uint32_t) ((uint64_t)(&_isr ## numero) >> 32 & (uint64_t) 0xFFFFFFFF);              \
+    idt[numero].zeroPadd = 0x0;
 
 void idt_inicializar() {
     IDT_ENTRY(0, KERNEL_TRAP_GATE_TYPE);//division por cero(instr div, idiv)

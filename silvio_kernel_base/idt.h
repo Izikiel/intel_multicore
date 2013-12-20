@@ -53,7 +53,7 @@ typedef struct str_idt_entry_fld {
     uint16_t attr;
     uint16_t offset_16_31;
     uint32_t offset_32_63;
-    uint32_t zero;
+    uint32_t zeroPadd;
 } __attribute__((__packed__, aligned (8))) idt_entry;
 
 extern idt_entry idt[];
