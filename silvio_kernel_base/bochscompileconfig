@@ -1,1 +1,0 @@
-./configure --prefix=/home/svilerino/bochs --enable-x86-64 --enable-smp --enable-long-phy-address --enable-debugger --enable-disasm --enable-debugger-gui --enable-assert-checks --enable-x86-debugger

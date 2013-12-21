@@ -1,3 +1,3 @@
 reset
 make clean
-make && bochs -q
+make && ./bochs/bin/bochs -q

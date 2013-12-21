@@ -2,19 +2,19 @@ BITS 16
 
 section .text
 
-habilitando: db 'Habilitando A20........'
+habilitando: db 'Activating A20........'
 habilitando_len equ $ - habilitando
 
-deshabilitando: db 'Desabilitando A20......'
+deshabilitando: db 'Deactivating A20......'
 deshabilitando_len equ $ - deshabilitando
 
-checkeando: db 'Checkeando A20.........'
+checkeando: db 'Checking A20.........'
 checkeando_len equ $ - checkeando
 
 mensajeOK: db 'OK!'
 mensajeOK_len equ $ - mensajeOK
 
-mensajeFAIL: db 'FALLO!'
+mensajeFAIL: db 'FAIL!'
 mensajeFAIL_len equ $ - mensajeFAIL
 
 contadorlineas: dw 0x0000

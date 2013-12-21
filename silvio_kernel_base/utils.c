@@ -8,10 +8,11 @@ void memcpy(void* dst, void* src, uint32_t byteCount){
 	}
 }
 
-void fillString(char* toFill, char character, uint32_t length){
-	do{
-		toFill[length--] = character;
-	}while(length);
+void memset(void* dst, uint8_t value, uint32_t length){
+	uint8_t* ptr = (uint8_t*) dst;
+	for(uint32_t idx = 0; idx < length; idx++){
+		ptr[idx] = value;
+	}
 }
 
 uint32_t strlen(char* str){
@@ -182,4 +183,59 @@ char* descripcion;
 		break;
 	}
 	return descripcion;
+}
+
+//Tomado de juampiOS utils
+
+void strcpy(char* dst, const char* src)
+{
+        uint32_t i;
+        for(i = 0; src[i] != '\0'; i++) {
+                dst[i] = src[i];
+        }
+        dst[i] = '\0';
+}
+
+void strcat(char* dst, const char* src)
+{
+        uint32_t i = 0, j = 0;
+        while(dst[i]) {
+                i++;
+        }
+        while(src[j]) {
+                dst[i] = src[j];
+                i++; j++;
+        }
+        dst[i] = '\0';
+}
+
+int memcmp(const void* _m1, const void* _m2, uint32_t bytes)
+{
+        const char* m1 = _m1, * m2 = _m2;
+        for(uint32_t i = 0; i < bytes; i++)
+                if(m1[i] != m2[i]) {
+                        return (m1[i]-m2[i] < 0) ? -1 : 1;
+                }
+        return 0;
+}
+
+int strcmp(const char* str1, const char* str2)
+{
+        uint32_t i;
+        for(i = 0; str1[i] == str2[i]; i++)
+                if(str1[i] == '\0') {
+                        return 0;
+                }
+        return str1[i]-str2[i];
+}
+
+void strncpy(char* dst, const char* src, uint32_t len)
+{
+        for(uint32_t i = 0; i < len; i++) {
+                if(src[i] == '\0') {
+                        dst[i] = '\0';
+                        return;
+                }
+                dst[i] = src[i];
+        }
 }
