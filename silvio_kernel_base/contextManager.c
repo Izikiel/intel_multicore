@@ -1,8 +1,9 @@
 #include "contextManager.h"
+#include "screen.h"
 
 void notificarTecla(uint8_t keyCode)
 {
-
+	printInteger(keyCode, 0x07, 10, 10);
 }
 
 void notificarRelojTick()

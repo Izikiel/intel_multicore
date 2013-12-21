@@ -14,9 +14,5 @@ void notificarRelojTick();
 //es llamada por isr cuando se presiona teclado
 void notificarTecla(unsigned char keyCode);
 
-//utiles en asmutils
-void haltCpu();
-void sleepClock();
-
 #endif  /* !__CONTEXT_MANAGER_H__*/
 

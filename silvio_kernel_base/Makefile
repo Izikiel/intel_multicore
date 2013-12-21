@@ -7,6 +7,7 @@ KERNEL_BIN=kernel.bin
 DEPEND = Makefile \
 	kernel.asm \
 	asm_screen_utils.mac \
+	long_mode_macros.mac \
 	gdt.c gdt.h pic.c pic.h \
 	mmu.h mmu.c idt.h idt.c \
 	isr.asm contextManager.h \

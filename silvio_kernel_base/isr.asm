@@ -1,9 +1,13 @@
+%include "long_mode_macros.mac"
 %include "asm_screen_utils.mac"
 BITS 64
 
 ;; PIC
 extern fin_intr_pic1
-extern test
+
+;; contextManager
+extern notificarRelojTick
+extern notificarTecla
 
 %macro ISR_GENERIC_HANDLER_ERR_CODE 2
         global _isr%1
@@ -13,11 +17,18 @@ extern test
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
-            add rsp, 8;desapilo (e ignoro)serror code.
+            add rsp, 8;desapilo (e ignoro) el error code.
+            pushaq
             imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
+            ;void notificarExcepcion(uint32_t errorCode, uint64_t FLAGS, uint64_t RDI, 
+            ;uint64_t RSI, uint64_t RBP, uint64_t RSP, uint64_t RBX,
+            ;uint64_t RDX, uint64_t RCX, uint64_t RAX, uint64_t RIP)
             
+            ;voy a usar convencion C -> preservar r12 a r15 y rbp , alinear la pila a 16 bytes
+
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
+            popaq
         iretq
 %endmacro
 
@@ -30,9 +41,17 @@ extern test
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
-            imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
+            pushaq
+            imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1   
+            ;void notificarExcepcion(uint32_t errorCode, uint64_t FLAGS, uint64_t RDI, 
+            ;uint64_t RSI, uint64_t RBP, uint64_t RSP, uint64_t RBX,
+            ;uint64_t RDX, uint64_t RCX, uint64_t RAX, uint64_t RIP) 
+            
+            ;voy a usar convencion C -> preservar r12 a r15 y rbp , alinear la pila a 16 bytes
+
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
+        popaq
         iretq
 %endmacro
 
@@ -74,11 +93,17 @@ clock_char:     db '_'
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 _isr32:
+        pushaq
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción        
+
         ;wrapper en contextManager
         ;void notificarRelojTick()
-        ;call notificarRelojTick
+        call notificarRelojTick
+
+        ;imprimir cursor titilando en rojo
         call printCursor
+
+    popaq
     iretq
 
 printCursor:
@@ -98,16 +123,15 @@ showClock:
 
 global _isr33
 _isr33:
+        pushaq
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción
         ;obtenemos el scan code
         in al, 0x60
-
-        ;TODO alinear pila!!
-        call test
-
+        xchg bx, bx
         ;wrapper en contextManager
-        ;void notificarTecla(unsigned char keyCode);
-        ;mov di, al;8 bits
-        ;call notificarTecla
-        
+        ;void notificarTecla(uint8_t keyCode);
+        mov di, ax;no puedo acceder a al en x64 pero muevo 16 bits en modo x64, 
+        ;y tomo los 8 bits menos significativos en C
+        call notificarTecla
+    popaq
     iretq

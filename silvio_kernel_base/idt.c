@@ -41,7 +41,7 @@ void idt_inicializar() {
     //...
     //IDT_ENTRY(31, *);//Reserved -> intel use only
     //----------------------------------------------------------------------------------------------------------------
-    //...user defined interrupts
+    //...user defined interrupts(IRQs)
     IDT_ENTRY(32, KERNEL_INT_GATE_TYPE);//clock
     IDT_ENTRY(33, KERNEL_INT_GATE_TYPE);//keyboard
 
