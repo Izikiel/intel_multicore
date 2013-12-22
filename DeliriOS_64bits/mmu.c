@@ -1,3 +1,4 @@
+#include <mmu.h>
 #include <defines.h>
 
 void* krnPML4T = (void*) KERNEL_PML4T_POINTER;
