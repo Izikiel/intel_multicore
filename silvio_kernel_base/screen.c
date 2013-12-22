@@ -1,6 +1,6 @@
-#include "screen.h"
-#include "defines.h"
-#include "utils.h"
+#include <screen.h>
+#include <defines.h>
+#include <utils.h>
 
 //NOTA:ojo que como es puntero a short, incrementar el puntero corre solo sizeof(uint16_t) = 2 bytes
 static uint16_t* _outputMemoryPtr = (uint16_t*) VIDEO_MEMORY;

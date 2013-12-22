@@ -1,4 +1,4 @@
-#include "gdt.h"
+#include <gdt.h>
 
 gdt_entry gdt[GDT_COUNT] = {
     /* Descriptor nulo*/

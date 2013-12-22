@@ -1,4 +1,4 @@
-#include "pic.h"
+#include <ports.h>
 
 #define PIC1_PORT 0x20
 #define PIC2_PORT 0xA0
@@ -32,5 +32,16 @@ void habilitar_pic() {
 void deshabilitar_pic() {
     outb(PIC1_PORT+1, 0xFF);
     outb(PIC2_PORT+1, 0xFF);
+}
+
+#define IF_BIT 9
+inline void irq_sti()
+{
+    __asm__ __volatile__("sti");
+}
+
+inline void irq_cli()
+{
+    __asm__ __volatile__("cli");
 }
 

@@ -1,5 +1,5 @@
-%include "asm_screen_utils.mac"
-%include "cursor_utils.asm"
+%include "macros/asm_screen_utils.mac"
+%include "macros/real_mode_macros.mac"
 
 global start
 

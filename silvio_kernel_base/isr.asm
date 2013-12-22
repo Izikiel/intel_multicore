@@ -1,5 +1,5 @@
-%include "long_mode_macros.mac"
-%include "asm_screen_utils.mac"
+%include "macros/long_mode_macros.mac"
+%include "macros/asm_screen_utils.mac"
 BITS 64
 
 ;; PIC
@@ -127,7 +127,6 @@ _isr33:
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción
         ;obtenemos el scan code
         in al, 0x60
-        xchg bx, bx
         ;wrapper en contextManager
         ;void notificarTecla(uint8_t keyCode);
         mov di, ax;no puedo acceder a al en x64 pero muevo 16 bits en modo x64, 

@@ -1,5 +1,5 @@
-#include "idt.h"
-#include "isr.h"
+#include <idt.h>
+#include <isr.h>
 
 idt_entry idt[IDT_ENTRIES_COUNT] = { };
 
