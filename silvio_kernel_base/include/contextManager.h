@@ -2,7 +2,7 @@
 #define __CONTEXT_MANAGER_H__
 
 #include "defines.h"
-#include <stdint.h>
+#include <types.h>
 
 ///es llamada por la isr cuando salta excepcion
 void notificarExcepcion(uint32_t errorCode, uint64_t FLAGS, uint64_t RDI,

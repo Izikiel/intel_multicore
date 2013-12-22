@@ -3,7 +3,7 @@
 
 #define GDT_COUNT 4
 
-#include <stdint.h>
+#include <types.h>
 #include "defines.h"
 
 

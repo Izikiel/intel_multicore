@@ -1,7 +1,7 @@
 #ifndef __IDT_H__
 #define __IDT_H__
 
-#include <stdint.h>
+#include <types.h>
 
 // Campo de atts de la IDT:
 // |    	| Descriptor   |           |       |           | 

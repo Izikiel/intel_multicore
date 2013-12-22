@@ -1,6 +1,6 @@
 #ifndef __screen_H__
 #define __screen_H__
-#include <stdint.h>
+#include <types.h>
 
 /* Definicion de limites */
 /* -------------------------------------------------------------------------- */
@@ -40,6 +40,7 @@
 #define modoEscrituraTexto whiteOnBlack
 #define modoEscrituraFillWhite (C_BG_LIGHT_GREY | C_FG_BLACK)
 
+#define redOnBlack (C_BG_BLACK | C_FG_RED)
 #define whiteOnRed (C_BG_RED | C_FG_WHITE)
 #define whiteOnBlack (C_BG_BLACK | C_FG_WHITE)
 #define blackOnWhite (C_BG_LIGHT_GREY | C_FG_BLACK)
@@ -51,8 +52,10 @@
 void printChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
 void printString(char* caracter, uint8_t format, uint8_t posX, uint8_t posY);
 void printInteger(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
+void printLine(char* cadena, uint8_t format);
+void printLineNumber(uint32_t number, uint8_t format);
+void updateCursor();
 void clrscr();
-
-void test();
+void setInitialPrintingLine(uint32_t number);
 
 #endif  /* !__screen_H__ */

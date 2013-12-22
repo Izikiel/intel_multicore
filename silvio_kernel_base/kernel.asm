@@ -21,6 +21,9 @@ extern habilitar_pic
 ;;paginacion
 extern krnPML4T
 
+;; startup
+extern startKernel64
+
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 16
 JMP start
@@ -212,9 +215,6 @@ imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_i
 
 BITS 64
 long_mode:
-    ;las desactive en modo real
-    ;cli     ; Mato las interrupciones hasta armar la IDT de 64 bits!
-
     ;levanto segmentos con valores iniciales
     XOR eax, eax
     MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
@@ -244,20 +244,12 @@ long_mode:
     ;habilito las interrupciones! :D
     STI
 
-    ;arithmetic 64 bits testing!
-;    mov rax, 0x1F201F201F201F20   
-;    mov ecx, 500                  
-;    mov rbx, 0x0123456789ABCDEF
-;    mov rcx, 0xF000000000000000
-;    add rcx, rbx
-;    mov rdx, rcx
-
+    ;llamo al entrypoint en kmain64
+    call startKernel64
 
     ;fin inicio kernel en 64 bits!
     halt: hlt
         jmp halt
-
-
 
 ;; -------------------------------------------------------------------------- ;;
 

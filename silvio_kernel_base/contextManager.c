@@ -2,13 +2,14 @@
 #include <screen.h>
 
 void notificarTecla(uint8_t keyCode)
-{
-	printInteger(keyCode, 0x07, 0, 6);
+{	if(keyCode>=144 && keyCode<190){
+		printLineNumber(keyCode, 0x07);
+	}
 }
 
 void notificarRelojTick()
 {
-
+	updateCursor();
 }
 
 void notificarExcepcion(uint32_t errorCode, uint64_t FLAGS, uint64_t RDI,

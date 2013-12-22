@@ -84,7 +84,6 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 ;ISR_GENERIC_HANDLER 31//Reserved -> intel use only
 
 ;...user defined data
-clock_char:     db '_'
 
 ;...user defined interrupts
 
@@ -100,22 +99,8 @@ _isr32:
         ;void notificarRelojTick()
         call notificarRelojTick
 
-        ;imprimir cursor titilando en rojo
-        call printCursor
-
     popaq
     iretq
-
-printCursor:
-        cmp byte [clock_char], '_'
-        je changeClock
-        mov byte [clock_char], '_'
-        jmp showClock
-changeClock:
-        mov byte [clock_char], ' '
-showClock:
-        imprimir_texto_ml clock_char, 1, 0x0C, 5, 0
-        ret
 
 ;;
 ;; Rutina de atención del TECLADO

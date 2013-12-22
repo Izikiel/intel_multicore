@@ -1,7 +1,7 @@
 #ifndef __utils_H__
 #define __utils_H__
 
-#include <stdint.h>
+#include <types.h>
 
 void memcpy(void* dst, const void *src, uint32_t byteCount);
 void memset(void* dst, uint8_t value, uint32_t length);
