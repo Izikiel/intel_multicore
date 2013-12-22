@@ -21,8 +21,8 @@
 ;;               ^---------------- Back color bright bit OR enables blinking text
 ;;
 ;;  Nota:
-;;      * Solo funciona en MODO PROTEGIDO.
-;;      * TODOS los parámetros son de 32 BITS.
+;;      * Solo funciona en MODO LARGO.
+;;      * TODOS los parámetros son de 64 BITS.
 ;;
 %macro imprimir_texto_ml 5    
     push rax
