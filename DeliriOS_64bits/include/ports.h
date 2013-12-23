@@ -8,10 +8,6 @@ void deshabilitar_pic();
 
 //Escribe al CMOS
 extern void cmos_writeb(uint, uint);
-//Activa si o si interrupciones
-extern void irq_sti();
-//Desactiva interrupciones
-extern void irq_cli();
 
 __attribute__((always_inline)) void outb(int port, unsigned char data);
 

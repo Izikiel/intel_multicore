@@ -9,21 +9,23 @@ extern fin_intr_pic1
 extern notificarRelojTick
 extern notificarTecla
 
+;; kmain64
+extern kernel_panic
+
 %macro ISR_GENERIC_HANDLER_ERR_CODE 2
         global _isr%1
 
         %defstr intr_itoa_%1 %1
-        interrupt_base_msg%1: db  "KERNEL PANIC - Exception #", intr_itoa_%1, " : ", %2, " has ocurred"
+        interrupt_base_msg%1: db  "KERNEL PANIC - Exception #", intr_itoa_%1, " : ", %2, " has ocurred", 0
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
             add rsp, 8;desapilo (e ignoro) el error code.
             pushaq
             imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
-            ;void notificarExcepcion(uint32_t errorCode, uint64_t FLAGS, uint64_t RDI, 
-            ;uint64_t RSI, uint64_t RBP, uint64_t RSP, uint64_t RBX,
-            ;uint64_t RDX, uint64_t RCX, uint64_t RAX, uint64_t RIP)
-            
+            mov rdi, interrupt_base_msg%1
+            call kernel_panic
+
             ;voy a usar convencion C -> preservar r12 a r15 y rbp , alinear la pila a 16 bytes
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
@@ -37,17 +39,14 @@ extern notificarTecla
         global _isr%1
 
         %defstr intr_itoa_%1 %1
-        interrupt_base_msg%1: db  "KERNEL PANIC - Exception #", intr_itoa_%1, " : ", %2, " has ocurred"
+        interrupt_base_msg%1: db  "KERNEL PANIC - Exception #", intr_itoa_%1, " : ", %2, " has ocurred", 0
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
             pushaq
             imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1   
-            ;void notificarExcepcion(uint32_t errorCode, uint64_t FLAGS, uint64_t RDI, 
-            ;uint64_t RSI, uint64_t RBP, uint64_t RSP, uint64_t RBX,
-            ;uint64_t RDX, uint64_t RCX, uint64_t RAX, uint64_t RIP) 
-            
-            ;voy a usar convencion C -> preservar r12 a r15 y rbp , alinear la pila a 16 bytes
+            mov rdi, interrupt_base_msg%1
+            call kernel_panic
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota

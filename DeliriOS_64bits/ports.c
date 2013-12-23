@@ -34,14 +34,3 @@ void deshabilitar_pic() {
     outb(PIC2_PORT+1, 0xFF);
 }
 
-#define IF_BIT 9
-inline void irq_sti()
-{
-    __asm__ __volatile__("sti");
-}
-
-inline void irq_cli()
-{
-    __asm__ __volatile__("cli");
-}
-

@@ -43,6 +43,7 @@
 #define redOnBlack (C_BG_BLACK | C_FG_RED)
 #define whiteOnRed (C_BG_RED | C_FG_WHITE)
 #define whiteOnBlack (C_BG_BLACK | C_FG_WHITE)
+#define whiteOnBlue (C_BG_BLUE | C_FG_WHITE)
 #define blackOnWhite (C_BG_LIGHT_GREY | C_FG_BLACK)
 #define blackOnOrange (C_BG_BROWN | C_FG_BLACK)
 #define blackOnGreen (C_BG_GREEN | C_FG_BLACK)
