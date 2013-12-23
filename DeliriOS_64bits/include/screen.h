@@ -49,13 +49,16 @@
 #define blackOnCyan (C_BG_CYAN | C_FG_BLACK)
 #define blackOnBlue (C_BG_BLUE | C_FG_BLACK)
 
-void printChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
-void printString(char* caracter, uint8_t format, uint8_t posX, uint8_t posY);
+void putChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
+void printString(char* cadena, uint8_t format, uint8_t posX, uint8_t posY);
 void printInteger(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
 void printLine(char* cadena, uint8_t format);
+void printChar(char caracter, uint8_t format);
 void printLineNumber(uint32_t number, uint8_t format);
 void updateCursor();
 void clrscr();
+void backspace();
 void setInitialPrintingLine(uint32_t number);
+void getLastScreenLine(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS
 
 #endif  /* !__screen_H__ */

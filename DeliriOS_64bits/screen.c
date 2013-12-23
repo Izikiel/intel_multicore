@@ -6,7 +6,8 @@
 static uint16_t* _outputMemoryPtr = (uint16_t*) VIDEO_MEMORY;
 
 //Indicador de ultima linea impresa, se usa como flag para shiftear
-static uint32_t currentFreeLine = 0;
+static uint32_t currentLine = 0;
+static uint32_t currentCol = 0;
 
 //variables para impresion de cursor
 static char* cursorBuffer = "|\\-/";
@@ -15,7 +16,7 @@ static uint32_t cursorBufferSize = 4;
 static uint8_t cursorScreenPosition = VIDEO_FILS-1;
 
 void setInitialPrintingLine(uint32_t number){
-	currentFreeLine=number;
+	currentLine=number;
 }
 
 void shiftUpScreen(){
@@ -31,16 +32,16 @@ void shiftUpScreen(){
 
 void updateCursor(){
 	//imprime el cursor en la ultima linea de pantalla
-	printChar(cursorBuffer[cursorIndex], redOnBlack, 0, cursorScreenPosition);
+	putChar(cursorBuffer[cursorIndex], redOnBlack, 0, cursorScreenPosition);
 	cursorIndex = (cursorIndex+1) % cursorBufferSize;
 }
 
 void printLine(char* cadena, uint8_t format){
-	if(currentFreeLine<VIDEO_FILS-1)
+	if(currentLine<VIDEO_FILS-1)
 	{
 		//si estoy dentro de la primer pantalla sin shiftear imprimo normalmente
-		printString(cadena, format, 0, currentFreeLine);
-		currentFreeLine++;
+		printString(cadena, format, 0, currentLine);
+		currentLine++;
 	}
 	else
 	{
@@ -49,25 +50,27 @@ void printLine(char* cadena, uint8_t format){
 		//escribo en la anteultima linea de la pantalla
 		printString(cadena, format, 0, VIDEO_FILS-2);//notar que los indices x,y comienzan en cero por eso se le resta uno a VIDEO_FILS
 	}
+	currentCol=0;
 }
 
 void printLineNumber(uint32_t number, uint8_t format){
-	if(currentFreeLine<VIDEO_FILS-1)
+	if(currentLine<VIDEO_FILS-1)
 	{
 		//si estoy dentro de la primer pantalla sin shiftear imprimo normalmente
-		printInteger(number, format, 0, currentFreeLine);
-		currentFreeLine++;
+		printInteger(number, format, 0, currentLine);
+		currentLine++;
 	}
 	else
 	{
 		//si me excedi de las lineas, shifteo la pantalla una linea hacia arriba
 		shiftUpScreen();
 		//escribo en la anteultima linea de la pantalla
-		printInteger(number, format, 0, VIDEO_FILS-2);//notar que los indices x,y comienzan en cero por eso se le resta uno a VIDEO_FILS
+		printInteger(number, format, 0, VIDEO_FILS-2);//notar que los indices x,y comienzan en cero por eso se le resta uno a VIDEO_FILSut}
 	}
+	currentCol=0;
 }
 
-void printChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
+void putChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
 {
 	uint16_t offset = posX + posY * VIDEO_COLS;	
 	uint16_t pixel = (format << 8) | caracter;
@@ -80,7 +83,7 @@ void printString(char* cadena, uint8_t format, uint8_t posX, uint8_t posY)
 	uint8_t idx = 0;
 	while(idx < strlength)
 	{
-		printChar(cadena[idx], format, posX + idx, posY);
+	putChar(cadena[idx], format, posX + idx, posY);
 		idx++;
 	}
 }
@@ -106,5 +109,46 @@ static void clearBuffer(unsigned short int* outputBufferPtr){
 
 void clrscr(){
 	clearBuffer(_outputMemoryPtr);
-	currentFreeLine=0;
+	currentLine=0;
+	currentCol=0;
+}
+
+void backspace(){
+	if(currentCol>0){
+		currentCol--;
+	}
+	//por ahora no permito borrar lineas de mas arriba de la actual!
+	/*else{
+		currentCol=VIDEO_COLS-1;
+		currentLine--;
+	}*/
+	putChar(' ', modoEscrituraTexto, currentCol, currentLine);
+}
+
+void printChar(char caracter, uint8_t format){
+	if(currentCol == VIDEO_COLS){
+		//Linea nueva		
+        printLine("", modoEscrituraTexto);
+        currentCol=0;
+        putChar(caracter, format, currentCol, currentLine);
+        currentCol++;
+	}else{
+		putChar(caracter, format, currentCol, currentLine);
+		currentCol++;
+	}	
+}
+
+void getLastScreenLine(char* buffer)//Nota, el buffer devuelto es de tamanio VIDEO_COLS
+{
+	//voy a leer a partir de la ultima linea escrita la cantidad de caracteres indicada por currentCol, 
+	//salteandome los caracteres de formato
+	uint16_t offset = currentLine*VIDEO_COLS;
+	uint16_t* screenPtr = _outputMemoryPtr + offset;
+	int i=0;
+	while(i<currentCol){
+		uint16_t readFormattedChar = *(screenPtr + i);
+		char readChar = (uint8_t)readFormattedChar;
+		buffer[i] = readChar;
+		i++;
+	}
 }

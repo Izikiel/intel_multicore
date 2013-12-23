@@ -6,13 +6,13 @@ KERNEL_BIN=kernel.bin
 
 DEPEND = Makefile\
 	kernel.asm isr.asm cmos.asm\
-	contextManager.c gdt.c idt.c mmu.c ports.c screen.c utils.c kmain64.c\
+	contextManager.c gdt.c idt.c mmu.c ports.c screen.c utils.c kmain64.c keyboard.c command.c\
 	./include/contextManager.h ./include/defines.h ./include/gdt.h ./include/idt.h\
 	./include/isr.h ./include/mmu.h ./include/ports.h ./include/screen.h ./include/vargs.h\
-	./include/types.h ./include/utils.h ./include/kmain64.h 
+	./include/types.h ./include/utils.h ./include/kmain64.h ./include/keyboard.h ./include/command.h 
 	
 
-OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o contextManager.o screen.o utils.o kmain64.o
+OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o contextManager.o screen.o utils.o kmain64.o keyboard.o command.o
 
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2

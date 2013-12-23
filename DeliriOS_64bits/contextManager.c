@@ -1,10 +1,10 @@
 #include <contextManager.h>
+#include <keyboard.h>
 #include <screen.h>
 
 void notificarTecla(uint8_t keyCode)
-{	if(keyCode>=144 && keyCode<190){
-		printLineNumber(keyCode, 0x07);
-	}
+{
+    keyboard_handler(keyCode);
 }
 
 void notificarRelojTick()
