@@ -84,11 +84,14 @@ void keyboard_handler(uint8_t keyCode)
                 getLastScreenLine(buffer);
                 //parse command and get result
                 char* result = parseCommand(buffer);
-                //create new line
-                printLine("", redOnBlack);
-                //print result
-                printLine(result, redOnBlack);
-                //print command symbol
+                //chequeo si tiene salida el comando
+                if(strlen(result)>0){
+                    //create new line
+                    printLine("", redOnBlack);
+                    //print result
+                    printLine(result, redOnBlack);
+                    //print command symbol
+                }
                 printChar('$', redOnBlack);
                 printChar('>', redOnBlack);
                 printChar(' ', redOnBlack);

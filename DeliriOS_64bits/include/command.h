@@ -5,9 +5,13 @@
 
 typedef struct command_binder_str {
 	char*		command_name;
-	uint64_t	command_method_ptr;
+	void*		command_method_ptr;
 } __attribute__((__packed__)) command_binder;
 
 char* parseCommand(char* command);
+
+//comandos
+char* command_paramtest(uint32_t argc, char** argv);
+char* command_clrscr(uint32_t argc, char** argv);
 
 #endif  /* !__COMMAND_H__ */
