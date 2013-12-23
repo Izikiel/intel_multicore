@@ -257,7 +257,7 @@ uint32_t needleCount(char *str, char needle, uint32_t startIndex)
 
 //Devuelve el indice de la primera aparicion del caracter en la string 
 //comenzando desde str[startIndex]. En caso de no encontrarlo, devuelve -1
-uint32_t nextTokenIdx(char *str, char delimiter, uint32_t startIndex)
+int32_t nextTokenIdx(char *str, char delimiter, uint32_t startIndex)
 {
 	uint32_t i=startIndex;
 	while(str[i] != '\0'){
@@ -266,5 +266,5 @@ uint32_t nextTokenIdx(char *str, char delimiter, uint32_t startIndex)
 		}
 		i++;
 	}
-	return -1;
+	return i;
 }

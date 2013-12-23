@@ -19,7 +19,7 @@ int strcmp(const char* str1, const char* str2);
 void strncpy(char* dst, const char* src, uint32_t len);
 //Devuelve el indice de la primera aparicion del caracter en la string 
 //comenzando desde str[startIndex]. En caso de no encontrarlo, devuelve -1
-uint32_t nextTokenIdx(char *str, char delimiter, uint32_t startIndex);
+int32_t nextTokenIdx(char *str, char delimiter, uint32_t startIndex);
 
 //Devuelve la cantidad de apariciones del caracter en la string 
 //comenzando desde str[startIndex].

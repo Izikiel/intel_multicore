@@ -87,7 +87,7 @@ void keyboard_handler(uint8_t keyCode)
                 //chequeo si tiene salida el comando
                 if(strlen(result)>0){
                     //create new line
-                    printLine("", redOnBlack);
+                    printLine("", modoEscrituraTexto);
                     //print result
                     printLine(result, redOnBlack);
                     //print command symbol

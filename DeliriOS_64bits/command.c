@@ -18,38 +18,57 @@ command_binder commands[COMMAND_COUNT] = {
 };
 
 char* parseCommand(char* command){
-	uint32_t paramCount = needleCount(command, ' ', 0);
+	//cuento cantidad de parametros <=> cantidad de espacios +1
+	uint32_t paramCount = needleCount(command, ' ', 0) + 1;
+	//armo buffer de parametros, doy una longuitud maxima de 100 caracteres por parametro
+	char params[paramCount][101];
+	//inicializo el buffer de parametros
+	memset(params, '\0', paramCount*101);
+	
+	//parseo los parametros
+	uint32_t currentParam=0;
 	uint32_t lastParamIdx = 0;
-	while(paramCount>0){
-		lastParamIdx = nextTokenIdx(command, ' ', lastParamIdx);
-		printLineNumber(lastParamIdx, modoEscrituraTexto);
-		paramCount--;
+	while(currentParam<paramCount){
+		uint32_t baseIdx = lastParamIdx;
+		lastParamIdx = nextTokenIdx(command, ' ', lastParamIdx + 1);
+		
+		//tengo el currentParam-esimo parametro en command[baseIdx..lastParamIdx-1]
+		uint32_t bufferIdx=0;
+		while(baseIdx<lastParamIdx){
+			//printChar(command[baseIdx], modoEscrituraTexto);
+			params[currentParam][bufferIdx] = command[baseIdx];
+			bufferIdx++;
+			baseIdx++;
+		}
+
+		lastParamIdx++;//salteo el espacio
+		currentParam++;
 	}
+
+	//en params[0..paramCount) tengo los parametros parseados
+
 	int i=0;
-	char* (*commandPtr)(int, char**);
+	char* (*commandPtr)(int, char argv[][101]);
 	for(i=0;i<COMMAND_COUNT;i++){
-		if(strcmp(command, commands[i].command_name) == 0){			
+		if(strcmp(params[0], commands[i].command_name) == 0){			
 			commandPtr = commands[i].command_method_ptr;
-			char* tmp[2] = {
-				[0] = "hello", 
-				[1] = "world"
-			};
-			return commandPtr(2, tmp);
+			return commandPtr(paramCount, params);
 		}
 	}
 	return "Comando no reconocido";
 }
 
-char* command_paramtest(uint32_t argc, char** argv){
+char* command_paramtest(uint32_t argc, char argv[][101]){
 	printLine("", modoEscrituraTexto);
 	printLine("Parametros leidos", modoEscrituraTexto);
+	printLineNumber(argc, modoEscrituraTexto);
 	for(int i=0;i<argc;i++){
 		printLine(argv[i], modoEscrituraTexto);
 	}
 	return "Fin de los parametros";	
 }
 
-char* command_clrscr(uint32_t argc, char** argv){
+char* command_clrscr(uint32_t argc, char argv[][101]){
 	clrscr();
 	return "";
 }
