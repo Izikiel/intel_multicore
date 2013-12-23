@@ -239,3 +239,32 @@ void strncpy(char* dst, const char* src, uint32_t len)
                 dst[i] = src[i];
         }
 }
+
+//Devuelve la cantidad de apariciones del caracter en la string 
+//comenzando desde str[startIndex].
+uint32_t needleCount(char *str, char needle, uint32_t startIndex)
+{
+	uint32_t j=0;
+	uint32_t i=startIndex;
+	while(str[i] != '\0'){
+		if(str[i] == needle){
+			j++;
+		}
+		i++;
+	}
+	return j;
+}
+
+//Devuelve el indice de la primera aparicion del caracter en la string 
+//comenzando desde str[startIndex]. En caso de no encontrarlo, devuelve -1
+uint32_t nextTokenIdx(char *str, char delimiter, uint32_t startIndex)
+{
+	uint32_t i=startIndex;
+	while(str[i] != '\0'){
+		if(str[i] == delimiter){
+			return i;
+		}
+		i++;
+	}
+	return -1;
+}

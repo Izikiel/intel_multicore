@@ -18,6 +18,13 @@ command_binder commands[COMMAND_COUNT] = {
 };
 
 char* parseCommand(char* command){
+	uint32_t paramCount = needleCount(command, ' ', 0);
+	uint32_t lastParamIdx = 0;
+	while(paramCount>0){
+		lastParamIdx = nextTokenIdx(command, ' ', lastParamIdx);
+		printLineNumber(lastParamIdx, modoEscrituraTexto);
+		paramCount--;
+	}
 	int i=0;
 	char* (*commandPtr)(int, char**);
 	for(i=0;i<COMMAND_COUNT;i++){
