@@ -10,10 +10,9 @@ static uint32_t currentLine = 0;
 static uint32_t currentCol = 0;
 
 //variables para impresion de cursor
-static char* cursorBuffer = "|\\-/";
+static char* cursorBuffer = "|\\-/*";
 static uint32_t cursorIndex = 0;
-static uint32_t cursorBufferSize = 4;
-static uint8_t cursorScreenPosition = VIDEO_FILS-1;
+static uint32_t cursorBufferSize = 5;
 
 void setInitialPrintingLine(uint32_t number){
 	currentLine=number;
@@ -32,7 +31,7 @@ void shiftUpScreen(){
 
 void updateCursor(){
 	//imprime el cursor en la ultima linea de pantalla
-	putChar(cursorBuffer[cursorIndex], redOnBlack, 0, cursorScreenPosition);
+	putChar(cursorBuffer[cursorIndex], redOnBlack, VIDEO_COLS-1, 0);
 	cursorIndex = (cursorIndex+1) % cursorBufferSize;
 }
 
@@ -130,12 +129,9 @@ void printChar(char caracter, uint8_t format){
 		//Linea nueva		
         printLine("", modoEscrituraTexto);
         currentCol=0;
-        putChar(caracter, format, currentCol, currentLine);
-        currentCol++;
-	}else{
-		putChar(caracter, format, currentCol, currentLine);
-		currentCol++;
 	}	
+	putChar(caracter, format, currentCol, currentLine);
+	currentCol++;
 }
 
 void getLastScreenLine(char* buffer)//Nota, el buffer devuelto es de tamanio VIDEO_COLS

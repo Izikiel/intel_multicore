@@ -7,7 +7,6 @@ void startKernel64(){
 	setInitialPrintingLine(5);
 	printLine("DeliriOS iniciado.", redOnBlack);
 	printLine("--------------------------------------------------------------------------------", modoEscrituraTexto);
-	printLine("", modoEscrituraTexto);
 
 	//En este punto lo que se tiene inicializado es:
 	// - Mapeados con Identity mapping los primeros 2 megas de memoria(con PAE) -> esto se hace en modo protegido de 32

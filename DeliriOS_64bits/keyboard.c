@@ -85,10 +85,14 @@ void keyboard_handler(uint8_t keyCode)
                 //create new line
                 printLine("", redOnBlack);
                 //print result
-                printLine(result, redOnBlack);                
+                printLine(result, redOnBlack);
                 break;
             case '\t'://Tab
-                printLine("    ", modoEscrituraTexto);
+                //4 espacios
+                printChar(' ', modoEscrituraTexto);
+                printChar(' ', modoEscrituraTexto);
+                printChar(' ', modoEscrituraTexto);
+                printChar(' ', modoEscrituraTexto);                
                 break;        
             case '\b'://BackSpace
                 backspace();
