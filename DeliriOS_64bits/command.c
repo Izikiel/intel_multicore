@@ -60,8 +60,9 @@ char* parseCommand(char* command){
 
 char* command_paramtest(uint32_t argc, char argv[][101]){
 	printLine("", modoEscrituraTexto);
-	printLine("Parametros leidos", modoEscrituraTexto);
+	printLine("Numero de parametros leidos:", modoEscrituraTexto);
 	printLineNumber(argc, modoEscrituraTexto);
+	printLine("Parametros:", modoEscrituraTexto);
 	for(int i=0;i<argc;i++){
 		printLine(argv[i], modoEscrituraTexto);
 	}

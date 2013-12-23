@@ -184,3 +184,10 @@ void printProxCursor(){
 void hideCursor(){
 	putChar(' ', modoEscrituraTexto, currentCol, currentLine);
 }
+
+void writeConsoleSymbol()
+{
+	printChar('$', redOnBlack);
+    printChar('>', redOnBlack);
+    printChar(' ', redOnBlack);
+}

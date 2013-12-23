@@ -92,9 +92,7 @@ void keyboard_handler(uint8_t keyCode)
                     printLine(result, redOnBlack);
                     //print command symbol
                 }
-                printChar('$', redOnBlack);
-                printChar('>', redOnBlack);
-                printChar(' ', redOnBlack);
+                writeConsoleSymbol();                
                 break;
             case '\t'://Tab
                 //4 espacios

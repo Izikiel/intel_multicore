@@ -62,5 +62,6 @@ void printProxCursor();
 void backspace();
 void setInitialPrintingLine(uint32_t number);
 void getLastScreenLine(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS
+void writeConsoleSymbol();
 
 #endif  /* !__screen_H__ */
