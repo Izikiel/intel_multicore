@@ -55,8 +55,10 @@ void printInteger(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
 void printLine(char* cadena, uint8_t format);
 void printChar(char caracter, uint8_t format);
 void printLineNumber(uint32_t number, uint8_t format);
-void updateCursor();
+void clockCursor();
 void clrscr();
+void hideCursor();
+void printProxCursor();
 void backspace();
 void setInitialPrintingLine(uint32_t number);
 void getLastScreenLine(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS

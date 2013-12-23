@@ -15,13 +15,13 @@ void memset(void* dst, uint8_t value, uint32_t length){
 	}
 }
 
-uint32_t strlen(char* str){
-	uint32_t overflowThreshold = 2000;//cualquier string con mas de este largo es truncada a 2000, igualmente no entran mas caracteres en la pantalla
-	uint32_t result=0;
-	while((result<overflowThreshold) && (*(str + result)!='\0')){
-		result++;
+uint32_t strlen(const char* str)
+{
+	uint32_t i = 0;
+	while(str[i]) {
+		i++;
 	}
-	return result;
+	return i;
 }
 
  void itoa(uint32_t number, char s[])

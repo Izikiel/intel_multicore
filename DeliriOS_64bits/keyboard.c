@@ -76,6 +76,8 @@ void keyboard_handler(uint8_t keyCode)
         char buffer[VIDEO_COLS+1];
         switch(readChar){
         	case '\n'://Linea nueva
+                //quitar el cursor de la pantalla
+                hideCursor();
                 //inicializar buffer a null
                 memset(buffer, '\0', VIDEO_COLS+1);
                 //load buffer with wrote line
@@ -86,6 +88,10 @@ void keyboard_handler(uint8_t keyCode)
                 printLine("", redOnBlack);
                 //print result
                 printLine(result, redOnBlack);
+                //print command symbol
+                printChar('$', redOnBlack);
+                printChar('>', redOnBlack);
+                printChar(' ', redOnBlack);
                 break;
             case '\t'://Tab
                 //4 espacios

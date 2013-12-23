@@ -9,10 +9,14 @@ static uint16_t* _outputMemoryPtr = (uint16_t*) VIDEO_MEMORY;
 static uint32_t currentLine = 0;
 static uint32_t currentCol = 0;
 
+//Indicador de posicion del cursor
+static uint32_t cursorLine = 0;
+static uint32_t cursorCol = VIDEO_COLS-1;
+
 //variables para impresion de cursor
-static char* cursorBuffer = "|\\-/*";
+static char* cursorBuffer = "|/-\\";
 static uint32_t cursorIndex = 0;
-static uint32_t cursorBufferSize = 5;
+static uint32_t cursorBufferSize = 4;
 
 void setInitialPrintingLine(uint32_t number){
 	currentLine=number;
@@ -29,7 +33,7 @@ void shiftUpScreen(){
     memset(_outputMemoryPtr + (VIDEO_FILS-1)*VIDEO_COLS, 0, VIDEO_COLS*sizeof(uint16_t));    
 }
 
-void updateCursor(){
+void clockCursor(){
 	//imprime el cursor en la ultima linea de pantalla
 	putChar(cursorBuffer[cursorIndex], redOnBlack, VIDEO_COLS-1, 0);
 	cursorIndex = (cursorIndex+1) % cursorBufferSize;
@@ -50,6 +54,9 @@ void printLine(char* cadena, uint8_t format){
 		printString(cadena, format, 0, VIDEO_FILS-2);//notar que los indices x,y comienzan en cero por eso se le resta uno a VIDEO_FILS
 	}
 	currentCol=0;
+
+	//pongo la posicion del proximo char a ser escrito en pantalla
+	printProxCursor();
 }
 
 void printLineNumber(uint32_t number, uint8_t format){
@@ -67,6 +74,9 @@ void printLineNumber(uint32_t number, uint8_t format){
 		printInteger(number, format, 0, VIDEO_FILS-2);//notar que los indices x,y comienzan en cero por eso se le resta uno a VIDEO_FILSut}
 	}
 	currentCol=0;
+
+	//pongo la posicion del proximo char a ser escrito en pantalla
+	printProxCursor();
 }
 
 void putChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
@@ -113,7 +123,7 @@ void clrscr(){
 }
 
 void backspace(){
-	if(currentCol>0){
+	if(currentCol>3){//espacio para el prefijo "$> "
 		currentCol--;
 	}
 	//por ahora no permito borrar lineas de mas arriba de la actual!
@@ -122,6 +132,19 @@ void backspace(){
 		currentLine--;
 	}*/
 	putChar(' ', modoEscrituraTexto, currentCol, currentLine);
+
+	//guardo la posicion del cursor actual
+	uint32_t cline = cursorLine;
+	uint32_t ccol = cursorCol;
+
+	//pongo la posicion del proximo cursor a ser escrito en pantalla
+	cursorLine=currentLine;
+	cursorCol=currentCol;
+
+	//limpio cursor
+	putChar(' ', modoEscrituraTexto, ccol, cline);
+	//pongo cursor nuevo
+	putChar(' ', whiteOnRed, currentCol, currentLine);	
 }
 
 void printChar(char caracter, uint8_t format){
@@ -129,22 +152,35 @@ void printChar(char caracter, uint8_t format){
 		//Linea nueva		
         printLine("", modoEscrituraTexto);
         currentCol=0;
-	}	
+	}
 	putChar(caracter, format, currentCol, currentLine);
 	currentCol++;
+
+	//pongo la posicion del proximo char a ser escrito en pantalla
+	printProxCursor();
 }
 
 void getLastScreenLine(char* buffer)//Nota, el buffer devuelto es de tamanio VIDEO_COLS
 {
 	//voy a leer a partir de la ultima linea escrita la cantidad de caracteres indicada por currentCol, 
-	//salteandome los caracteres de formato
+	//salteandome los caracteres de formato y salteandome los primeros 3 chars del simbolo del sistema
 	uint16_t offset = currentLine*VIDEO_COLS;
 	uint16_t* screenPtr = _outputMemoryPtr + offset;
-	int i=0;
+	int i=3;
 	while(i<currentCol){
 		uint16_t readFormattedChar = *(screenPtr + i);
 		char readChar = (uint8_t)readFormattedChar;
-		buffer[i] = readChar;
+		buffer[i-3] = readChar;
 		i++;
 	}
+}
+
+void printProxCursor(){
+	cursorLine=currentLine;
+	cursorCol=currentCol;
+	putChar(' ', whiteOnRed, currentCol, currentLine);
+}
+
+void hideCursor(){
+	putChar(' ', modoEscrituraTexto, currentCol, currentLine);
 }

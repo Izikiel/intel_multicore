@@ -9,7 +9,7 @@ void notificarTecla(uint8_t keyCode)
 
 void notificarRelojTick()
 {
-	updateCursor();
+	clockCursor();
 }
 
 void notificarExcepcion(uint32_t errorCode, uint64_t FLAGS, uint64_t RDI,
