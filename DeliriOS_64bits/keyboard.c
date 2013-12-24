@@ -1,6 +1,6 @@
 #include <keyboard.h>
 #include <utils.h>
-#include <screen.h>
+#include <console.h>
 #include <command.h>
 
 /* KBDUS means US Keyboard Layout. This is a scancode table
@@ -74,43 +74,50 @@ void keyboard_handler(uint8_t keyCode)
         *  you would add 128 to the scancode when you look for it */
         char readChar = kbdus[keyCode];
         char buffer[VIDEO_COLS+1];
-        switch(readChar){
-        	case '\n'://Linea nueva
-                //quitar el cursor de la pantalla
-                scrn_hide_text_cursor();
-                //inicializar buffer a null
-                memset(buffer, '\0', VIDEO_COLS+1);
-                //load buffer with wrote line
-                scrn_get_last_line(buffer);
-                //parse command and get result
-                uint64_t commandResult = parseCommand(buffer);
-                
-                switch(commandResult){
-                    case NORMAL_EXIT:
-                        break;
-                    case NOT_FOUND_COMMAND:
-                        scrn_printf("\nComando no encontrado\n");
-                        break;
-                    default:
-                        scrn_printf("\n[Resultado Erroneo] Codigo de error: %d\n", commandResult);
-                        break;
-                }
-                //print command symbol
-                scrn_initialize_console();                
-                break;
-            case '\t'://Tab
-                //4 espacios
-                scrn_putc(' ', modoEscrituraTexto);
-                scrn_putc(' ', modoEscrituraTexto);
-                scrn_putc(' ', modoEscrituraTexto);
-                scrn_putc(' ', modoEscrituraTexto);                
-                break;        
-            case '\b'://BackSpace
-                scrn_moveBack(false/*not calling from system*/);
-                break;   
-        	default:
-		        scrn_putc(readChar, modoEscrituraTexto);
-	        	break;
+        if(isRunningCommand() != true){
+            switch(readChar){
+            	case '\n'://Linea nueva
+                    //quitar el cursor de la pantalla
+                    scrn_hide_text_cursor();
+                    //inicializar buffer a null
+                    memset(buffer, '\0', VIDEO_COLS+1);
+                    //load buffer with wrote line
+                    scrn_get_last_line(buffer);
+                    //parse command and get result
+                    uint64_t commandResult = parseCommand(buffer);
+                    
+                    switch(commandResult){
+                        case NORMAL_EXIT:
+                            break;
+                        case NOT_FOUND_COMMAND:
+                            scrn_printf("\nComando no encontrado\n");
+                            break;
+                        case BAD_ARGUMENTS:
+                            scrn_printf("\nArgumentos erroneos\n");
+                            break;
+                        default:
+                            scrn_printf("\n[Resultado Erroneo] Codigo de error: %d\n", commandResult);
+                            break;
+                    }
+                    //print command symbol
+                    scrn_initialize_console(); 
+                    break;
+                case '\t'://Tab
+                    //4 espacios
+                    scrn_putc(' ', modoEscrituraTexto);
+                    scrn_putc(' ', modoEscrituraTexto);
+                    scrn_putc(' ', modoEscrituraTexto);
+                    scrn_putc(' ', modoEscrituraTexto);                
+                    break;        
+                case '\b'://BackSpace
+                    scrn_moveBack(false/*not calling from system*/);
+                    break;   
+            	default:
+    		        scrn_putc(readChar, modoEscrituraTexto);
+    	        	break;
+            }
+        }else{
+            scrn_printf("Hay un comando corriendo...por favor espere que finalice\n");
         }
     }
 }

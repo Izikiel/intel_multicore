@@ -6,14 +6,16 @@ KERNEL_BIN=kernel.bin
 
 DEPEND = Makefile\
 	kernel.asm isr.asm cmos.asm i386.asm\
-	contextManager.c gdt.c idt.c mmu.c ports.c screen.c utils.c kmain64.c keyboard.c command.c irq.c timer.c multicore.c\
+	contextManager.c gdt.c idt.c mmu.c ports.c console.c utils.c kmain64.c keyboard.c command.c irq.c \
+	timer.c multicore.c command_sleep.c command_paramtest.c command_clear.c\
 	./include/contextManager.h ./include/defines.h ./include/gdt.h ./include/idt.h\
-	./include/isr.h ./include/mmu.h ./include/ports.h ./include/screen.h ./include/vargs.h\
+	./include/isr.h ./include/mmu.h ./include/ports.h ./include/console.h ./include/vargs.h\
 	./include/types.h ./include/utils.h ./include/kmain64.h ./include/keyboard.h ./include/command.h \
-	./include/irq.h ./include/i386.h ./include/timer.h ./include/multicore.h
+	./include/irq.h ./include/i386.h ./include/timer.h ./include/multicore.h ./include/command_signatures.h
 	
 
-OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o irq.o contextManager.o screen.o utils.o kmain64.o keyboard.o command.o i386.o timer.o multicore.o cmos.o
+OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o irq.o contextManager.o console.o utils.o kmain64.o \
+	keyboard.o command.o i386.o timer.o multicore.o cmos.o command_sleep.o command_paramtest.o command_clear.o
 
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2

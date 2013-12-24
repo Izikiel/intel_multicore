@@ -14,6 +14,7 @@ void memset(void* dst, uint8_t value, uint32_t length);
 uint32_t strlen(const char* str);
 void strrev(char s[]);
 void itoa(uint32_t n, char s[]);
+uint64_t atoi(char* string);
 void decToHexStr(uint32_t num, char* output, char* title, uint8_t hasHexPrefix);
 char* getError(uint32_t codError);
 

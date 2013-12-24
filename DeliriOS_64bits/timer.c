@@ -1,5 +1,5 @@
 #include <timer.h>
-#include <screen.h>
+#include <console.h>
 #include <irq.h>
 #include <asserts.h>
 #include <ports.h>

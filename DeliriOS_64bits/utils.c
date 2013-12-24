@@ -1,4 +1,5 @@
 #include <utils.h>
+#include <console.h>
 
 void memcpy(void* dst, const void* src, uint32_t byteCount){	
 	char* dst8 = (char*)dst;
@@ -24,7 +25,31 @@ uint32_t strlen(const char* str)
 	return i;
 }
 
- void itoa(uint32_t number, char s[])
+uint64_t atoi(char* string)
+{
+	bool signMinus = false;
+	uint64_t res = 0;
+	uint64_t len = strlen(string);
+	uint64_t i=0;
+	while(i<len){
+		if((string[i] >= '0') && (string[i] < '9')){
+			res = (res * 10) + (string[i] - '0');
+		}else if(string[i] == '-'){
+			signMinus=true;
+		}else{
+			res=0;
+			scrn_printf("La cadena '%s' no es un numero valido\n", string);
+			break;
+		}
+		i++;
+	}
+	if(signMinus == true){
+		res = res * (-1);
+	}
+	return res;
+}
+
+void itoa(uint32_t number, char s[])
  {
  	uint32_t idx = 0;
  	uint32_t sign = number;

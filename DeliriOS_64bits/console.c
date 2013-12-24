@@ -1,4 +1,4 @@
-#include <screen.h>
+#include <console.h>
 #include <defines.h>
 #include <utils.h>
 #include <vargs.h>

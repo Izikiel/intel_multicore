@@ -1,6 +1,6 @@
 #include <contextManager.h>
 #include <keyboard.h>
-#include <screen.h>
+#include <console.h>
 #include <timer.h>
 
 void notificarTecla(uint8_t keyCode)

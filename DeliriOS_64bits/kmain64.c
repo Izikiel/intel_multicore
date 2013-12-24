@@ -1,6 +1,6 @@
 #include <kmain64.h>
 #include <i386.h>
-#include <screen.h>
+#include <console.h>
 #include <mmu.h>
 #include <timer.h>
 #include <multicore.h>
@@ -28,22 +28,22 @@ void startKernel64(){
 	
 	init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!
 	
-	scrn_puts("Ok!", greenOnBlack);
+	scrn_puts("OK!", greenOnBlack);
 	scrn_printf("\n");
 
 	scrn_printf("Configuring timer...");
 	
 	initialize_timer();
 	
-	scrn_puts("Ok!", greenOnBlack);
+	scrn_puts("OK!", greenOnBlack);
 	scrn_printf("\n");
 
 	scrn_printf("Starting up multicore mode...");
 	
 	//inicializar multicore
-	multiprocessor_init();
+	//multiprocessor_init();
 	
-	scrn_puts("Ok!", greenOnBlack);
+	scrn_puts("OK!", greenOnBlack);
 	scrn_printf("\n");
 	scrn_println("DeliriOS started up.", redOnBlack);
 	scrn_println("--------------------------------------------------------------------------------", modoEscrituraTexto);

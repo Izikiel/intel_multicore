@@ -94,7 +94,7 @@ deshabilitar_A20:
     mov     al,0xAE
     out     0x64,al
     call    a20wait
-    IMPRIMIR_MODO_REAL mensajeOK, mensajeOK_len, 0x0A, 0xFFFF, 23
+    IMPRIMIR_MODO_REAL mensajeOK, mensajeOK_len, 0x02, 0xFFFF, 23
     popa
     popf
     ret
@@ -124,7 +124,7 @@ habilitar_A20:
     mov     al,0xAE
     out     0x64,al
     call    a20wait
-    IMPRIMIR_MODO_REAL mensajeOK, mensajeOK_len, 0x0A, 0xFFFF, 23
+    IMPRIMIR_MODO_REAL mensajeOK, mensajeOK_len, 0x02, 0xFFFF, 23
     popa
     popf
     ret
@@ -162,7 +162,7 @@ checkear_A20:
     mov byte [gs:si], 0xFF
     cmp byte [fs:di], 0xFF
     je .falla
-        IMPRIMIR_MODO_REAL mensajeOK, mensajeOK_len, 0x0A, 0xFFFF, 23
+        IMPRIMIR_MODO_REAL mensajeOK, mensajeOK_len, 0x02, 0xFFFF, 23
     jmp .sigue
     .falla:
         IMPRIMIR_MODO_REAL mensajeFAIL, mensajeFAIL_len, 0x0C, 0xFFFF, 23

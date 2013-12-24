@@ -104,7 +104,7 @@ protected_mode:
     mov esp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x0A, 2, mensaje_inicioprot_len
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicioprot_len
 
     imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 3, 0    
 
@@ -211,7 +211,7 @@ pd_again:               ; Create a 2 MiB page
     or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
     mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x0A, 3, mensaje_inicio64_len
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_inicio64_len
 
     imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 4, 0
     
@@ -259,7 +259,7 @@ long_mode:
     MOV rsp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
     
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x0A, 4, mensaje_inicio64real_len
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_inicio64real_len
 
     ;levanto la IDT de 64 bits
     lidt [IDT_DESC]

@@ -1,4 +1,4 @@
-#include <screen.h>
+#include <console.h>
 #include <multicore.h>
 #include <asserts.h>
 #include <utils.h>
