@@ -189,7 +189,7 @@ char* descripcion;
 
 void strcpy(char* dst, const char* src)
 {
-        uint32_t i;
+        uint64_t i;
         for(i = 0; src[i] != '\0'; i++) {
                 dst[i] = src[i];
         }
@@ -198,7 +198,7 @@ void strcpy(char* dst, const char* src)
 
 void strcat(char* dst, const char* src)
 {
-        uint32_t i = 0, j = 0;
+        uint64_t i = 0, j = 0;
         while(dst[i]) {
                 i++;
         }
@@ -209,19 +209,19 @@ void strcat(char* dst, const char* src)
         dst[i] = '\0';
 }
 
-int memcmp(const void* _m1, const void* _m2, uint32_t bytes)
+int memcmp(const void* _m1, const void* _m2, uint64_t bytes)
 {
         const char* m1 = _m1, * m2 = _m2;
-        for(uint32_t i = 0; i < bytes; i++)
+        for(uint64_t i = 0; i < bytes; i++)
                 if(m1[i] != m2[i]) {
                         return (m1[i]-m2[i] < 0) ? -1 : 1;
-                }
+                }			               
         return 0;
 }
 
 int strcmp(const char* str1, const char* str2)
 {
-        uint32_t i;
+        uint64_t i;
         for(i = 0; str1[i] == str2[i]; i++)
                 if(str1[i] == '\0') {
                         return 0;
@@ -229,9 +229,9 @@ int strcmp(const char* str1, const char* str2)
         return str1[i]-str2[i];
 }
 
-void strncpy(char* dst, const char* src, uint32_t len)
+void strncpy(char* dst, const char* src, uint64_t len)
 {
-        for(uint32_t i = 0; i < len; i++) {
+        for(uint64_t i = 0; i < len; i++) {
                 if(src[i] == '\0') {
                         dst[i] = '\0';
                         return;

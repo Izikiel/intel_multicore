@@ -26,7 +26,7 @@ void startKernel64(){
 	//armo la estructura de paginacion para hacer identitty mapping sobre los primeros 64 gb
 	scrn_printf("Configuring paging...");
 	
-	init_64gb_identity_mapping();
+	init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!
 	
 	scrn_puts("Ok!", greenOnBlack);
 	scrn_printf("\n");
@@ -61,6 +61,7 @@ void startKernel64(){
 
 
 	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!
+	// - TODO: esta hardcodeado en asm lo de mapear los primeros 4 gb
 	// - TODO: crear funciones en mmu para que sea posible mapear, desmapear paginas, y cambiar el contexto de paginas desde C
 	// BUG: la consola solo le envia al parser la ultima linea escrita ( si escribimos mas de 80 caracteres y damos enter solo se toman los de la ultima linea )
 

@@ -29,6 +29,7 @@ global getRFLAGS
 global haltCpu
 global irq_cli
 global irq_sti
+global breakpoint
 
 getRAX:;en RAX tenemos RAX
 	ret
@@ -157,4 +158,8 @@ irq_cli:
 
 irq_sti:
 	sti
+	ret
+
+breakpoint:
+	xchg bx, bx
 	ret

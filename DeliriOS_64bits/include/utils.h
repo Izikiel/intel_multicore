@@ -6,6 +6,9 @@
 #define min(a,b) (((a)<(b))?(a):(b))
 #define max(a,b) (((a)>(b))?(a):(b))
 
+//impl en i386.asm
+extern void breakpoint();
+
 void memcpy(void* dst, const void *src, uint32_t byteCount);
 void memset(void* dst, uint8_t value, uint32_t length);
 uint32_t strlen(const char* str);
@@ -16,9 +19,9 @@ char* getError(uint32_t codError);
 
 void strcpy(char* dst, const char* src);
 void strcat(char* dst, const char* src);
-int memcmp(const void* _m1, const void* _m2, uint32_t bytes);
+int memcmp(const void* _m1, const void* _m2, uint64_t bytes);
 int strcmp(const char* str1, const char* str2);
-void strncpy(char* dst, const char* src, uint32_t len);
+void strncpy(char* dst, const char* src, uint64_t len);
 //-----------------------------------------------
 
 //Devuelve el indice de la primera aparicion del caracter en la string 

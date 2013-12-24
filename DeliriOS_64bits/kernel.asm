@@ -121,53 +121,82 @@ protected_mode:
     push ecx             ; Store the C-register.
     popfd                ; Restore the FLAGS-register.
     xor eax, ecx         ; Do a XOR-operation on the A-register and the C-register.
-    jz .CPUIDNoDisponible; The zero flag is set, no CPUID.
+    jz CPUIDNoDisponible; The zero flag is set, no CPUID.
     ; here CPUID is available for use.
 
     ;Deteccion de modo 64 bits y mensaje de error sino esta disponible halteamos.
     mov eax, 0x80000000    ; pasamos parametros 0x80000000.
     cpuid                  
     cmp eax, 0x80000001    ; 0x80000001 significa que esta habilitado.
-    jb .ModoLargoNoDisp    ; si es menor, modo largo no esta disponible
+    jb ModoLargoNoDisp    ; si es menor, modo largo no esta disponible
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
-    
-                                ;------------------ Hardcode --------------------------
 
-;mapeamos los primeros 2 megas con id mapping y PAE.
+                ;------------------ Hardcode --------------------------
 
-;PML4T - 0x40000.
-;PDPT - 0x41000.
-;PDT - 0x42000.
-;PT - 0x43000.
+;;PML4T - 0x40000.
+;;PDPT - 0x41000.
+;;PDT - 0x42000.
+;;PT - 0x43000.
 
-    mov edi, [krnPML4T];cargar directorio de paginas del kernel
-    mov cr3, edi       ; Set control register 3 to the destination index.
-    xor eax, eax       ; Nullify the A-register.
-    mov ecx, 4096      ; Set the C-register to 4096.
-    rep stosd          ; Clear the memory.
-    mov edi, cr3       ; Set the destination index to control register 3.
+; Clear memory for the Page Descriptor Entries (0x10000 - 0x4FFFF)
+;    mov edi, 0x00010000
+;    mov ecx, 65536
+;    rep stosd
 
-    mov DWORD [edi], 0x41003     ; Set the double word at the destination index to 0x41003.
-    add edi, 0x1000              ; Add 0x1000 to the destination index.
-    mov DWORD [edi], 0x42003     ; Set the double word at the destination index to 0x42003.
-    add edi, 0x1000              ; Add 0x1000 to the destination index.
-    mov DWORD [edi], 0x43003     ; Set the double word at the destination index to 0x43003.
-    add edi, 0x1000              ; Add 0x1000 to the destination index.
+; Create the Level 4 Page Map. (Maps 4GBs of 2MB pages)
+; First create a PML4 entry.
+; PML4 is stored at 0x0000000000040000, create the first entry there
+; A single PML4 entry can map 512GB with 2MB pages.
+    cld
+    mov edi, 0x00040000     ; Create a PML4 entry for the first 4GB of RAM
+    mov eax, 0x00041007
+    stosd
+    xor eax, eax
+    stosd
 
-    mov ebx, 0x00000003          ; Set the B-register to 0x00000003.
-    mov ecx, 512                 ; Set the C-register to 512.
-     
-    .SetEntry:
-        mov DWORD [edi], ebx     ; Set the double word at the destination index to the B-register.
-        add ebx, 0x1000          ; Add 0x1000 to the B-register.
-        add edi, 8               ; Add eight to the destination index.
-    loop .SetEntry               ; Set the next entry.
+; Create the PDP entries.
+; The first PDP is stored at 0x0000000000041000, create the first entries there
+; A single PDP entry can map 1GB with 2MB pages
+    mov ecx, 64         ; number of PDPE's to make.. each PDPE maps 1GB of physical memory
+    mov edi, 0x00041000
+    mov eax, 0x00050007     ; location of first PD
+create_pdpe:
+    stosd
+    push eax
+    xor eax, eax
+    stosd
+    pop eax
+    add eax, 0x00001000     ; 4K later (512 records x 8 bytes)
+    dec ecx
+    cmp ecx, 0
+    jne create_pdpe
+
+; Create the PD entries.
+; PD entries are stored starting at 0x0000000000050000 and ending at 0x000000000009FFFF (256 KiB)
+; This gives us room to map 64 GiB with 2 MiB pages
+    mov edi, 0x00050000
+    mov eax, 0x0000008F     ; Bit 7 must be set to 1 as we have 2 MiB pages
+    xor ecx, ecx
+pd_again:               ; Create a 2 MiB page
+    stosd
+    push eax
+    xor eax, eax
+    stosd
+    pop eax
+    add eax, 0x00200000
+    inc ecx
+    cmp ecx, 2048
+    jne pd_again            ; Create 2048 2 MiB page maps.
+
+; Point cr3 at PML4
+    mov eax, 0x00040000     ; Write-thru (Bit 3)
+    mov cr3, eax
 
     mov eax, cr4                 ; Set the A-register to control register 4.
     or eax, 1 << 5               ; Set the PAE-bit, which is the 6th bit (bit 5).
     mov cr4, eax                 ; Set control register 4 to the A-register.
-
+    
 
                                 ;--------------- Fin Hardcode --------------------------
 
@@ -194,19 +223,19 @@ protected_mode:
     ;aca setie el selector de segmento cs al segmento de codigo del kernel 
 
 ; Funciones auxiliares en 32 bits!
-.CPUIDNoDisponible:
+CPUIDNoDisponible:
 imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
     
     cli
     hlt
-    jmp .CPUIDNoDisponible
+    jmp CPUIDNoDisponible
 
-.ModoLargoNoDisp:    
+ModoLargoNoDisp:    
     imprimir_texto_mp mensaje_64bitserr_msg, mensaje_64bitserr_len, 0x0C, 3, mensaje_inicio64_len
     
     cli
     hlt
-    jmp .ModoLargoNoDisp
+    jmp ModoLargoNoDisp
 
 
 ;------------------------------------------------------------------------------------------------------
