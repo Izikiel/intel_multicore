@@ -45,6 +45,7 @@
 #define whiteOnRed (C_BG_RED | C_FG_WHITE)
 #define whiteOnBlack (C_BG_BLACK | C_FG_WHITE)
 #define whiteOnBlue (C_BG_BLUE | C_FG_WHITE)
+#define whiteOnGreen (C_BG_GREEN | C_FG_WHITE)
 #define blackOnWhite (C_BG_LIGHT_GREY | C_FG_BLACK)
 #define blackOnOrange (C_BG_BROWN | C_FG_BLACK)
 #define blackOnGreen (C_BG_GREEN | C_FG_BLACK)
@@ -55,7 +56,7 @@ void scrn_setXCursor(uint32_t number);
 void scrn_setYCursor(uint32_t number);
 
 void scrn_moveUp();
-void scrn_moveBack();
+void scrn_moveBack(bool fromSystem);
 
 void scrn_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
 void scrn_puts(char* string, uint8_t format);

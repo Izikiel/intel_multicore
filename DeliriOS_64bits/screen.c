@@ -32,7 +32,7 @@ void scrn_setXCursor(uint32_t number){
 void scrn_update_text_cursor(){
 	cursorLine=currentLine;
 	cursorCol=currentCol;
-	scrn_pos_putc(' ', whiteOnRed, currentCol, currentLine);
+	scrn_pos_putc(' ', whiteOnGreen, currentCol, currentLine);
 }
 
 void scrn_hide_text_cursor(){
@@ -69,8 +69,12 @@ void scrn_moveUp(){
     memset(_outputMemoryPtr + (VIDEO_FILS-1)*VIDEO_COLS, 0, VIDEO_COLS*sizeof(uint16_t));    
 }
 
-void scrn_moveBack(){
-	if(currentCol>0){
+void scrn_moveBack(bool fromSystem){
+	uint16_t limitBackSpace = 0;
+	if(fromSystem == false){
+		limitBackSpace = 3;
+	}
+	if(currentCol>limitBackSpace){
 		currentCol--;
 	}
 	//por ahora no permito borrar lineas de mas arriba de la actual!
@@ -91,7 +95,7 @@ void scrn_moveBack(){
 	//limpio cursor
 	scrn_pos_putc(' ', modoEscrituraTexto, ccol, cline);
 	//pongo cursor nuevo
-	scrn_pos_putc(' ', whiteOnRed, currentCol, currentLine);	
+	scrn_pos_putc(' ', whiteOnGreen, currentCol, currentLine);	
 }
 
 void scrn_clear(){
@@ -116,7 +120,7 @@ void scrn_clear(){
 //es llamada periodicamente por el reloj del sistema
 void scrn_print_next_cursor(){
 	//imprime el cursor en la ultima linea de pantalla
-	scrn_pos_putc(cursorBuffer[cursorIndex], redOnBlack, VIDEO_COLS-1, 0);
+	scrn_pos_putc(cursorBuffer[cursorIndex], whiteOnBlue, VIDEO_COLS-1, 0);
 	cursorIndex = (cursorIndex+1) % cursorBufferSize;
 }
 
@@ -224,7 +228,7 @@ void scrn_putc(char caracter, uint8_t format){
 			break;
 		case '\r': //Borrar linea actual
 	        while(currentCol>0){
-	        	scrn_moveBack();
+	        	scrn_moveBack(false/*not calling from system*/);;
 	        }
 			break;
 		case '\t': //Tab

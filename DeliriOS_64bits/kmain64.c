@@ -5,8 +5,7 @@
 #include <timer.h>
 
 void startKernel64(){
-	initialize_timer(1000);//TODO no es el valor real!
-
+	initialize_timer();
 
 	//En este punto lo que se tiene inicializado es:
 	// - Mapeados con Identity mapping los primeros 2 megas de memoria(con PAE) -> esto se hace en modo protegido de 32
@@ -36,7 +35,11 @@ void startKernel64(){
 	scrn_println("--------------------------------------------------------------------------------", modoEscrituraTexto);
 	scrn_initialize_console();
 
-	sleep(10);
+	//tests de sleep
+	//uint64_t ticks = 20;
+	//scrn_printf("Waiting %d ticks\n", ticks);
+	//sleep(ticks);
+	//scrn_printf("Waiting %d ticks finished\n", ticks);
 	
 	// Tests de printf
 	//scrn_printf("Hola mundo:\t %u %s\n", 123, "jojojo");

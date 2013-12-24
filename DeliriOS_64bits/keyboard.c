@@ -83,15 +83,19 @@ void keyboard_handler(uint8_t keyCode)
                 //load buffer with wrote line
                 scrn_get_last_line(buffer);
                 //parse command and get result
-                char* result = parseCommand(buffer);
-                //chequeo si tiene salida el comando
-                if(strlen(result)>0){
-                    //create new line
-                    scrn_println("", modoEscrituraTexto);
-                    //print result
-                    scrn_println(result, redOnBlack);
-                    //print command symbol
+                uint64_t commandResult = parseCommand(buffer);
+                
+                switch(commandResult){
+                    case NORMAL_EXIT:
+                        break;
+                    case NOT_FOUND_COMMAND:
+                        scrn_printf("\nComando no encontrado\n");
+                        break;
+                    default:
+                        scrn_printf("\n[Resultado Erroneo] Codigo de error: %d\n", commandResult);
+                        break;
                 }
+                //print command symbol
                 scrn_initialize_console();                
                 break;
             case '\t'://Tab
@@ -102,7 +106,7 @@ void keyboard_handler(uint8_t keyCode)
                 scrn_putc(' ', modoEscrituraTexto);                
                 break;        
             case '\b'://BackSpace
-                scrn_moveBack();
+                scrn_moveBack(false/*not calling from system*/);
                 break;   
         	default:
 		        scrn_putc(readChar, modoEscrituraTexto);

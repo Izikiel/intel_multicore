@@ -4,7 +4,7 @@
 
 #define MAX_INSTANCES 32
 
-void initialize_timer(uint64_t tickSpeed);
+void initialize_timer();
 uint64_t getFreeInstance();
 bool sleep(uint64_t ticksCount);
 void timer_tick();

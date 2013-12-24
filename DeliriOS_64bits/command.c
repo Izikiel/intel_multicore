@@ -17,7 +17,7 @@ command_binder commands[COMMAND_COUNT] = {
 	}
 };
 
-char* parseCommand(char* command){
+uint64_t parseCommand(char* command){
 	//cuento cantidad de parametros <=> cantidad de espacios +1
 	uint32_t paramCount = needleCount(command, ' ', 0) + 1;
 	//armo buffer de parametros, doy una longuitud maxima de 100 caracteres por parametro
@@ -48,28 +48,28 @@ char* parseCommand(char* command){
 	//en params[0..paramCount) tengo los parametros parseados
 
 	int i=0;
-	char* (*commandPtr)(int, char argv[][101]);
+	uint64_t (*commandPtr)(int, char argv[][101]);
 	for(i=0;i<COMMAND_COUNT;i++){
 		if(strcmp(params[0], commands[i].command_name) == 0){			
 			commandPtr = commands[i].command_method_ptr;
+			//add a new line to de console to indicate that we've processed the command
+			scrn_printf("\n");
 			return commandPtr(paramCount, params);
 		}
 	}
-	return "Comando no reconocido";
+	return NOT_FOUND_COMMAND;
 }
 
-char* command_paramtest(uint32_t argc, char argv[][101]){
-	scrn_println("", modoEscrituraTexto);
-	scrn_println("Numero de parametros leidos:", modoEscrituraTexto);
-	scrn_printlnNumber(argc, modoEscrituraTexto);
-	scrn_println("Parametros:", modoEscrituraTexto);
+uint64_t command_paramtest(uint32_t argc, char argv[][101]){	
+	scrn_printf("Numero de parametros leidos: %d\n", argc);
+	scrn_printf("Parametros:\n");
 	for(int i=0;i<argc;i++){
-		scrn_println(argv[i], modoEscrituraTexto);
+		scrn_printf("%s\n", argv[i]);
 	}
-	return "Fin de los parametros";	
+	return NORMAL_EXIT;
 }
 
-char* command_scrn_clear(uint32_t argc, char argv[][101]){
+uint64_t command_scrn_clear(uint32_t argc, char argv[][101]){
 	scrn_clear();
-	return "";
+	return NORMAL_EXIT;
 }

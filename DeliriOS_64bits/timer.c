@@ -1,14 +1,33 @@
 #include <timer.h>
 #include <screen.h>
 #include <irq.h>
+#include <asserts.h>
+#include <ports.h>
 
 static volatile uint64_t sleep_pool[MAX_INSTANCES];
 
-void initialize_timer(uint64_t tickSpeed){
+void initialize_timer(){
 	//simulamos "lock" con cli y sti
 	irq_cli();
-	//initialize speed
-	//...
+
+	//segun http://www.osdever.net/bkerndev/Docs/pit.htm
+	//The default freq is 18.222Hz tick rate and was used in order
+	//for the tick count to cycle at 0.055 seconds.
+	//Using a 16-bit timer tick counter, the counter will overflow 
+	//and wrap around to 0 once every hour	
+
+	//TODO: empieza a tirar general protection violentamente despues si hago esto
+	//por lo tanto lo voy a dejar en default
+
+	////initialize speed (http://www.osdever.net/bkerndev/Docs/pit.htm)
+	//uint32_t divisor = 1193180 / freq;
+	//
+	////El valor debe entrar en un entero de 16 bits
+	//fail_if(divisor > (uint16_t)-1);
+    //
+    //outb(0x43, 0x36);	           /* Set our command byte 0x36 */
+    //outb(0x40, divisor & 0xFF);   /* Set low byte of divisor */
+    //outb(0x40, divisor >> 8);     /* Set high byte of divisor */	
 
 	//..init data structure
 	uint64_t i = 0;
@@ -40,6 +59,13 @@ bool sleep(uint64_t ticksCount){
 		irq_sti();
 		return false;
 	}
+
+
+	//segun http://www.osdever.net/bkerndev/Docs/pit.htm
+	//The default freq is 18.222Hz tick rate and was used in order
+	//for the tick count to cycle at 0.055 seconds.
+	//Using a 16-bit timer tick counter, the counter will overflow 
+	//and wrap around to 0 once every hour.
 
 	sleep_pool[freeInstance] = ticksCount;
 
