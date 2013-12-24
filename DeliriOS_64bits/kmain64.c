@@ -2,8 +2,12 @@
 #include <i386.h>
 #include <screen.h>
 #include <mmu.h>
+#include <timer.h>
 
 void startKernel64(){
+	initialize_timer(1000);//TODO no es el valor real!
+
+
 	//En este punto lo que se tiene inicializado es:
 	// - Mapeados con Identity mapping los primeros 2 megas de memoria(con PAE) -> esto se hace en modo protegido de 32
 	// 	 para poder pasar a modo largo sin problemas.
@@ -31,6 +35,8 @@ void startKernel64(){
 	scrn_println("DeliriOS iniciado.", redOnBlack);
 	scrn_println("--------------------------------------------------------------------------------", modoEscrituraTexto);
 	scrn_initialize_console();
+
+	sleep(10);
 	
 	// Tests de printf
 	//scrn_printf("Hola mundo:\t %u %s\n", 123, "jojojo");

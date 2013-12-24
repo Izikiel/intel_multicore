@@ -27,6 +27,8 @@ global getCR3
 global getCR4
 global getRFLAGS
 global haltCpu
+global irq_cli
+global irq_sti
 
 getRAX:;en RAX tenemos RAX
 	ret
@@ -148,3 +150,11 @@ haltCpu:
 	cli
 	hlt
 	jmp haltCpu
+
+irq_cli:
+	cli
+	ret
+
+irq_sti:
+	sti
+	ret
