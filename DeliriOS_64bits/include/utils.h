@@ -14,7 +14,6 @@ void itoa(uint32_t n, char s[]);
 void decToHexStr(uint32_t num, char* output, char* title, uint8_t hasHexPrefix);
 char* getError(uint32_t codError);
 
-//Tomado de juampiOS utils
 void strcpy(char* dst, const char* src);
 void strcat(char* dst, const char* src);
 int memcmp(const void* _m1, const void* _m2, uint32_t bytes);

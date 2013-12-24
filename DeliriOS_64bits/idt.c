@@ -53,4 +53,13 @@ void idt_inicializar() {
     //IDT_ENTRY(80/*0x50*/, SERVICE_INT_GATE_TYPE);
     //IDT_ENTRY(102/*0x66*/, SERVICE_INT_GATE_TYPE);
 
+    //Evitar interrupciones spurias usando el spurious intr number. Esto se
+    //usa para el APIC en el vector.    
+    idt[SPURIOUS_INTR_NUM].segsel = (uint16_t) 0x10;/*64 bits code segment*/                                     
+    idt[SPURIOUS_INTR_NUM].attr = (uint16_t) KERNEL_INT_GATE_TYPE;                                                         
+    idt[SPURIOUS_INTR_NUM].offset_0_15 = (uint16_t) ((uint64_t)(&_isr_spurious) & (uint64_t) 0xFFFF);           
+    idt[SPURIOUS_INTR_NUM].offset_16_31 = (uint16_t) ((uint64_t)(&_isr_spurious) >> 16 & (uint64_t) 0xFFFF);    
+    idt[SPURIOUS_INTR_NUM].offset_32_63 = (uint32_t) ((uint64_t)(&_isr_spurious) >> 32 & (uint64_t) 0xFFFFFFFF);
+    idt[SPURIOUS_INTR_NUM].zeroPadd = 0x0;
+
 }

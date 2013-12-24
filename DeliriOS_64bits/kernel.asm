@@ -74,7 +74,7 @@ start:
     ; cargar la GDT        
     lgdt [GDT_DESC]
 
-    imprimir_texto_mr mensaje_inicioprot_msg, mensaje_inicioprot_len, 0x07, 0, 320
+    imprimir_texto_mr mensaje_inicioprot_msg, mensaje_inicioprot_len, 0x0F, 0, 320
 
     ; setear el bit PE del registro CR0
     mov EAX, CR0;levanto registro CR0 para pasar a modo protegido
@@ -106,7 +106,7 @@ protected_mode:
 
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x0A, 2, mensaje_inicioprot_len
 
-    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x07, 3, 0    
+    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 3, 0    
 
     ; Chequeo de disponibilidad de uso de CPUID
 
@@ -184,7 +184,7 @@ protected_mode:
 
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x0A, 3, mensaje_inicio64_len
 
-    imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x07, 4, 0
+    imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 4, 0
     
     ;estamos en modo ia32e compatibilidad con 32 bits
     ;comienzo pasaje a 64 bits puro

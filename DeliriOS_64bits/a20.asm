@@ -73,7 +73,7 @@ contadorlineas: dw 0x0000
 deshabilitar_A20:
     pushf
     pusha
-    IMPRIMIR_MODO_REAL deshabilitando, deshabilitando_len, 0x07, 0, 0
+    IMPRIMIR_MODO_REAL deshabilitando, deshabilitando_len, 0x0F, 0, 0
     call    a20wait
     mov     al,0xAD
     out     0x64,al
@@ -103,7 +103,7 @@ deshabilitar_A20:
 habilitar_A20:
     pushf
     pusha
-    IMPRIMIR_MODO_REAL habilitando, habilitando_len, 0x07, 0, 0
+    IMPRIMIR_MODO_REAL habilitando, habilitando_len, 0x0F, 0, 0
     call    a20wait
     mov     al,0xAD
     out     0x64,al
@@ -147,7 +147,7 @@ checkear_A20:
     push gs
     push di
     push si
-    IMPRIMIR_MODO_REAL checkeando, checkeando_len, 0x07, 0, 0
+    IMPRIMIR_MODO_REAL checkeando, checkeando_len, 0x0F, 0, 0
     xor ax, ax ; ax = 0
     mov fs, ax
     not ax ; ax = 0xFFFF

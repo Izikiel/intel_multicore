@@ -30,4 +30,6 @@ void _isr33();
 
 //system services interrupts
 //...
+
+void _isr_spurious();
 #endif  /* !__ISR_H__ */

@@ -42,6 +42,7 @@
 #define modoEscrituraFillWhite (C_BG_LIGHT_GREY | C_FG_BLACK)
 
 #define redOnBlack (C_BG_BLACK | C_FG_RED)
+#define greenOnBlack (C_BG_BLACK | C_FG_GREEN)
 #define whiteOnRed (C_BG_RED | C_FG_WHITE)
 #define whiteOnBlack (C_BG_BLACK | C_FG_WHITE)
 #define whiteOnBlue (C_BG_BLUE | C_FG_WHITE)
@@ -73,7 +74,7 @@ void scrn_get_last_line(char* buffer);//Nota, el buffer devuelto es de tamanio V
 void scrn_initialize_console();
 void scrn_reset_console();
 
-//Tomado de juampiOS
+//Tomada referencia de juampiOS
 
 //Imprime el mensaje, con formato estilo printf de C. 
 //PRE: La cantidad de parametros pasados DEBE ser correcta
