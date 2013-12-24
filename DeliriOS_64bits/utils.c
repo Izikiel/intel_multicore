@@ -86,8 +86,8 @@ void decToHexStr(uint32_t num, char* output, char* title, uint8_t hasHexPrefix){
 		idx++;		
 	}
 	
-	//padding hasta completar el hexa de 32 bits
-	while(idx<8){
+	//padding hasta completar el hexa de 64 bits
+	while(idx<16/*16 chars hexa = 64 bits number*/){
 		output[idx++]='0';
 	}
 

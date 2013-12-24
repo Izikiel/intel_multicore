@@ -26,11 +26,16 @@ void startKernel64(){
 
 	//inicializo la consola
 	//pongo 5 porque es la linea donde termina de escribir kernel.asm con las macros de asm
-	setInitialPrintingLine(5);
-	printLine("DeliriOS iniciado.", redOnBlack);
-	printLine("--------------------------------------------------------------------------------", modoEscrituraTexto);
-	writeConsoleSymbol();
+	scrn_setYCursor(5);
+	scrn_setXCursor(0);
+	scrn_println("DeliriOS iniciado.", redOnBlack);
+	scrn_println("--------------------------------------------------------------------------------", modoEscrituraTexto);
+	scrn_initialize_console();
 	
+	// Tests de printf
+	//scrn_printf("Hola mundo:\t %u %s\n", 123, "jojojo");
+	//scrn_printf("Hola mundo:\t %u %s\n\r%s", 123, "jojojo", "paramtest 1 2 3");
+
 
 	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!
 	// - TODO: poner de forma correcta el callback a notificarExcepcion en isr.asm (convencion C de 64 bits!)
@@ -44,11 +49,11 @@ void startKernel64(){
 }
 
 void kernel_panic(char* message){
-	clrscr();
-	printLine(message, whiteOnBlue);
+	scrn_clear();
+	scrn_println(message, whiteOnBlue);
 	/*
 		TODO: Completar info de los registros de i386.h
 	*/
-	hideCursor();
+	scrn_hide_text_cursor();
 	haltCpu();
 }

@@ -1,7 +1,7 @@
 #ifndef __CONTEXT_MANAGER_H__
 #define __CONTEXT_MANAGER_H__
 
-#include "defines.h"
+#include <defines.h>
 #include <types.h>
 
 //es llamada por la isr cuando salta clock

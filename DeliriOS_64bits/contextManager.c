@@ -9,5 +9,5 @@ void notificarTecla(uint8_t keyCode)
 
 void notificarRelojTick()
 {
-	clockCursor();
+	scrn_print_next_cursor();
 }

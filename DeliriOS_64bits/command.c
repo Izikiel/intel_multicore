@@ -12,8 +12,8 @@ command_binder commands[COMMAND_COUNT] = {
 	},
 	[1] = 
 	{
-		.command_name = "clrscr\0",
-		.command_method_ptr = &command_clrscr
+		.command_name = "clear\0",
+		.command_method_ptr = &command_scrn_clear
 	}
 };
 
@@ -35,7 +35,7 @@ char* parseCommand(char* command){
 		//tengo el currentParam-esimo parametro en command[baseIdx..lastParamIdx-1]
 		uint32_t bufferIdx=0;
 		while(baseIdx<lastParamIdx){
-			//printChar(command[baseIdx], modoEscrituraTexto);
+			//scrn_putc(command[baseIdx], modoEscrituraTexto);
 			params[currentParam][bufferIdx] = command[baseIdx];
 			bufferIdx++;
 			baseIdx++;
@@ -59,17 +59,17 @@ char* parseCommand(char* command){
 }
 
 char* command_paramtest(uint32_t argc, char argv[][101]){
-	printLine("", modoEscrituraTexto);
-	printLine("Numero de parametros leidos:", modoEscrituraTexto);
-	printLineNumber(argc, modoEscrituraTexto);
-	printLine("Parametros:", modoEscrituraTexto);
+	scrn_println("", modoEscrituraTexto);
+	scrn_println("Numero de parametros leidos:", modoEscrituraTexto);
+	scrn_printlnNumber(argc, modoEscrituraTexto);
+	scrn_println("Parametros:", modoEscrituraTexto);
 	for(int i=0;i<argc;i++){
-		printLine(argv[i], modoEscrituraTexto);
+		scrn_println(argv[i], modoEscrituraTexto);
 	}
 	return "Fin de los parametros";	
 }
 
-char* command_clrscr(uint32_t argc, char argv[][101]){
-	clrscr();
+char* command_scrn_clear(uint32_t argc, char argv[][101]){
+	scrn_clear();
 	return "";
 }

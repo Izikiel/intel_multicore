@@ -1,6 +1,7 @@
 #ifndef __screen_H__
 #define __screen_H__
 #include <types.h>
+#include <vargs.h>
 
 /* Definicion de limites */
 /* -------------------------------------------------------------------------- */
@@ -50,19 +51,33 @@
 #define blackOnCyan (C_BG_CYAN | C_FG_BLACK)
 #define blackOnBlue (C_BG_BLUE | C_FG_BLACK)
 
-void putChar(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
-void printString(char* cadena, uint8_t format, uint8_t posX, uint8_t posY);
-void printInteger(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
-void printLine(char* cadena, uint8_t format);
-void printChar(char caracter, uint8_t format);
-void printLineNumber(uint32_t number, uint8_t format);
-void clockCursor();
-void clrscr();
-void hideCursor();
-void printProxCursor();
-void backspace();
-void setInitialPrintingLine(uint32_t number);
-void getLastScreenLine(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS
-void writeConsoleSymbol();
+void scrn_setXCursor(uint32_t number);
+void scrn_setYCursor(uint32_t number);
+
+void scrn_moveUp();
+void scrn_moveBack();
+
+void scrn_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
+void scrn_puts(char* string, uint8_t format);
+void scrn_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY);
+void scrn_pos_printInt(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
+void scrn_println(char* cadena, uint8_t format);
+void scrn_putc(char caracter, uint8_t format);
+void scrn_printlnNumber(uint32_t number, uint8_t format);
+void scrn_print_next_cursor();
+void scrn_clear();
+void scrn_hide_text_cursor();
+void scrn_update_text_cursor();
+void scrn_get_last_line(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS
+void scrn_initialize_console();
+void scrn_reset_console();
+
+//Tomado de juampiOS
+
+//Imprime el mensaje, con formato estilo printf de C. 
+//PRE: La cantidad de parametros pasados DEBE ser correcta
+void scrn_printf(const char* msg, ...);
+// Tomado de juampi OS
+void scrn_vprintf(const char* msg, va_list l);
 
 #endif  /* !__screen_H__ */

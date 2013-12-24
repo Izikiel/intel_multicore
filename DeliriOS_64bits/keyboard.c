@@ -77,35 +77,35 @@ void keyboard_handler(uint8_t keyCode)
         switch(readChar){
         	case '\n'://Linea nueva
                 //quitar el cursor de la pantalla
-                hideCursor();
+                scrn_hide_text_cursor();
                 //inicializar buffer a null
                 memset(buffer, '\0', VIDEO_COLS+1);
                 //load buffer with wrote line
-                getLastScreenLine(buffer);
+                scrn_get_last_line(buffer);
                 //parse command and get result
                 char* result = parseCommand(buffer);
                 //chequeo si tiene salida el comando
                 if(strlen(result)>0){
                     //create new line
-                    printLine("", modoEscrituraTexto);
+                    scrn_println("", modoEscrituraTexto);
                     //print result
-                    printLine(result, redOnBlack);
+                    scrn_println(result, redOnBlack);
                     //print command symbol
                 }
-                writeConsoleSymbol();                
+                scrn_initialize_console();                
                 break;
             case '\t'://Tab
                 //4 espacios
-                printChar(' ', modoEscrituraTexto);
-                printChar(' ', modoEscrituraTexto);
-                printChar(' ', modoEscrituraTexto);
-                printChar(' ', modoEscrituraTexto);                
+                scrn_putc(' ', modoEscrituraTexto);
+                scrn_putc(' ', modoEscrituraTexto);
+                scrn_putc(' ', modoEscrituraTexto);
+                scrn_putc(' ', modoEscrituraTexto);                
                 break;        
             case '\b'://BackSpace
-                backspace();
+                scrn_moveBack();
                 break;   
         	default:
-		        printChar(readChar, modoEscrituraTexto);
+		        scrn_putc(readChar, modoEscrituraTexto);
 	        	break;
         }
     }

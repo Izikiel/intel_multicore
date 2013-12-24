@@ -39,7 +39,7 @@ QUIET = @
 
 .PHONY=clean all image 
 
-all: clrscr clean image
+all: scrn_clear clean image
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -69,7 +69,7 @@ image: kernel.bin $(DEPEND) $(DISK_IMG)
 $(DISK_IMG): $(DISK_IMG_BZ)
 	bzip2 -dk $(DISK_IMG_BZ)
 
-clrscr: 
+scrn_clear: 
 	reset
 
 clean:
