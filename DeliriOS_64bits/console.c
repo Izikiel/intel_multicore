@@ -23,6 +23,9 @@ static uint32_t cursorBufferSize = 4;
 //flag de kernel_panic
 static bool panicFormat = false;
 
+//para levantar mas de una linea cuando leo de la pantalla un comando
+static uint64_t columnOverflowLineOffset=0;
+
 //-------------- Start Command Processing functions -------------------
 
 void console_processEnterKey(){
@@ -291,6 +294,7 @@ void console_putc(char caracter, uint8_t format){
 		//Linea nueva		
         console_println("", format);
         currentCol=0;
+        columnOverflowLineOffset++;
 	}
 
 	//process \n, \t, etc special chars
@@ -302,6 +306,7 @@ void console_putc(char caracter, uint8_t format){
 			//quitar el cursor de la pantalla
             console_hide_text_cursor();
 	        currentCol=0;
+	        columnOverflowLineOffset=0;
 			break;
 		case '\r': //Borrar linea actual
 	        while(currentCol>0){
@@ -377,14 +382,21 @@ void console_get_last_line(char* buffer)//Nota, el buffer devuelto es de tamanio
 {
 	//voy a leer a partir de la ultima linea escrita la cantidad de caracteres indicada por currentCol, 
 	//salteandome los caracteres de formato y salteandome los primeros 3 chars del simbolo del sistema
-	uint16_t offset = currentLine*VIDEO_COLS;
-	uint16_t* screenPtr = _outputMemoryPtr + offset;
-	int i=3;
-	while(i<currentCol){
-		uint16_t readFormattedChar = *(screenPtr + i);
+
+	//Nota: usando columnOverflowLineOffset tengo la cantidad de lineas a leer(por si escribimos mas de una linea y se hace
+	//overflow y salto de linea.
+	
+	uint16_t offsetStart = (currentLine - columnOverflowLineOffset) * VIDEO_COLS  + 3/*padding symbol system*/;
+	uint16_t offsetEnd = currentLine*VIDEO_COLS + currentCol;
+	
+	uint64_t screenIdx = offsetStart;
+	uint64_t idxBuffer = 0;
+	while(screenIdx < offsetEnd){
+		uint16_t readFormattedChar = *(_outputMemoryPtr + screenIdx);
 		char readChar = (uint8_t)readFormattedChar;
-		buffer[i-3] = readChar;
-		i++;
+		buffer[idxBuffer] = readChar;
+		idxBuffer++;
+		screenIdx++;
 	}
 }
 
