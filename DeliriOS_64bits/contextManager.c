@@ -3,7 +3,7 @@
 #include <console.h>
 #include <timer.h>
 
-void notificarTecla(uint8_t keyCode)
+void notificarTecla(const uint8_t keyCode)
 {
     keyboard_handler(keyCode);
 }

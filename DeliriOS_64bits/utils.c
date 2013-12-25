@@ -25,7 +25,7 @@ uint32_t strlen(const char* str)
 	return i;
 }
 
-uint64_t atoi(char* string)
+uint64_t atoi(const char* string)
 {
 	bool signMinus = false;
 	uint64_t res = 0;
@@ -210,8 +210,6 @@ char* descripcion;
 	return descripcion;
 }
 
-//Tomado de juampiOS utils
-
 void strcpy(char* dst, const char* src)
 {
         uint64_t i;
@@ -267,7 +265,7 @@ void strncpy(char* dst, const char* src, uint64_t len)
 
 //Devuelve la cantidad de apariciones del caracter en la string 
 //comenzando desde str[startIndex].
-uint32_t needleCount(char *str, char needle, uint32_t startIndex)
+uint32_t needleCount(const char *str, const char needle, const uint32_t startIndex)
 {
 	uint32_t j=0;
 	uint32_t i=startIndex;
@@ -282,7 +280,7 @@ uint32_t needleCount(char *str, char needle, uint32_t startIndex)
 
 //Devuelve el indice de la primera aparicion del caracter en la string 
 //comenzando desde str[startIndex]. En caso de no encontrarlo, devuelve -1
-int32_t nextTokenIdx(char *str, char delimiter, uint32_t startIndex)
+int32_t nextTokenIdx(const char *str, const char delimiter, const uint32_t startIndex)
 {
 	uint32_t i=startIndex;
 	while(str[i] != '\0'){

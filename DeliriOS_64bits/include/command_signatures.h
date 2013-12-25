@@ -3,10 +3,10 @@
 
 #include <types.h>
 
-uint64_t command_listcommands(uint32_t argc, char argv[][101]);
-uint64_t command_paramtest(uint32_t argc, char argv[][101]);
-uint64_t command_clear(uint32_t argc, char argv[][101]);
-uint64_t command_sleep(uint32_t argc, char argv[][101]);
+uint64_t command_listcommands(const uint32_t argc, const char argv[][101]);
+uint64_t command_paramtest(const uint32_t argc, const char argv[][101]);
+uint64_t command_clear(const uint32_t argc, const char argv[][101]);
+uint64_t command_sleep(const uint32_t argc, const char argv[][101]);
 
 
 #endif

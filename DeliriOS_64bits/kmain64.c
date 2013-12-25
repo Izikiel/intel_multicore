@@ -52,17 +52,6 @@ void startKernel64(){
 	console_initialize_console();
 
 
-	//tests de sleep
-	//uint64_t ticks = 20;
-	//console_printf("Waiting %d ticks\n", ticks);
-	//sleep(ticks);
-	//console_printf("Waiting %d ticks finished\n", ticks);
-	
-	// Tests de printf
-	//console_printf("Hola mundo:\t %u %s\n", 123, "jojojo");
-	//console_printf("Hola mundo:\t %u %s\n\r%s", 123, "jojojo", "paramtest 1 2 3");
-
-
 	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!
 	// - TODO: esta hardcodeado en asm lo de mapear los primeros 4 gb
 	// - TODO: crear funciones en mmu para que sea posible mapear, desmapear paginas, y cambiar el contexto de paginas desde C
@@ -72,7 +61,7 @@ void startKernel64(){
 	//Disfrutar del tp final DeliriOS.
 }
 
-void kernel_panic(const char* functionSender, char* message){
+void kernel_panic(const char* functionSender, const char* message){
 	console_set_panic_format();
 	console_clear();
 	console_printf("[KERNEL PANIC]: %s\n", message);

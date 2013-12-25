@@ -4,7 +4,7 @@
 #include <utils.h>
 #include <timer.h>
 
-uint64_t command_listcommands(uint32_t argc, char argv[][101]){
+uint64_t command_listcommands(const uint32_t argc, const char argv[][101]){	
 	console_printf("Lista de comandos de DeliriOS:\n");
 
 	uint64_t i = 0;

@@ -1,7 +1,7 @@
 #ifndef __KEYBOARD_H
 #define __KEYBOARD_H
-#include <stdint.h>
+#include <types.h>
 
-void keyboard_handler(uint8_t keyCode);
+void keyboard_handler(const uint8_t keyCode);
 
 #endif

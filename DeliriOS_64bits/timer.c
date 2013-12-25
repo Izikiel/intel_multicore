@@ -50,7 +50,7 @@ uint64_t getFreeInstance(){
 }
 
 //devuelve false si no se pudo instanciar una espera
-bool sleep(uint64_t ticksCount){
+bool sleep(const uint64_t ticksCount){
 	//simulamos "lock" con cli y sti
 	irq_cli();
 	uint64_t freeInstance = getFreeInstance();

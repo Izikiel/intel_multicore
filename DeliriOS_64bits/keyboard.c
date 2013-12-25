@@ -7,7 +7,7 @@
 *  comments in to give you an idea of what key is what, even
 *  though I set it's array index to 0. You can change that to
 *  whatever you want using a macro, if you wish! */
-unsigned char kbdus[128] =
+const unsigned char kbdus[128] =
 {
     0,  27, '1', '2', '3', '4', '5', '6', '7', '8',	/* 9 */
   '9', '0', '-', '=', '\b',	/* Backspace */
@@ -47,7 +47,7 @@ unsigned char kbdus[128] =
     0,	/* All other keys are undefined */
 };		
 
-void keyboard_handler(uint8_t keyCode)
+void keyboard_handler(const uint8_t keyCode)
 {
 
     /* If the top bit of the byte we read from the keyboard is
@@ -71,7 +71,7 @@ void keyboard_handler(uint8_t keyCode)
         *  to the above layout to correspond to 'shift' being
         *  held. If shift is held using the larger lookup table,
         *  you would add 128 to the scancode when you look for it */
-        char readChar = kbdus[keyCode];        
+        const char readChar = kbdus[keyCode];        
         switch(readChar){
             case '\n'://Enter
                 console_processEnterKey();

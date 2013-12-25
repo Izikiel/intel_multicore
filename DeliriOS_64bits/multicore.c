@@ -7,7 +7,7 @@
 #include <timer.h>
 
 typedef struct {
-	uint start, end;
+	uint64_t start, end;
 } mem_zone;
 
 static mem_zone
@@ -22,7 +22,7 @@ get_ebda_zone(void)
 	//Como aparentemente la ebda mide al menos un kilobyte segun
 	//	http://www.nondot.org/sabre/os/files/Booting/BIOS_SEG.txt
 	//Y solo nos interesa el primer KB por la MPSpec, no nos fijamos nada.
-	uint ebda_start = (*((ushort *) 0x40e)) << 4;
+	uint64_t ebda_start = (*((uint16_t *) 0x40e)) << 4;
 
 	mem_zone res = { ebda_start, ebda_start + 0xFFF };
 	return res;
@@ -36,7 +36,7 @@ do_checksum(const void * p, unsigned int len)
 	const char * bytes =(const char *) p;
 	char sum = 0;
 
-	for(uint i = 0; i < len; i++){
+	for(uint64_t i = 0; i < len; i++){
 		sum += bytes[i];	
 	}
 
@@ -57,8 +57,8 @@ find_floating_pointer_struct(void)
 {
 	//Header y zonas a revisar
 	static const char MPSIG[]	= "_MP_";
-	static const uint MPLEN		= sizeof(MPSIG)-1;
-	static const uint ZONES		= 3;
+	static const uint64_t MPLEN		= sizeof(MPSIG)-1;
+	static const uint64_t ZONES		= 3;
 
 	//Direcciones son inclusive (intervalo cerrado).
 	mem_zone zones[] = {
@@ -73,10 +73,10 @@ find_floating_pointer_struct(void)
 
 	//Buscar header en las zonas indicadas
 	mp_float_struct * mpfs = NULL;
-	for(uint i = 0; i < ZONES; i++){
-		uchar * st = (uchar *) zones[i].start;
-		uchar * en = (uchar *) zones[i].end;
-		for(uchar * p = st; p <= en; p++){
+	for(uint64_t i = 0; i < ZONES; i++){
+		uint8_t * st = (uint8_t *) zones[i].start;
+		uint8_t * en = (uint8_t *) zones[i].end;
+		for(uint8_t * p = st; p <= en; p++){
 			if(memcmp(p,MPSIG,MPLEN) == 0){
 				mpfs = (mp_float_struct *) p;
 				goto found;
@@ -111,7 +111,7 @@ check_valid_mpct(const mp_config_table * mpct)
 
 #define MAX_PROCESSORS 16
 static processor_entry processors[MAX_PROCESSORS];
-static uint processor_count = 0;
+static uint64_t processor_count = 0;
 //Indice del bootstrap processor
 static int bootstrap_index = -1;
 
@@ -138,7 +138,7 @@ configure_processor(const processor_entry * entry)
 }
 
 //Tamaño de las entradas de la tabla de configuracion de MP
-static uint entry_sizes[] = {
+static uint64_t entry_sizes[] = {
 	[PROCESSOR]		= 20,
 	[BUS]			= 8,
 	[IOAPIC]		= 8,
@@ -167,7 +167,7 @@ start_icmr_apic_mode(void)
 //Register en el  offset F0 en bytes.
 //Nos puede servir para prender las otras.
 static void
-turn_on_apic(volatile uint * apic)
+turn_on_apic(volatile uint64_t * apic)
 {
 	//0xF0 en bytes, pero usamos arreglo de int32 para poder hacer bien el
 	//offset lo dividimos por el tamaño de un int32
@@ -178,7 +178,7 @@ turn_on_apic(volatile uint * apic)
 #define DEFAULT_APIC_ADDR 0xFEE00000
 
 //Flag correspondiente a cada delivery mode
-static uint delivery_mode_flag[] = {
+static uint64_t delivery_mode_flag[] = {
 	[FIXED]			= 0,
 	[LOWEST]		= 1,
 	[SMI]			= 2,
@@ -192,8 +192,8 @@ static uint delivery_mode_flag[] = {
 static void
 initialize_ipi_options(	intr_command_register * options,
 						delivery_mode_type delivery_mode,
-						uint vector,
-						uint destination)
+						uint64_t vector,
+						uint64_t destination)
 {
 	//Ponemos todo en cero para asegurar que los reserved bits esten en zero.
 	memset(options,0,sizeof(*options));
@@ -225,8 +225,8 @@ initialize_ipi_options(	intr_command_register * options,
 static void
 send_ipi(const intr_command_register * options)
 {
-	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
-	const uint * opts = (const uint *) options;
+	uint64_t * local_apic = (uint64_t *) DEFAULT_APIC_ADDR;
+	const uint64_t * opts = (const uint64_t *) options;
 
 	//Copiar opciones al mensaje que vamos a utilizar.
 	//Se tiene que hacer de a 32 bits alineado a 16 bytes. Por eso el ICR
@@ -240,7 +240,7 @@ send_ipi(const intr_command_register * options)
 static void
 wait_for_ipi_reception(void)
 {
-	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
+	volatile uint64_t * local_apic = (volatile uint64_t *) DEFAULT_APIC_ADDR;
 	//Esperar a la recepcion de la IPI.
 	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
 	for(;local_apic[LAPIC_ICR_DWORD0] & (1 << 12););
@@ -252,7 +252,7 @@ static void
 turn_on_local_apic(const mp_config_table * mpct)
 {
 	fail_if(mpct->local_apic_addr != DEFAULT_APIC_ADDR);
-	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
+	volatile uint64_t * local_apic = (volatile uint64_t *) DEFAULT_APIC_ADDR;
 
 	//Poner el valor de la entrada de la IDT para el 
 	//Spurious Vector Interrupt y prendemos el local APIC.
@@ -265,7 +265,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//
 	//Estos valores los leo asi en base al manual Intel 3A Capitulo 10, donde
 	//especifica como estan armados.
-	uint id = local_apic[LAPIC_ID_REG];
+	uint64_t id = local_apic[LAPIC_ID_REG];
 	id = (id >> 24) & 0xFF;
 
 	fail_if(id != processors[bootstrap_index].local_apic_id);
@@ -273,7 +273,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//asignados. No se porque. Pero en el codigo de hecho se puede ver, y en
 	//qemu anda.
 	//
-	//uchar version_number = local_apic[0x30 >> 2] & 0x7F;
+	//uint8_t version_number = local_apic[0x30 >> 2] & 0x7F;
 	//fail_if(version_number != processors[bootstrap_index].version);
 }
 
@@ -281,24 +281,24 @@ turn_on_local_apic(const mp_config_table * mpct)
 static void
 clear_apic_errors(void)
 {
-	uint * local_apic = (uint *) DEFAULT_APIC_ADDR;
+	uint64_t * local_apic = (uint64_t *) DEFAULT_APIC_ADDR;
 	local_apic[LAPIC_ERR_REG] = 0x0;
 }
 
 //Levanta la posicion de memoria a la que vamos a saltar por el codigo de 
 //reset
 static void
-set_warm_reset_vector(uint address)
+set_warm_reset_vector(uint64_t address)
 {
 	//Seteamos al BIOS para que el shutdown sea reset warm por jump
 	cmos_writeb(0xF,0xA);
 	//Le ponemos a que direccion saltar en la posicion 40:67h en modo real.
-	*((uint *) (0x40*16 +0x67)) = address;
+	*((uint64_t *) (0x40*16 +0x67)) = address;
 }
 
 static bool is_82489(void)
 {
-	volatile uint * local_apic = (volatile uint *) DEFAULT_APIC_ADDR;
+	volatile uint64_t * local_apic = (volatile uint64_t *) DEFAULT_APIC_ADDR;
 	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar 
 	//usando el bit 4 del byte del registro de version;
 	return !(local_apic[LAPIC_VER_REG] & (1 << 4));
@@ -306,7 +306,7 @@ static bool is_82489(void)
 
 //Enciende todos los APs
 static void
-turn_on_aps(uint ap_startup_code_page)
+turn_on_aps(uint64_t ap_startup_code_page)
 {
 	//De acuerdo a http://www.cheesecake.org/sac/smp.html, primero hay que
 	//poner Warm Reset with far jump en el CMOS y poner la direccion a la que
@@ -319,7 +319,7 @@ turn_on_aps(uint ap_startup_code_page)
 	//Hay que enviar las STARTUP Ipis solamente si el local APIC no es un
 	//82489DX.
 	bool send_startup_ipis = !is_82489(); 
-	for(uint proci = 0; proci < processor_count; proci++){
+	for(uint64_t proci = 0; proci < processor_count; proci++){
 		processor_entry * p = &processors[proci];
 
 		//No despertar al BSP, porque no es AP
@@ -376,12 +376,12 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	mp_config_table * mpct = mpfs->config;
 	fail_if(!check_valid_mpct(mpct));
 
-	console_printf("\tMPCT TABLE: %u\n",(uint) mpct);
+	console_printf("\tMPCT TABLE: %u\n",(uint64_t) mpct);
 	//Seguimos las entradas de la tabla de configuracion
 	fail_unless(mpct->entry_count > 0);
 	const mp_entry * entry = mpct->entries;
 
-	for(uint entryi = 0; entryi < mpct->entry_count; entryi++){
+	for(uint64_t entryi = 0; entryi < mpct->entry_count; entryi++){
 		if(entry->entry_type == PROCESSOR){
 			configure_processor(&entry->chunk.processor);
 		}
@@ -400,7 +400,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 
 	turn_on_local_apic(mpct);
 
-	uint ap_symb = (uint) &ap_startup_code_page;
+	uint64_t ap_symb = (uint64_t) &ap_startup_code_page;
 
 	//Se require que la pagina donde se inicia a ejecutar el codigo 16 bits
 	//de modo real del AP este alineada a pagina.

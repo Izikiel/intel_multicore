@@ -35,7 +35,7 @@ void console_processEnterKey(){
 	    //load buffer with wrote line
 	    console_get_last_line(buffer);
 	    //parse command and get result
-	    uint64_t commandResult = parseCommand(buffer);
+	    command_result commandResult = parseCommand(buffer);
 	    
 	    switch(commandResult){
 	        case NORMAL_EXIT:
@@ -45,6 +45,9 @@ void console_processEnterKey(){
 	            break;
 	        case BAD_ARGUMENTS:
 	            console_printf("\nArgumentos erroneos\n");
+	            break;
+	        case INVALID_PRIVILEGE:
+	            console_printf("\nPrivilegios erroneos\n");
 	            break;
 	        default:
 	            console_printf("\n[Resultado Erroneo] Codigo de error: %d\n", commandResult);
@@ -77,7 +80,7 @@ void console_processBackSpaceKey(){
     //}
 }
 
-void console_processKey(char keyPressed){
+void console_processKey(const char keyPressed){
 	if(isRunningCommand() != true){
 		console_putc(keyPressed, modoEscrituraTexto);
     }//else{
@@ -225,21 +228,21 @@ void console_vprintf(const char* msg, va_list l)
                                 console_putc(msg[i], outputFormat);
                                 break;
                         case 'u':
-                        		decToHexStr(va_arg(l, uint), buffer, ""/*no title*/, 1/*print 0x prefix*/);
+                        		decToHexStr(va_arg(l, uint64_t), buffer, ""/*no title*/, 1/*print 0x prefix*/);
                                 console_puts(buffer, outputFormat);
                                 break;
                         case 'd':
-                                itoa(va_arg(l, uint), buffer);                                
+                                itoa(va_arg(l, uint64_t), buffer);                                
                                 console_puts(buffer, outputFormat);
                                 break;
                         case 's':
                                 console_puts(va_arg(l, char*), outputFormat);
                                 break;
                         case 'c':
-                                console_putc(va_arg(l, uint), outputFormat);
+                                console_putc(va_arg(l, uint64_t), outputFormat);
                                 break;
                         case 'b':
-                        		console_puts(va_arg(l, uint) ? "true" : "false", outputFormat);
+                        		console_puts(va_arg(l, uint64_t) ? "true" : "false", outputFormat);
                                 break;
                         }
                         break;
@@ -254,7 +257,7 @@ void console_vprintf(const char* msg, va_list l)
 
 //-------------- Start Console printing functions -------------------
 
-void console_println(char* cadena, uint8_t format){
+void console_println(const char* cadena, uint8_t format){
 	if(currentLine<VIDEO_FILS-1)
 	{
 		//si estoy dentro de la primer pantalla sin shiftear imprimo normalmente
@@ -325,7 +328,7 @@ void console_putc(char caracter, uint8_t format){
 	console_update_text_cursor();
 }
 
-void console_puts(char* string, uint8_t format)
+void console_puts(const char* string, uint8_t format)
 {
 	uint32_t len = strlen(string);
 	uint32_t i = 0;
@@ -345,7 +348,7 @@ void console_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
 	*(_outputMemoryPtr + offset) = pixel;
 }
 
-void console_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY)
+void console_pos_print(const char* cadena, uint8_t format, uint8_t posX, uint8_t posY)
 {
 	uint32_t strlength = strlen(cadena);
 	uint8_t idx = 0;

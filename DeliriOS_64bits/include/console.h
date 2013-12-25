@@ -58,7 +58,7 @@
 void console_processEnterKey();
 void console_processTabKey();
 void console_processBackSpaceKey();
-void console_processKey(char keyPressed);
+void console_processKey(const char keyPressed);
 
 //-------------- End Command Processing functions -------------------
 
@@ -72,10 +72,10 @@ void console_moveUp();
 void console_moveBack(bool fromSystem);
 
 void console_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
-void console_puts(char* string, uint8_t format);
-void console_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY);
+void console_puts(const char* string, uint8_t format);
+void console_pos_print(const char* cadena, uint8_t format, uint8_t posX, uint8_t posY);
 void console_pos_printInt(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
-void console_println(char* cadena, uint8_t format);
+void console_println(const char* cadena, uint8_t format);
 void console_putc(char caracter, uint8_t format);
 void console_printlnNumber(uint32_t number, uint8_t format);
 void console_print_next_cursor();
@@ -85,8 +85,6 @@ void console_update_text_cursor();
 void console_get_last_line(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS
 void console_initialize_console();
 void console_reset_console();
-
-//Tomada referencia de juampiOS
 
 //Imprime el mensaje, con formato estilo printf de C. 
 //PRE: La cantidad de parametros pasados DEBE ser correcta

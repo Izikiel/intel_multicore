@@ -2,7 +2,7 @@
 #include <command.h>
 #include <console.h>
 
-uint64_t command_clear(uint32_t argc, char argv[][101]){	
+uint64_t command_clear(const uint32_t argc, const char argv[][101]){	
 	console_clear();
 	return NORMAL_EXIT;
 }

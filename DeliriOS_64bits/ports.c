@@ -3,7 +3,7 @@
 #define PIC1_PORT 0x20
 #define PIC2_PORT 0xA0
 
-inline void outb(int port, unsigned char data) {
+inline void outb(uint8_t port, uint8_t data) {
     __asm __volatile("outb %0,%w1" : : "a" (data), "d" (port));
 }
 

@@ -7,7 +7,7 @@
 //es llamada por la isr cuando salta clock
 void notificarRelojTick();
 //es llamada por isr cuando se presiona teclado
-void notificarTecla(unsigned char keyCode);
+void notificarTecla(const unsigned char keyCode);
 
 #endif  /* !__CONTEXT_MANAGER_H__*/
 

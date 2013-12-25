@@ -1,7 +1,7 @@
 #ifndef __i386_H__
 #define __i386_H__
 
-#include <stdint.h>
+#include <types.h>
 
 extern uint64_t getRAX();
 extern uint64_t getRBX();

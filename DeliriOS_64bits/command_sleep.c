@@ -4,7 +4,7 @@
 #include <utils.h>
 #include <timer.h>
 
-uint64_t command_sleep(uint32_t argc, char argv[][101]){
+uint64_t command_sleep(const uint32_t argc, const char argv[][101]){	
 	console_printf("(TODO: AJUSTAR timer.c y PIT FREQ)\n");
 	if(argc == 2){
 		uint64_t msec = atoi(argv[1]);
