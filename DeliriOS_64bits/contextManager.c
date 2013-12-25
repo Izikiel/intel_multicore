@@ -11,5 +11,5 @@ void notificarTecla(uint8_t keyCode)
 void notificarRelojTick()
 {
 	timer_tick();
-	scrn_print_next_cursor();
+	console_print_next_cursor();
 }

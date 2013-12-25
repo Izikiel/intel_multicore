@@ -1,5 +1,5 @@
-#ifndef __screen_H__
-#define __screen_H__
+#ifndef __console_H__
+#define __console_H__
 #include <types.h>
 #include <vargs.h>
 
@@ -53,33 +53,45 @@
 #define blackOnCyan (C_BG_CYAN | C_FG_BLACK)
 #define blackOnBlue (C_BG_BLUE | C_FG_BLACK)
 
-void scrn_setXCursor(uint32_t number);
-void scrn_setYCursor(uint32_t number);
+//-------------- Start Command Processing functions -------------------
 
-void scrn_moveUp();
-void scrn_moveBack(bool fromSystem);
+void console_processEnterKey();
+void console_processTabKey();
+void console_processBackSpaceKey();
+void console_processKey(char keyPressed);
 
-void scrn_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
-void scrn_puts(char* string, uint8_t format);
-void scrn_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY);
-void scrn_pos_printInt(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
-void scrn_println(char* cadena, uint8_t format);
-void scrn_putc(char caracter, uint8_t format);
-void scrn_printlnNumber(uint32_t number, uint8_t format);
-void scrn_print_next_cursor();
-void scrn_clear();
-void scrn_hide_text_cursor();
-void scrn_update_text_cursor();
-void scrn_get_last_line(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS
-void scrn_initialize_console();
-void scrn_reset_console();
+//-------------- End Command Processing functions -------------------
+
+
+void console_setXCursor(uint32_t number);
+void console_setYCursor(uint32_t number);
+
+void console_set_panic_format();
+
+void console_moveUp();
+void console_moveBack(bool fromSystem);
+
+void console_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY);
+void console_puts(char* string, uint8_t format);
+void console_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY);
+void console_pos_printInt(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY);
+void console_println(char* cadena, uint8_t format);
+void console_putc(char caracter, uint8_t format);
+void console_printlnNumber(uint32_t number, uint8_t format);
+void console_print_next_cursor();
+void console_clear();
+void console_hide_text_cursor();
+void console_update_text_cursor();
+void console_get_last_line(char* buffer);//Nota, el buffer devuelto es de tamanio VIDEO_COLS
+void console_initialize_console();
+void console_reset_console();
 
 //Tomada referencia de juampiOS
 
 //Imprime el mensaje, con formato estilo printf de C. 
 //PRE: La cantidad de parametros pasados DEBE ser correcta
-void scrn_printf(const char* msg, ...);
+void console_printf(const char* msg, ...);
 // Tomado de juampi OS
-void scrn_vprintf(const char* msg, va_list l);
+void console_vprintf(const char* msg, va_list l);
 
-#endif  /* !__screen_H__ */
+#endif  /* !__console_H__ */

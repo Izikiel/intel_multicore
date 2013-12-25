@@ -86,12 +86,12 @@ find_floating_pointer_struct(void)
 
 found:
 	if(mpfs == NULL){
-		kernel_panic("Estructura MPFS no encontrada");
+		kernel_panic(__FUNCTION__, "Estructura MPFS no encontrada");
 		return NULL;
 	}
 
 	if(!check_valid_mpfs(mpfs)){
-		kernel_panic("Estructura MPFS con checksum invalido");
+		kernel_panic(__FUNCTION__, "Estructura MPFS con checksum invalido");
 		return NULL;
 	}
 
@@ -119,7 +119,7 @@ static int bootstrap_index = -1;
 static void
 configure_processor(const processor_entry * entry)
 {
-	scrn_printf("\tEntrada de procesador: \n"
+	console_printf("\tEntrada de procesador: \n"
 		"\tLAPIC (%u / %u)\n"
 		"\tFLAGS (%u / %u)\n"
 		"\tIS BP: %b\n",
@@ -324,7 +324,7 @@ turn_on_aps(uint ap_startup_code_page)
 
 		//No despertar al BSP, porque no es AP
 		if(p->bootstrap) continue;
-		scrn_printf("\tProcesador %u - %u\n",proci,p->local_apic_id);
+		console_printf("\tProcesador %u - %u\n",proci,p->local_apic_id);
 
 		//Crear mensaje de INIT e INIT Deasserted inicial para IPI
 		intr_command_register init_ipi,init_ipi_doff;
@@ -340,7 +340,7 @@ turn_on_aps(uint ap_startup_code_page)
 			ap_startup_code_page >> 12,p->local_apic_id);
 
 		//Enviar las ipis de inicio
-		scrn_printf("\tEnviando IPI de inicio\n");
+		console_printf("\tEnviando IPI de inicio\n");
 		send_ipi(&init_ipi);
 		wait_for_ipi_reception();
 		send_ipi(&init_ipi_doff);
@@ -349,10 +349,10 @@ turn_on_aps(uint ap_startup_code_page)
 						  //(1000 10 microseg con la unidad considerada).
 		sleep(1); //Dormir un poco mas de 10 milisegundos (0.055 segundos)
 
-		scrn_printf("\tIPI de inicio enviada\n");
+		console_printf("\tIPI de inicio enviada\n");
 		if(send_startup_ipis){
 			clear_apic_errors();
-			scrn_printf("\tEnviando IPIs de startup\n");
+			console_printf("\tEnviando IPIs de startup\n");
 			//Enviar las STARTUP ipis, dormir y esperar.
 			send_ipi(&startup_ipi);	
 			//core_sleep(20); //Dormir 200 microsegundos
@@ -363,13 +363,10 @@ turn_on_aps(uint ap_startup_code_page)
 			sleep(1); //Dormir un poco mas de 20 milisegundos (0.055 segundos)
 			wait_for_ipi_reception();
 		}
-		scrn_printf("\tPrendi el core %u\n",proci);
+		console_printf("\tPrendi el core %u\n",proci);
 		//TODO: Verificar que el core haya levantado programaticamente.
 	}
 }
-
-//Pagina de codigo donde esta el codigo que van a ejecutar los cores
-uint ap_startup_code_page = 0x1200;
 
 //Determina la configuracion del procesador si hay una tabla de configuracion
 //es decir si no hay una configuracion default en uso.
@@ -379,7 +376,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	mp_config_table * mpct = mpfs->config;
 	fail_if(!check_valid_mpct(mpct));
 
-	scrn_printf("\tMPCT TABLE: %u\n",(uint) mpct);
+	console_printf("\tMPCT TABLE: %u\n",(uint) mpct);
 	//Seguimos las entradas de la tabla de configuracion
 	fail_unless(mpct->entry_count > 0);
 	const mp_entry * entry = mpct->entries;
@@ -432,7 +429,11 @@ check_struct_sizes(void)
 
 void multiprocessor_init()
 {
-	//scrn_cls();
+	//check &ap_startup_code_page % 0x1000 == 0
+	//es decir, que este alineado a pagina de 4k el RIP de los AP CPU's
+	fail_unless((uint64_t)(&ap_startup_code_page) % 0x1000 == 0)
+
+	//console_cls();
 	check_struct_sizes();
 
 	//Detectar MPFS
@@ -441,18 +442,18 @@ void multiprocessor_init()
 		return;
 	}
 
-	scrn_printf("\tEstructura MPFS encontrada: %u\n", mpfs);
+	console_printf("\tEstructura MPFS encontrada: %u\n", mpfs);
 
 	//Recorrer estructura y determinar los cores
 	if(mpfs->config != 0){
 		//Configuracion hay que determinarla
-		scrn_printf("\tConfiguracion a determinar\n");
+		console_printf("\tConfiguracion a determinar\n");
 		determine_cpu_configuration(mpfs);
 	}else if(mpfs->mp_features1 != 0){
 		//La configuracion ya esta definida y es una estandar
-		scrn_printf("\tConfiguracion default numero: %d",mpfs->mp_features1);
+		console_printf("\tConfiguracion default numero: %d",mpfs->mp_features1);
 		determine_default_configuration(mpfs);	
 	}else{
-		kernel_panic("Configuracion MPFS invalida");	
+		kernel_panic(__FUNCTION__, "Configuracion MPFS invalida");	
 	}
 }

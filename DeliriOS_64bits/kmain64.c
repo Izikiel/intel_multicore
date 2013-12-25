@@ -20,44 +20,47 @@ void startKernel64(){
 
 	//inicializo la consola
 	//pongo 5 porque es la linea donde termina de escribir kernel.asm con las macros de asm
-	scrn_setYCursor(5);
-	scrn_setXCursor(0);
+	console_setYCursor(5);
+	console_setXCursor(0);
 	
 	//armo la estructura de paginacion para hacer identitty mapping sobre los primeros 64 gb
-	scrn_printf("Configuring paging...");
+	console_printf("Configuring paging...");
 	
 	init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!
 	
-	scrn_puts("OK!", greenOnBlack);
-	scrn_printf("\n");
+	console_puts("OK!", greenOnBlack);
+	console_printf("\n");
 
-	scrn_printf("Configuring timer...");
+	console_printf("Configuring timer...");
 	
 	initialize_timer();
 	
-	scrn_puts("OK!", greenOnBlack);
-	scrn_printf("\n");
+	console_puts("OK!", greenOnBlack);
+	console_printf("\n");
 
-	scrn_printf("Starting up multicore mode...");
+	//console_printf("Multicore mode info:\n");
+	//console_printf("AP CPU start RIP: %u\n", &ap_startup_code_page);
+	console_printf("Starting up multicore mode...");
 	
 	//inicializar multicore
 	//multiprocessor_init();
 	
-	scrn_puts("OK!", greenOnBlack);
-	scrn_printf("\n");
-	scrn_println("DeliriOS started up.", redOnBlack);
-	scrn_println("--------------------------------------------------------------------------------", modoEscrituraTexto);
-	scrn_initialize_console();
+	console_puts("OK!", greenOnBlack);
+	console_printf("\n");
+	console_println("DeliriOS started up.", redOnBlack);
+	console_println("--------------------------------------------------------------------------------", modoEscrituraTexto);
+	console_initialize_console();
+
 
 	//tests de sleep
 	//uint64_t ticks = 20;
-	//scrn_printf("Waiting %d ticks\n", ticks);
+	//console_printf("Waiting %d ticks\n", ticks);
 	//sleep(ticks);
-	//scrn_printf("Waiting %d ticks finished\n", ticks);
+	//console_printf("Waiting %d ticks finished\n", ticks);
 	
 	// Tests de printf
-	//scrn_printf("Hola mundo:\t %u %s\n", 123, "jojojo");
-	//scrn_printf("Hola mundo:\t %u %s\n\r%s", 123, "jojojo", "paramtest 1 2 3");
+	//console_printf("Hola mundo:\t %u %s\n", 123, "jojojo");
+	//console_printf("Hola mundo:\t %u %s\n\r%s", 123, "jojojo", "paramtest 1 2 3");
 
 
 	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!
@@ -69,12 +72,45 @@ void startKernel64(){
 	//Disfrutar del tp final DeliriOS.
 }
 
-void kernel_panic(char* message){
-	//scrn_clear();
-	scrn_println(message, whiteOnBlue);
-	/*
-		TODO: Completar info de los registros de i386.h
-	*/
-	scrn_hide_text_cursor();
+void kernel_panic(const char* functionSender, char* message){
+	console_set_panic_format();
+	console_clear();
+	console_printf("[KERNEL PANIC]: %s\n", message);
+
+	console_printf("\nFuncion que produjo el error:\t%s\n", functionSender);
+
+	console_printf("\nEstado de los registros:");
+	console_printf("\nRAX = %u", getRAX());
+	console_printf("\tRBX = %u", getRBX());
+	console_printf("\nRCX = %u", getRCX());
+	console_printf("\tRDX = %u", getRDX());
+	console_printf("\nRSI = %u", getRSI());
+	console_printf("\tRDI = %u", getRDI());
+	console_printf("\nRBP = %u", getRBP());
+	console_printf("\tRSP = %u", getRSP());
+	console_printf("\nR8  = %u", getR8());
+	console_printf("\tR9  = %u", getR9());
+	console_printf("\nR10 = %u", getR10());
+	console_printf("\tR11 = %u", getR11());
+	console_printf("\nR12 = %u", getR12());
+	console_printf("\tR13 = %u", getR13());
+	console_printf("\nR14 = %u", getR14());
+	console_printf("\tR15 = %u", getR15());
+	console_printf("\nRIP = %u", getRIP());
+	console_printf("\tCS  = %u", getCS());
+	console_printf("\nDS  = %u", getDS());
+	console_printf("\tES  = %u", getES());
+	console_printf("\nFS  = %u", getFS());
+	console_printf("\tGS  = %u", getGS());
+	console_printf("\nSS  = %u", getSS());
+	console_printf("\tCR0 = %u", getCR0());
+	console_printf("\nCR2 = %u", getCR2());
+	console_printf("\tCR3 = %u", getCR3());
+	console_printf("\nCR4 = %u", getCR4());
+	console_printf("\tRFLAGS = %u", getRFLAGS());
+
+	console_printf("\n\nSystem Halted.");
+
+	console_hide_text_cursor();
 	haltCpu();
 }

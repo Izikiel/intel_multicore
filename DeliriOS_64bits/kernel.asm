@@ -1,7 +1,7 @@
 %include "macros/asm_screen_utils.mac"
 %include "macros/real_mode_macros.mac"
 
-global start
+global kernel
 
 ;; GDT
 extern GDT_DESC
@@ -26,7 +26,7 @@ extern startKernel64
 
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 16
-JMP start
+JMP kernel
 
 ;;
 ;; Seccion de datos
@@ -57,7 +57,7 @@ mensaje_ok_len              equ $ - mensaje_ok_msg
 ;------------------------------- comienzo modo real ---------------------------------------------------
 ;------------------------------------------------------------------------------------------------------
 BITS 16
-start:
+kernel:
     ; Deshabilitar interrupciones
     cli
 

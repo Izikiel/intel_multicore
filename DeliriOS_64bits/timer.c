@@ -55,7 +55,7 @@ bool sleep(uint64_t ticksCount){
 	irq_cli();
 	uint64_t freeInstance = getFreeInstance();
 	if(freeInstance == MAX_INSTANCES){//fallar si no hay instancias libres
-		scrn_printf("No hay instancias libres para un sleep, intente nuevamente\n");
+		console_printf("No hay instancias libres para un sleep, intente nuevamente\n");
 		irq_sti();
 		return false;
 	}
@@ -83,7 +83,7 @@ void timer_tick(){
 	while(i<MAX_INSTANCES){
 		if(sleep_pool[i]>0){
 			sleep_pool[i]--;
-			//scrn_printf("[Poll #%d]pending ticks: %d\n", i, sleep_pool[i]);
+			//console_printf("[Poll #%d]pending ticks: %d\n", i, sleep_pool[i]);
 		}
 		i++;
 	}

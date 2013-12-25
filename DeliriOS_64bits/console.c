@@ -1,4 +1,5 @@
 #include <console.h>
+#include <command.h>
 #include <defines.h>
 #include <utils.h>
 #include <vargs.h>
@@ -19,46 +20,118 @@ static char* cursorBuffer = "\\-/|";
 static uint32_t cursorIndex = 0;
 static uint32_t cursorBufferSize = 4;
 
+//flag de kernel_panic
+static bool panicFormat = false;
+
+//-------------- Start Command Processing functions -------------------
+
+void console_processEnterKey(){
+	if(isRunningCommand() != true){
+		char buffer[VIDEO_COLS+1];
+		//quitar el cursor de la pantalla
+	    console_hide_text_cursor();
+	    //inicializar buffer a null
+	    memset(buffer, '\0', VIDEO_COLS+1);
+	    //load buffer with wrote line
+	    console_get_last_line(buffer);
+	    //parse command and get result
+	    uint64_t commandResult = parseCommand(buffer);
+	    
+	    switch(commandResult){
+	        case NORMAL_EXIT:
+	            break;
+	        case NOT_FOUND_COMMAND:
+	            console_printf("\nComando no encontrado\n");
+	            break;
+	        case BAD_ARGUMENTS:
+	            console_printf("\nArgumentos erroneos\n");
+	            break;
+	        default:
+	            console_printf("\n[Resultado Erroneo] Codigo de error: %d\n", commandResult);
+	            break;
+	    }
+	    //print command symbol
+	    console_initialize_console(); 
+    }//else{
+        //console_printf("Hay un comando corriendo...por favor espere que finalice\n");
+    //}
+}
+
+void console_processTabKey(){
+	if(isRunningCommand() != true){
+		//4 espacios
+		console_putc(' ', modoEscrituraTexto);
+		console_putc(' ', modoEscrituraTexto);
+		console_putc(' ', modoEscrituraTexto);
+		console_putc(' ', modoEscrituraTexto);   
+    }//else{
+    //    console_printf("Hay un comando corriendo...por favor espere que finalice\n");
+    //}
+}
+
+void console_processBackSpaceKey(){
+	if(isRunningCommand() != true){
+		console_moveBack(false/*not calling from system*/);
+    }//else{
+    //    console_printf("Hay un comando corriendo...por favor espere que finalice\n");
+    //}
+}
+
+void console_processKey(char keyPressed){
+	if(isRunningCommand() != true){
+		console_putc(keyPressed, modoEscrituraTexto);
+    }//else{
+    //    console_printf("Hay un comando corriendo...por favor espere que finalice\n");
+    //}
+}
+
+
+//-------------- End Command Processing functions -------------------
+
 //-------------- Start Config functions -------------------
 
-void scrn_setYCursor(uint32_t number){
+void console_setYCursor(uint32_t number){
 	currentLine=number;
 }
 
-void scrn_setXCursor(uint32_t number){
+void console_setXCursor(uint32_t number){
 	currentCol=number;
 }
 
-void scrn_update_text_cursor(){
+void console_set_panic_format(){
+	panicFormat = true;
+}
+
+void console_update_text_cursor(){
 	cursorLine=currentLine;
 	cursorCol=currentCol;
-	scrn_pos_putc(' ', whiteOnGreen, currentCol, currentLine);
+	console_pos_putc(' ', whiteOnGreen, currentCol, currentLine);
 }
 
-void scrn_hide_text_cursor(){
-	scrn_pos_putc(' ', modoEscrituraTexto, currentCol, currentLine);
+void console_hide_text_cursor(){
+	console_pos_putc(' ', (panicFormat == true ? whiteOnGreen : modoEscrituraTexto), currentCol, currentLine);
 }
 
-void scrn_initialize_console()
+void console_initialize_console()
 {
-	scrn_putc('$', redOnBlack);
-    scrn_putc('>', redOnBlack);
-    scrn_putc(' ', redOnBlack);
+	console_putc('$', redOnBlack);
+    console_putc('>', redOnBlack);
+    console_putc(' ', redOnBlack);
 }
 
-void scrn_reset_console()
+void console_reset_console()
 {
-	scrn_clear();
-	scrn_putc('$', redOnBlack);
-    scrn_putc('>', redOnBlack);
-    scrn_putc(' ', redOnBlack);
+	console_clear();
+	console_putc('$', redOnBlack);
+    console_putc('>', redOnBlack);
+    console_putc(' ', redOnBlack);
 }
 
 //-------------- End Config functions -------------------
 
 //-------------- Start Console movement functions -------------------
 
-void scrn_moveUp(){
+void console_moveUp(){
 	//backup del buffer de pantalla actual
 	uint16_t tmpBuffer[VIDEO_FILS][VIDEO_COLS];
     //copio el buffer de video al buffer temporal
@@ -69,7 +142,7 @@ void scrn_moveUp(){
     memset(_outputMemoryPtr + (VIDEO_FILS-1)*VIDEO_COLS, 0, VIDEO_COLS*sizeof(uint16_t));    
 }
 
-void scrn_moveBack(bool fromSystem){
+void console_moveBack(bool fromSystem){
 	uint16_t limitBackSpace = 0;
 	if(fromSystem == false){
 		limitBackSpace = 3;
@@ -82,7 +155,7 @@ void scrn_moveBack(bool fromSystem){
 		currentCol=VIDEO_COLS-1;
 		currentLine--;
 	}*/
-	scrn_pos_putc(' ', modoEscrituraTexto, currentCol, currentLine);
+	console_pos_putc(' ', modoEscrituraTexto, currentCol, currentLine);
 
 	//guardo la posicion del cursor actual
 	uint32_t cline = cursorLine;
@@ -93,13 +166,13 @@ void scrn_moveBack(bool fromSystem){
 	cursorCol=currentCol;
 
 	//limpio cursor
-	scrn_pos_putc(' ', modoEscrituraTexto, ccol, cline);
+	console_pos_putc(' ', modoEscrituraTexto, ccol, cline);
 	//pongo cursor nuevo
-	scrn_pos_putc(' ', whiteOnGreen, currentCol, currentLine);	
+	console_pos_putc(' ', whiteOnGreen, currentCol, currentLine);	
 }
 
-void scrn_clear(){
-	uint8_t _modoEscritura = modoEscrituraTexto;//fondo negro, letras blancas
+void console_clear(){
+	uint8_t _modoEscritura = (panicFormat == true ? whiteOnGreen : modoEscrituraTexto);//fondo negro, letras blancas
 	uint8_t _caracter = ' ';//espacio en blanco
 
 	uint32_t offset = 0;
@@ -118,9 +191,9 @@ void scrn_clear(){
 //-------------- Start Console clock cursor functions -------------------
 
 //es llamada periodicamente por el reloj del sistema
-void scrn_print_next_cursor(){
+void console_print_next_cursor(){
 	//imprime el cursor en la ultima linea de pantalla
-	scrn_pos_putc(cursorBuffer[cursorIndex], whiteOnBlue, VIDEO_COLS-1, 0);
+	console_pos_putc(cursorBuffer[cursorIndex], whiteOnBlue, VIDEO_COLS-1, 0);
 	cursorIndex = (cursorIndex+1) % cursorBufferSize;
 }
 
@@ -129,18 +202,19 @@ void scrn_print_next_cursor(){
 //-------------- Start Console FORMATTED printing functions -------------------
 
 // Tomado de juampi OS
-void scrn_printf(const char* msg, ...)
+void console_printf(const char* msg, ...)
 {
         va_list l;
         va_start(l,msg);
-        scrn_vprintf(msg, l);
+        console_vprintf(msg, l);
         va_end(l);
 }
 
 // Tomado de juampi OS
-void scrn_vprintf(const char* msg, va_list l)
+void console_vprintf(const char* msg, va_list l)
 {
-        uint i;
+		uint16_t outputFormat = (panicFormat == true ? whiteOnGreen : modoEscrituraTexto);
+        uint64_t i;
         char buffer[64];
         for(i = 0; msg[i]; i++) {
                 switch(msg[i]) {
@@ -148,29 +222,29 @@ void scrn_vprintf(const char* msg, va_list l)
                         i++;
                         switch(msg[i]) {
                         case '%':
-                                scrn_putc(msg[i], modoEscrituraTexto);
+                                console_putc(msg[i], outputFormat);
                                 break;
                         case 'u':
                         		decToHexStr(va_arg(l, uint), buffer, ""/*no title*/, 1/*print 0x prefix*/);
-                                scrn_puts(buffer, modoEscrituraTexto);
+                                console_puts(buffer, outputFormat);
                                 break;
                         case 'd':
                                 itoa(va_arg(l, uint), buffer);                                
-                                scrn_puts(buffer, modoEscrituraTexto);
+                                console_puts(buffer, outputFormat);
                                 break;
                         case 's':
-                                scrn_puts(va_arg(l, char*), modoEscrituraTexto);
+                                console_puts(va_arg(l, char*), outputFormat);
                                 break;
                         case 'c':
-                                scrn_putc(va_arg(l, uint), modoEscrituraTexto);
+                                console_putc(va_arg(l, uint), outputFormat);
                                 break;
                         case 'b':
-                        		scrn_puts(va_arg(l, uint) ? "true" : "false", modoEscrituraTexto);
+                        		console_puts(va_arg(l, uint) ? "true" : "false", outputFormat);
                                 break;
                         }
                         break;
                 default:
-                        scrn_putc(msg[i], modoEscrituraTexto);
+                        console_putc(msg[i], outputFormat);
                         break;
                 }
         }
@@ -180,39 +254,39 @@ void scrn_vprintf(const char* msg, va_list l)
 
 //-------------- Start Console printing functions -------------------
 
-void scrn_println(char* cadena, uint8_t format){
+void console_println(char* cadena, uint8_t format){
 	if(currentLine<VIDEO_FILS-1)
 	{
 		//si estoy dentro de la primer pantalla sin shiftear imprimo normalmente
-		scrn_pos_print(cadena, format, 0, currentLine);
+		console_pos_print(cadena, format, 0, currentLine);
 		currentLine++;
 	}
 	else
 	{
 		//si me excedi de las lineas, shifteo la pantalla una linea hacia arriba
-		scrn_moveUp();
+		console_moveUp();
 		//escribo en la anteultima linea de la pantalla
-		scrn_pos_print(cadena, format, 0, VIDEO_FILS-2);//notar que los indices x,y comienzan en cero por eso se le resta uno a VIDEO_FILS
+		console_pos_print(cadena, format, 0, VIDEO_FILS-2);//notar que los indices x,y comienzan en cero por eso se le resta uno a VIDEO_FILS
 	}
 	currentCol=0;
 
 	//pongo la posicion del proximo char a ser escrito en pantalla
-	scrn_update_text_cursor();
+	console_update_text_cursor();
 }
 
 //como no existe la sobrecarga de funciones, me armo otra funcion para imprimir numeros.
-void scrn_printlnNumber(uint32_t number, uint8_t format){
+void console_printlnNumber(uint32_t number, uint8_t format){
 	char buffer[VIDEO_COLS*VIDEO_FILS];
 	memset(buffer, '\0', VIDEO_FILS*VIDEO_COLS);
 	itoa(number, buffer);
-	scrn_println(buffer, format);
+	console_println(buffer, format);
 }
 
-void scrn_putc(char caracter, uint8_t format){
+void console_putc(char caracter, uint8_t format){
 	//process console movement
 	if(currentCol == VIDEO_COLS){
 		//Linea nueva		
-        scrn_println("", modoEscrituraTexto);
+        console_println("", format);
         currentCol=0;
 	}
 
@@ -220,43 +294,43 @@ void scrn_putc(char caracter, uint8_t format){
 	switch(caracter){
 		case '\n': //Linea nueva
 			//quitar el cursor de la pantalla
-            scrn_hide_text_cursor();
-	        scrn_println("", modoEscrituraTexto);
+            console_hide_text_cursor();
+	        console_println("", format);
 			//quitar el cursor de la pantalla
-            scrn_hide_text_cursor();
+            console_hide_text_cursor();
 	        currentCol=0;
 			break;
 		case '\r': //Borrar linea actual
 	        while(currentCol>0){
-	        	scrn_moveBack(false/*not calling from system*/);;
+	        	console_moveBack(false/*not calling from system*/);;
 	        }
 			break;
 		case '\t': //Tab
             //4 espacios
-            scrn_putc(' ', modoEscrituraTexto);
-            scrn_putc(' ', modoEscrituraTexto);
-            scrn_putc(' ', modoEscrituraTexto);
-            scrn_putc(' ', modoEscrituraTexto);  
+            console_putc(' ', format);
+            console_putc(' ', format);
+            console_putc(' ', format);
+            console_putc(' ', format);  
 			//quitar el cursor de la pantalla
-            scrn_hide_text_cursor();            
+            console_hide_text_cursor();            
 			break;
 		default:
-			scrn_pos_putc(caracter, format, currentCol, currentLine);
+			console_pos_putc(caracter, format, currentCol, currentLine);
 			//avanzar columna
 			currentCol++;
 			break;
 	}
 
 	//pongo la posicion del proximo char a ser escrito en pantalla
-	scrn_update_text_cursor();
+	console_update_text_cursor();
 }
 
-void scrn_puts(char* string, uint8_t format)
+void console_puts(char* string, uint8_t format)
 {
 	uint32_t len = strlen(string);
 	uint32_t i = 0;
 	while(i<len){
-		scrn_putc(string[i], format);
+		console_putc(string[i], format);
 		i++;
 	}
 }
@@ -264,14 +338,14 @@ void scrn_puts(char* string, uint8_t format)
 
 //-------------- Start Console POSITIONED printing functions -------------------
 
-void scrn_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
+void console_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
 {
 	uint16_t offset = posX + posY * VIDEO_COLS;	
 	uint16_t pixel = (format << 8) | caracter;
 	*(_outputMemoryPtr + offset) = pixel;
 }
 
-void scrn_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY)
+void console_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY)
 {
 	uint32_t strlength = strlen(cadena);
 	uint8_t idx = 0;
@@ -281,22 +355,22 @@ void scrn_pos_print(char* cadena, uint8_t format, uint8_t posX, uint8_t posY)
 			posY++;
 			posX=0;
 		}
-		scrn_pos_putc(cadena[idx], format, posX + idx, posY);
+		console_pos_putc(cadena[idx], format, posX + idx, posY);
 		idx++;
 	}
 }
 
-void scrn_pos_printInt(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY){
+void console_pos_printInt(uint32_t number, uint8_t format, uint8_t posX, uint8_t posY){
 	char buffer[VIDEO_COLS*VIDEO_FILS];
 	itoa(number, buffer);
-	scrn_pos_print(buffer, format, posX, posY);
+	console_pos_print(buffer, format, posX, posY);
 }
 
 //-------------- End Console POSITIONED printing functions -------------------
 
 //-------------- Start Console reading functions -------------------
 
-void scrn_get_last_line(char* buffer)//Nota, el buffer devuelto es de tamanio VIDEO_COLS
+void console_get_last_line(char* buffer)//Nota, el buffer devuelto es de tamanio VIDEO_COLS
 {
 	//voy a leer a partir de la ultima linea escrita la cantidad de caracteres indicada por currentCol, 
 	//salteandome los caracteres de formato y salteandome los primeros 3 chars del simbolo del sistema

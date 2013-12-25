@@ -38,7 +38,7 @@ uint64_t atoi(char* string)
 			signMinus=true;
 		}else{
 			res=0;
-			scrn_printf("La cadena '%s' no es un numero valido\n", string);
+			console_printf("La cadena '%s' no es un numero valido\n", string);
 			break;
 		}
 		i++;
