@@ -112,22 +112,22 @@ void console_update_text_cursor(){
 }
 
 void console_hide_text_cursor(){
-	console_pos_putc(' ', (panicFormat == true ? whiteOnGreen : modoEscrituraTexto), currentCol, currentLine);
+	console_pos_putc(' ', (panicFormat == true ? modoEscrituraBSOD : modoEscrituraTexto), currentCol, currentLine);
 }
 
 void console_initialize_console()
 {
-	console_putc('$', redOnBlack);
-    console_putc('>', redOnBlack);
-    console_putc(' ', redOnBlack);
+	console_putc('$', modoEscrituraSymbol);
+    console_putc('>', modoEscrituraSymbol);
+    console_putc(' ', modoEscrituraSymbol);
 }
 
 void console_reset_console()
 {
 	console_clear();
-	console_putc('$', redOnBlack);
-    console_putc('>', redOnBlack);
-    console_putc(' ', redOnBlack);
+	console_putc('$', modoEscrituraSymbol);
+    console_putc('>', modoEscrituraSymbol);
+    console_putc(' ', modoEscrituraSymbol);
 }
 
 //-------------- End Config functions -------------------
@@ -175,7 +175,7 @@ void console_moveBack(bool fromSystem){
 }
 
 void console_clear(){
-	uint8_t _modoEscritura = (panicFormat == true ? whiteOnGreen : modoEscrituraTexto);//fondo negro, letras blancas
+	uint8_t _modoEscritura = (panicFormat == true ? modoEscrituraBSOD : modoEscrituraTexto);//fondo negro, letras blancas
 	uint8_t _caracter = ' ';//espacio en blanco
 
 	uint32_t offset = 0;
@@ -216,7 +216,7 @@ void console_printf(const char* msg, ...)
 // Tomado de juampi OS
 void console_vprintf(const char* msg, va_list l)
 {
-		uint16_t outputFormat = (panicFormat == true ? whiteOnGreen : modoEscrituraTexto);
+		uint16_t outputFormat = (panicFormat == true ? modoEscrituraBSOD : modoEscrituraTexto);
         uint64_t i;
         char buffer[64];
         for(i = 0; msg[i]; i++) {

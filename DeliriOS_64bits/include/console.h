@@ -39,7 +39,8 @@
 #define C_BLINK                 (0x8 << 4)
 
 #define modoEscrituraTexto whiteOnBlack
-#define modoEscrituraFillWhite (C_BG_LIGHT_GREY | C_FG_BLACK)
+#define modoEscrituraSymbol redOnBlack
+#define modoEscrituraBSOD whiteOnBlue
 
 #define redOnBlack (C_BG_BLACK | C_FG_RED)
 #define greenOnBlack (C_BG_BLACK | C_FG_GREEN)

@@ -26,7 +26,7 @@ void startKernel64(){
 	//armo la estructura de paginacion para hacer identitty mapping sobre los primeros 64 gb
 	console_printf("Configuring paging...");
 	
-	init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!
+	//init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!  ==> pasar a C mas bonitamente
 	
 	console_puts("OK!", greenOnBlack);
 	console_printf("\n");
@@ -42,13 +42,13 @@ void startKernel64(){
 	//console_printf("AP CPU start RIP: %u\n", &ap_startup_code_page);
 	console_printf("Starting up multicore mode...");
 	
+	console_puts("FAILED!", redOnBlack);
 	//inicializar multicore
 	//multiprocessor_init();
-	
-	console_puts("OK!", greenOnBlack);
-	console_printf("\n");
-	console_println("DeliriOS started up.", redOnBlack);
-	console_println("--------------------------------------------------------------------------------", modoEscrituraTexto);
+	//
+	//console_puts("OK!", greenOnBlack);
+	console_printf("\n\n");
+	console_println("DeliriOS started up.", greenOnBlack);
 	console_initialize_console();
 
 
@@ -56,6 +56,8 @@ void startKernel64(){
 	// - TODO: esta hardcodeado en asm lo de mapear los primeros 4 gb
 	// - TODO: crear funciones en mmu para que sea posible mapear, desmapear paginas, y cambiar el contexto de paginas desde C
 	// BUG: la consola solo le envia al parser la ultima linea escrita ( si escribimos mas de 80 caracteres y damos enter solo se toman los de la ultima linea )
+	// esto lo podemos arreglar guardando un contador de lineas que se "bajan" por overflow de linea y cuando hacemos enter leemos la cantidad de lineas haciendo la dif
+	// entre la linea actual y la linea donde se comenzo a escribir.
 
 
 	//Disfrutar del tp final DeliriOS.
