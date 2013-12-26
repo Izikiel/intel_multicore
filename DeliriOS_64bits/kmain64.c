@@ -40,14 +40,13 @@ void startKernel64(){
 	console_printf("\n");
 
 	//console_printf("Multicore mode info:\n");
-	//console_printf("AP CPU start RIP: %u\n", &ap_startup_code_page);
-	console_printf("Starting up multicore mode...");
-	
-		console_puts("FAILED!", redOnBlack);
-		//inicializar multicore
-		//multiprocessor_init();
+	console_printf("AP CPU start RIP: %u\n", &ap_startup_code_page);
+	console_printf("Starting up multicore mode...");	
+	console_puts("FAILED!", redOnBlack);
+	//inicializar multicore
+	multiprocessor_init();
 
-	//console_puts("OK!", greenOnBlack);
+	console_puts("OK!", greenOnBlack);
 	console_printf("\n\n");
 	console_println("DeliriOS started up.", greenOnBlack);
 	console_initialize_console();

@@ -54,7 +54,7 @@ typedef struct {
 	uint8_t __reserved_signature_byte : 4;
 	uint16_t __reserved_signature_word;
 	//Feature flags as returned by CPUID instruction. Table 4.6 has values.
-	uint64_t features;
+	uint32_t features;
 } __attribute__((__packed__)) processor_entry;
 
 //MultiProcessor Configuration Table Entry for Bus. Table 4.7 of spec.
@@ -74,7 +74,7 @@ typedef struct {
 	//Enabled bit. If zero the APIC is unusable
 	uint8_t enabled : 1;
 	//Base address of APIC
-	void * base_address;
+	uint32_t base_address;
 } __attribute__((__packed__)) ioapic_entry;
 
 //MultiProcessor Configuration Table Entry for IO Interrupts.
@@ -144,13 +144,13 @@ typedef struct mp_config_table{
 	//Product ID: Name of product family of the system. Not NULL Terminated.
 	char product_id[12];
 	//OEM Table Pointer: Optional OEM defined config table. Zero if not defined.
-	struct mp_config_table * oem_config_table;
+	uint32_t oem_config_table;
 	//OEM Table Size: Length of optional OEM table. Zero if not defined.
 	uint16_t oem_table_length;
 	//Entries following this base header in memory.
 	uint16_t entry_count;
 	//Base address by which each processor acceses the local apic. 
-	uint64_t local_apic_addr;
+	uint32_t local_apic_addr;
 	//Length in bytes of the extended table entries. Zero if there are none.
 	uint16_t extended_table_length;
 	//Extended table checksum. All bytes of the extended table must sum to this
@@ -168,7 +168,7 @@ typedef struct {
 	char signature[4];
 	//Configuration pointer: Contais information of the multiprocessor
 	//configuration. All zeros if the configuration table does not exist.
-	mp_config_table * config;
+	uint32_t config;
 	//Length: Number of 16 byte chunks of this structure. Should be 1
 	uint8_t length;
 	//Version: Number of the MP Specification used. 1 for 1.1, 4 for 1.4

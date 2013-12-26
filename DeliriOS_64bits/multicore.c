@@ -167,7 +167,7 @@ start_icmr_apic_mode(void)
 //Register en el  offset F0 en bytes.
 //Nos puede servir para prender las otras.
 static void
-turn_on_apic(volatile uint64_t * apic)
+turn_on_apic(volatile uint32_t * apic)
 {
 	//0xF0 en bytes, pero usamos arreglo de int32 para poder hacer bien el
 	//offset lo dividimos por el tamaño de un int32
@@ -240,7 +240,7 @@ send_ipi(const intr_command_register * options)
 static void
 wait_for_ipi_reception(void)
 {
-	volatile uint64_t * local_apic = (volatile uint64_t *) DEFAULT_APIC_ADDR;
+	volatile uint32_t * local_apic = (volatile uint32_t *) DEFAULT_APIC_ADDR;
 	//Esperar a la recepcion de la IPI.
 	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
 	for(;local_apic[LAPIC_ICR_DWORD0] & (1 << 12););
@@ -252,7 +252,7 @@ static void
 turn_on_local_apic(const mp_config_table * mpct)
 {
 	fail_if(mpct->local_apic_addr != DEFAULT_APIC_ADDR);
-	volatile uint64_t * local_apic = (volatile uint64_t *) DEFAULT_APIC_ADDR;
+	volatile uint32_t * local_apic = (volatile uint32_t *) DEFAULT_APIC_ADDR;
 
 	//Poner el valor de la entrada de la IDT para el 
 	//Spurious Vector Interrupt y prendemos el local APIC.
@@ -265,7 +265,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 	//
 	//Estos valores los leo asi en base al manual Intel 3A Capitulo 10, donde
 	//especifica como estan armados.
-	uint64_t id = local_apic[LAPIC_ID_REG];
+	uint32_t id = local_apic[LAPIC_ID_REG];
 	id = (id >> 24) & 0xFF;
 
 	fail_if(id != processors[bootstrap_index].local_apic_id);
@@ -281,24 +281,24 @@ turn_on_local_apic(const mp_config_table * mpct)
 static void
 clear_apic_errors(void)
 {
-	uint64_t * local_apic = (uint64_t *) DEFAULT_APIC_ADDR;
+	uint32_t * local_apic = (uint32_t *) DEFAULT_APIC_ADDR;
 	local_apic[LAPIC_ERR_REG] = 0x0;
 }
 
 //Levanta la posicion de memoria a la que vamos a saltar por el codigo de 
 //reset
 static void
-set_warm_reset_vector(uint64_t address)
+set_warm_reset_vector(uint32_t address)
 {
 	//Seteamos al BIOS para que el shutdown sea reset warm por jump
 	cmos_writeb(0xF,0xA);
 	//Le ponemos a que direccion saltar en la posicion 40:67h en modo real.
-	*((uint64_t *) (0x40*16 +0x67)) = address;
+	*((uint32_t *) (0x40*16 +0x67)) = address;
 }
 
 static bool is_82489(void)
 {
-	volatile uint64_t * local_apic = (volatile uint64_t *) DEFAULT_APIC_ADDR;
+	volatile uint32_t * local_apic = (volatile uint32_t *) DEFAULT_APIC_ADDR;
 	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar 
 	//usando el bit 4 del byte del registro de version;
 	return !(local_apic[LAPIC_VER_REG] & (1 << 4));
@@ -306,7 +306,7 @@ static bool is_82489(void)
 
 //Enciende todos los APs
 static void
-turn_on_aps(uint64_t ap_startup_code_page)
+turn_on_aps(uint32_t ap_startup_code_page)
 {
 	//De acuerdo a http://www.cheesecake.org/sac/smp.html, primero hay que
 	//poner Warm Reset with far jump en el CMOS y poner la direccion a la que
@@ -373,15 +373,18 @@ turn_on_aps(uint64_t ap_startup_code_page)
 static void 
 determine_cpu_configuration(const mp_float_struct * mpfs)
 {
-	mp_config_table * mpct = mpfs->config;
+	intptr_t ptr = mpfs->config;
+	mp_config_table * mpct = (mp_config_table *) ptr;
 	fail_if(!check_valid_mpct(mpct));
 
 	console_printf("\tMPCT TABLE: %u\n",(uint64_t) mpct);
 	//Seguimos las entradas de la tabla de configuracion
 	fail_unless(mpct->entry_count > 0);
+	console_printf("Entryies: %u\n",mpct->entry_count);
 	const mp_entry * entry = mpct->entries;
 
 	for(uint64_t entryi = 0; entryi < mpct->entry_count; entryi++){
+		console_printf("\tENTRY: %u\n",(uint64_t) entry);
 		if(entry->entry_type == PROCESSOR){
 			configure_processor(&entry->chunk.processor);
 		}
@@ -400,7 +403,8 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 
 	turn_on_local_apic(mpct);
 
-	uint64_t ap_symb = (uint64_t) &ap_startup_code_page;
+	intptr_t ap_startup_address = (intptr_t) &ap_startup_code_page;
+	uint32_t ap_symb = (uint32_t) (ap_startup_address & 0xFFFFFFFF);
 
 	//Se require que la pagina donde se inicia a ejecutar el codigo 16 bits
 	//de modo real del AP este alineada a pagina.
@@ -431,7 +435,7 @@ void multiprocessor_init()
 {
 	//check &ap_startup_code_page % 0x1000 == 0
 	//es decir, que este alineado a pagina de 4k el RIP de los AP CPU's
-	fail_unless((uint64_t)(&ap_startup_code_page) % 0x1000 == 0)
+	//fail_unless(((uint64_t)(&ap_startup_code_page) & 0xFFF) == 0)
 
 	//console_cls();
 	check_struct_sizes();

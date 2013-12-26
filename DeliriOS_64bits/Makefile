@@ -50,8 +50,6 @@ all: console_clear clean image
 kernel.bin: $(OBJ)
 	@echo 'Linkeando kernel...'
 	$(LD) $(LDFLAGS) -o $@ $(OBJ)
-	@echo ''
-
 	@echo 'Generando imagen del kernel...'
 	mv kernel.bin kernel.bin.tmp
 	dd if=/dev/zero of=kernel.bin bs=1 count=$(KERNELSIZE) conv=notrunc status=noxfer > /dev/null 2>&1
@@ -62,7 +60,6 @@ kernel.bin: $(OBJ)
 image: kernel.bin $(DEPEND) $(DISK_IMG)
 	@echo 'Copiando el $(KERNEL_BIN) a la imagen de diskette'
 	$(MCOPY) -o -i $(DISK_IMG) $(KERNEL_BIN) ::/	
-	@echo ''
 	@echo 'Corriendo bochs'
 	./bochs/bin/bochs -q -f bochsrc
 
@@ -78,5 +75,3 @@ clean:
 	rm -f *.bin
 	rm -f *.tmp
 	rm -f $(DISK_IMG)
-	@echo ''
-

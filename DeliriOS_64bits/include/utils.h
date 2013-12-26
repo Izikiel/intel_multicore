@@ -6,6 +6,8 @@
 #define min(a,b) (((a)<(b))?(a):(b))
 #define max(a,b) (((a)>(b))?(a):(b))
 
+#define BOCHSBREAK __asm__ __volatile__("xchg %bx,%bx")
+
 //impl en i386.asm
 extern void breakpoint();
 
