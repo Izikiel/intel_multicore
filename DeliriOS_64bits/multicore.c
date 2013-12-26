@@ -192,8 +192,8 @@ static uint64_t delivery_mode_flag[] = {
 static void
 initialize_ipi_options(	intr_command_register * options,
 						delivery_mode_type delivery_mode,
-						uint64_t vector,
-						uint64_t destination)
+						uint32_t vector,
+						uint32_t destination)
 {
 	//Ponemos todo en cero para asegurar que los reserved bits esten en zero.
 	memset(options,0,sizeof(*options));
@@ -207,8 +207,7 @@ initialize_ipi_options(	intr_command_register * options,
 	}else{
 		options->destination_shorthand = 0;
 	}
-	
-	
+		
 	//Para distinguir INIT y INIT DeAssert se usan flags distintos en otros
 	//lados. Para eso utilizamos un modo separado de envio.
 	if(delivery_mode == INIT_DASSERT){
@@ -225,8 +224,8 @@ initialize_ipi_options(	intr_command_register * options,
 static void
 send_ipi(const intr_command_register * options)
 {
-	uint64_t * local_apic = (uint64_t *) DEFAULT_APIC_ADDR;
-	const uint64_t * opts = (const uint64_t *) options;
+	uint32_t * local_apic = (uint32_t *) DEFAULT_APIC_ADDR;
+	const uint32_t * opts = (const uint32_t *) options;
 
 	//Copiar opciones al mensaje que vamos a utilizar.
 	//Se tiene que hacer de a 32 bits alineado a 16 bytes. Por eso el ICR

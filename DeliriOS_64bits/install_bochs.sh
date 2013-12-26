@@ -10,16 +10,21 @@ if [[ -f ./bochs/bin/bochs ]]; then
 fi
 
 URL="http://downloads.sourceforge.net/project/bochs/bochs/2.6.2/bochs-2.6.2.tar.gz"
-#Prerequisito para bochs, tener gtk
-dpkg -l | grep -qw libgtk2.0-dev || apt-get install libgtk2.0-dev
 
+#Prerequisito para bochs, tener gtk
+sudo apt-get install libx11-6:i386
+sudo apt-get install libx11-6:i386
+dpkg -l | grep -qw libgtk2.0-dev || apt-get install libgtk2.0-dev
 dpkg -l | grep -qw libgtk2.0-dev || sudo apt-get libgtk2.0-dev
+
 wget -O bochs.tar.gz $URL
 mkdir bochs-installation
 mkdir bochs
 tar zxvf bochs.tar.gz -C bochs-installation
 cd bochs-installation/bochs-2.6.2
 export LDFLAGS=-lpthread
+export CFLAGS="-Wall -O2 -m32"
+export CXXFLAGS="$CFLAGS"
 ./configure --enable-x86-64 --enable-smp --enable-long-phy-address \
 	--enable-debugger --enable-disasm\
 	--enable-readline --enable-cpu-level=6\
