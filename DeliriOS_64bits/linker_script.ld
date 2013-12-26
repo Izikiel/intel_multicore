@@ -1,8 +1,6 @@
 OUTPUT_FORMAT("binary")
 ENTRY(kernel)
-/*aca hay un tema de magnitud turbia, el codigo arranca en 0x1200 y necesitamos un ap_startup_code_page alineado a 4k, */
-/*sale rellenar de instrucciones nops hasta alinear?.*/
-ap_startup_code_page = 0x1200;
+ap_startup_code_page = 0x2000;
 SECTIONS
 {
     . = 0x1200;
@@ -14,6 +12,8 @@ SECTIONS
         . = ALIGN(4096);
         end_section_text = .;
     }
+    
+    
     
     .data : 
     {    

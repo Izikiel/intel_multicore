@@ -17,7 +17,7 @@ DEPEND = Makefile\
 
 OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o irq.o contextManager.o console.o utils.o kmain64.o \
 	keyboard.o command.o i386.o timer.o multicore.o cmos.o command_sleep.o command_paramtest.o command_clear.o\
-	command_listcommands.o
+	command_listcommands.o ap_startup_code.o
 
 DISK_IMG=diskette.img
 DISK_IMG_BZ=diskette.img.bz2
