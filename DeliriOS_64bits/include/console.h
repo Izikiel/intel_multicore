@@ -87,10 +87,11 @@ void console_get_last_line(char* buffer);//Nota, el buffer devuelto es de tamani
 void console_initialize_console();
 void console_reset_console();
 
-//Imprime el mensaje, con formato estilo printf de C. 
-//PRE: La cantidad de parametros pasados DEBE ser correcta
 void console_printf(const char* msg, ...);
-// Tomado de juampi OS
 void console_vprintf(const char* msg, va_list l);
+
+//hay que pasarle PUNTEROS a lo que queremos levantar!
+void console_scanf(const char* format, ...);
+void console_sscanf(const char* msg, const char* format, va_list l);
 
 #endif  /* !__console_H__ */

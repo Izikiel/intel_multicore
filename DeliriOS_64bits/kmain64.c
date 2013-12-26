@@ -4,6 +4,7 @@
 #include <mmu.h>
 #include <timer.h>
 #include <multicore.h>
+#include <utils.h>
 
 void startKernel64(){
 
@@ -50,6 +51,20 @@ void startKernel64(){
 	console_printf("\n\n");
 	console_println("DeliriOS started up.", greenOnBlack);
 	console_initialize_console();
+
+//	console_printf("Ingrese un numero entero:\n");
+//	uint64_t a=0;
+//	console_scanf("%s", &a);
+//	console_printf("El numero que ingreso es %d\n", a);
+
+//	uint64_t a = 14;
+//	uint64_t b = 22;
+//	char buffer[256];
+//	memset(buffer, '\0', 256);
+//	char caracter = 'y';
+//
+//	console_scanf("%d %d %s %c", &a, &b, buffer, &caracter);
+//	console_printf("%d %d %s %c", a, b, buffer, caracter);
 
 
 	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!

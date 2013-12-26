@@ -3,6 +3,7 @@
 #include <defines.h>
 #include <utils.h>
 #include <vargs.h>
+#include <asserts.h>
 
 //NOTA:ojo que como es puntero a short, incrementar el puntero corre solo sizeof(uint16_t) = 2 bytes
 static uint16_t* _outputMemoryPtr = (uint16_t*) VIDEO_MEMORY;
@@ -401,3 +402,97 @@ void console_get_last_line(char* buffer)//Nota, el buffer devuelto es de tamanio
 }
 
 //-------------- End Console reading functions -------------------
+
+//-------------- Start Console FORMATTED reading functions -------------------
+
+//hay que pasarle PUNTEROS a lo que queremos levantar!
+void console_scanf(const char* format, ...){
+	char buffer[256];
+	memset(buffer, '\0', 256);
+	console_get_last_line(buffer);
+	va_list l;
+	va_start(l, format);	
+	console_sscanf(buffer, format, l);
+	va_end(l);
+}
+
+//buffer es de 256 bytes
+//devuelve el currentIdx modificado luego del parseo
+uint64_t parseNextString(const char* msg, char* buffer, char nextDelimiter, uint64_t currentIdx){
+//	console_printf("\t'%s' hasta '%c'\n", msg, nextDelimiter);
+	memset(buffer, '\0', 256);
+	uint16_t j=0;
+	//itero hasta encontrar un espacio o otro parametro que comience con % o el fin de cadena
+	while((msg[currentIdx] != nextDelimiter) && (msg[currentIdx] != '\0')){
+		buffer[j++]=msg[currentIdx++];
+		fail_if(j>=256);//buffer overflow(es de 256)
+	}
+	
+	if(msg[currentIdx] == nextDelimiter){
+		//ignoramos el delimitador
+		currentIdx++;
+	}
+	
+	return currentIdx;
+}
+
+void console_sscanf(const char* inputStr, const char* format, va_list l)
+{
+//	console_printf("Input string: '%s'\n", inputStr);
+//	console_printf("Format string: '%s'\n", format);
+	char buffer[256];//numeros y cadenas de hasta 256 digitos, sino volamos en pedazos
+	uint64_t formatIdx = 0;
+	uint64_t inputStrIdx = 0;
+	bool continueParsing = format[formatIdx] != '\0';
+
+	while(continueParsing){
+		
+		if(format[formatIdx] == '%'){
+			
+			formatIdx++;
+
+			if(format[formatIdx] != '\0'){
+
+				switch(format[formatIdx]){
+					case 'd'://parse integer						
+						inputStrIdx = parseNextString(inputStr, buffer, format[formatIdx+1], inputStrIdx);
+                		//ahora tengo en buffer capturado el "entero", lo guardo como numero en el ptr indicado
+                		uint64_t* ptrInt = va_arg(l, uint64_t*);
+                        *ptrInt = atoi(buffer);
+						break;
+                	case 's'://parse string
+                		inputStrIdx = parseNextString(inputStr, buffer, format[formatIdx+1], inputStrIdx);
+                		//ahora tengo en buffer capturado el "string", lo guardo como numero en el ptr indicado
+                		char* ptrStr = va_arg(l, char*);
+                		//lo copio, sino cuando salgo de la funcion lo perdi de vista porque es stack!
+                        strcpy(ptrStr, buffer);
+                        break;
+                	case 'c':
+                		//esto parsea un char
+                		parseNextString(inputStr, buffer, format[formatIdx+1], inputStrIdx);
+                		char* ptrChar = va_arg(l, char*);
+                		*ptrChar = inputStr[inputStrIdx];
+                        break;
+                	case 'b':
+                		//esto parsea una cadena("true" o "false") y la guarda en un puntero pasado por parametro
+                		//sigo iterando hasta encontrar un espacio , otro parametro o el fin de cadena
+                		inputStrIdx = parseNextString(inputStr, buffer, format[formatIdx+1], inputStrIdx);
+                		bool* boolPtr = va_arg(l, bool*);
+                		if(strcmp(buffer, "true") == 0){
+                			*boolPtr = true;
+                		}else{
+							*boolPtr = false;
+                		}
+                        break;
+				}
+
+			}//else fin de cadena
+
+		}//else no nos importa este caracter
+
+		continueParsing = inputStr[formatIdx] != '\0';
+		formatIdx++;
+	}
+}
+
+//-------------- Start Console FORMATTED reading functions -------------------
