@@ -376,14 +376,14 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	mp_config_table * mpct = (mp_config_table *) ptr;
 	fail_if(!check_valid_mpct(mpct));
 
-	console_printf("\tMPCT TABLE: %u\n",(uint64_t) mpct);
+	//console_printf("\tMPCT TABLE: %u\n",(uint64_t) mpct);
 	//Seguimos las entradas de la tabla de configuracion
 	fail_unless(mpct->entry_count > 0);
-	console_printf("Entries: %u\n",mpct->entry_count);
+	//console_printf("Entries: %u\n",mpct->entry_count);
 	const mp_entry * entry = mpct->entries;
 
 	for(uint64_t entryi = 0; entryi < mpct->entry_count; entryi++){
-		console_printf("\tENTRY: %u\n",(uint64_t) entry);
+		//console_printf("\tENTRY: %u\n",(uint64_t) entry);
 		if(entry->entry_type == PROCESSOR){
 			configure_processor(&entry->chunk.processor);
 		}

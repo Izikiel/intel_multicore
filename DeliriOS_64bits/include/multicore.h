@@ -9,7 +9,7 @@
 #include <types.h>
 
 //Pagina de codigo donde esta el codigo que van a ejecutar los cores ap
-extern uint64_t ap_startup_code_page;
+extern uint32_t ap_startup_code_page;
 
 #define MP_ENTRY_TYPES 5
 
