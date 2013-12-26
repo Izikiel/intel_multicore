@@ -119,13 +119,13 @@ static int bootstrap_index = -1;
 static void
 configure_processor(const processor_entry * entry)
 {
-	console_printf("\tEntrada de procesador: \n"
-		"\tLAPIC (%u / %u)\n"
-		"\tFLAGS (%u / %u)\n"
-		"\tIS BP: %b\n",
-		entry->local_apic_id,entry->version,
-		entry->model,entry->family,
-		entry->bootstrap);
+	//console_printf("\tEntrada de procesador: \n"
+	//	"\tLAPIC (%u / %u)\n"
+	//	"\tFLAGS (%u / %u)\n"
+	//	"\tIS BP: %b\n",
+	//	entry->local_apic_id,entry->version,
+	//	entry->model,entry->family,
+	//	entry->bootstrap);
 
 	//Agregar el procesador a la lista de procesadores. Que por ahora es un
 	//arreglo fijo.
@@ -379,7 +379,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	console_printf("\tMPCT TABLE: %u\n",(uint64_t) mpct);
 	//Seguimos las entradas de la tabla de configuracion
 	fail_unless(mpct->entry_count > 0);
-	console_printf("Entryies: %u\n",mpct->entry_count);
+	console_printf("Entries: %u\n",mpct->entry_count);
 	const mp_entry * entry = mpct->entries;
 
 	for(uint64_t entryi = 0; entryi < mpct->entry_count; entryi++){

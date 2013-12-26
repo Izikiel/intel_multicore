@@ -1,6 +1,6 @@
 OUTPUT_FORMAT("binary")
 ENTRY(kernel)
-ap_startup_code_page = 0x2000;
+/*ap_startup_code_page = 0x2000;*/
 SECTIONS
 {
     . = 0x1200;
@@ -13,7 +13,14 @@ SECTIONS
         end_section_text = .;
     }
     
-    
+    /*aca . esta alineado a 4k!*/
+    .apstartsection :
+    {
+        ap_startup_code_page = .;
+        *(.apstartsection)
+        . = ALIGN(4096);
+        end_ap_startup_code_page = .;
+    }
     
     .data : 
     {    
