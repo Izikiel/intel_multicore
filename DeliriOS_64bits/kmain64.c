@@ -6,6 +6,17 @@
 #include <multicore.h>
 #include <utils.h>
 
+extern uint64_t start_section_text;
+extern uint64_t end_section_text;
+//extern uint64_t ap_startup_code_page;		 ya esta en multicore.h
+extern uint64_t end_ap_startup_code_page;
+extern uint64_t start_section_data;
+extern uint64_t end_section_data;
+extern uint64_t start_section_rodata;
+extern uint64_t end_section_rodata;
+extern uint64_t start_section_bss;
+extern uint64_t end_section_bss;
+
 void startKernel64(){
 
 	//En este punto lo que se tiene inicializado es:
@@ -27,7 +38,7 @@ void startKernel64(){
 	//armo la estructura de paginacion para hacer identitty mapping sobre los primeros 64 gb
 	console_printf("Configuring paging...");
 	
-	//init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!  ==> pasar a C mas bonitamente
+	init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!  ==> pasar a C mas bonitamente
 	
 	console_puts("OK!", greenOnBlack);
 	console_printf("\n");
@@ -39,31 +50,15 @@ void startKernel64(){
 	console_puts("OK!", greenOnBlack);
 	console_printf("\n");
 
-	//console_printf("Multicore mode info:\n");
-	console_printf("AP CPU start RIP: %u\n", &ap_startup_code_page);
-	console_printf("Starting up multicore mode...");	
-	console_puts("FAILED!", redOnBlack);
-	//inicializar multicore
+	console_printf("Starting up multicore mode...\n");	
+	console_printf("AP CPUs starting at RIP: %u\n", &ap_startup_code_page);
 	multiprocessor_init();
+	console_println("Multicore started OK!", greenOnBlack);
 
-	console_puts("OK!", greenOnBlack);
+	//inicializar consola y dar bienvenida
 	console_printf("\n\n");
 	console_println("DeliriOS started up.", greenOnBlack);
 	console_initialize_console();
-
-//	console_printf("Ingrese un numero entero:\n");
-//	uint64_t a=0;
-//	console_scanf("%s", &a);
-//	console_printf("El numero que ingreso es %d\n", a);
-
-//	uint64_t a = 14;
-//	uint64_t b = 22;
-//	char buffer[256];
-//	memset(buffer, '\0', 256);
-//	char caracter = 'y';
-//
-//	console_scanf("%d %d %s %c", &a, &b, buffer, &caracter);
-//	console_printf("%d %d %s %c", a, b, buffer, caracter);
 
 
 	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!
@@ -108,9 +103,14 @@ void kernel_panic(const char* functionSender, const char* message){
 	console_printf("\nCR2 = %u", getCR2());
 	console_printf("\tCR3 = %u", getCR3());
 	console_printf("\nCR4 = %u", getCR4());
-	console_printf("\tRFLAGS = %u", getRFLAGS());
+	console_printf("\tRFLAGS = %u\n", getRFLAGS());
 
-	console_printf("\n\nSystem Halted.");
+	//info de como linkea todo en memoria
+	console_printf("section_text: 			[%u..%u)\n", &start_section_text, &end_section_text);
+	console_printf("ap_startup_code_page: 	[%u..%u)\n", &ap_startup_code_page, &end_ap_startup_code_page);
+	console_printf("section_data: 			[%u..%u)\n", &start_section_data, &end_section_data);
+	console_printf("section_rodata: 		[%u..%u)\n", &start_section_rodata, &end_section_rodata);
+	console_printf("section_bss: 			[%u..%u)\n", &start_section_bss, &end_section_bss);
 
 	console_hide_text_cursor();
 	haltCpu();

@@ -323,7 +323,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 
 		//No despertar al BSP, porque no es AP
 		if(p->bootstrap) continue;
-		console_printf("\tProcesador %u - %u\n",proci,p->local_apic_id);
+		//console_printf("\tProcesador %u - %u\n",proci,p->local_apic_id);
 
 		//Crear mensaje de INIT e INIT Deasserted inicial para IPI
 		intr_command_register init_ipi,init_ipi_doff;
@@ -339,7 +339,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 			ap_startup_code_page >> 12,p->local_apic_id);
 
 		//Enviar las ipis de inicio
-		console_printf("\tEnviando IPI de inicio\n");
+		//console_printf("\tEnviando IPI de inicio\n");
 		send_ipi(&init_ipi);
 		wait_for_ipi_reception();
 		send_ipi(&init_ipi_doff);
@@ -348,10 +348,10 @@ turn_on_aps(uint32_t ap_startup_code_page)
 						  //(1000 10 microseg con la unidad considerada).
 		sleep(1); //Dormir un poco mas de 10 milisegundos (0.055 segundos)
 
-		console_printf("\tIPI de inicio enviada\n");
+		//console_printf("\tIPI de inicio enviada\n");
 		if(send_startup_ipis){
 			clear_apic_errors();
-			console_printf("\tEnviando IPIs de startup\n");
+			//console_printf("\tEnviando IPIs de startup\n");
 			//Enviar las STARTUP ipis, dormir y esperar.
 			send_ipi(&startup_ipi);	
 			//core_sleep(20); //Dormir 200 microsegundos
@@ -445,16 +445,16 @@ void multiprocessor_init()
 		return;
 	}
 
-	console_printf("\tEstructura MPFS encontrada: %u\n", mpfs);
+	//console_printf("\n\tEstructura MPFS encontrada: %u\n", mpfs);
 
 	//Recorrer estructura y determinar los cores
 	if(mpfs->config != 0){
 		//Configuracion hay que determinarla
-		console_printf("\tConfiguracion a determinar\n");
+		//console_printf("\tConfiguracion a determinar\n");
 		determine_cpu_configuration(mpfs);
 	}else if(mpfs->mp_features1 != 0){
 		//La configuracion ya esta definida y es una estandar
-		console_printf("\tConfiguracion default numero: %d",mpfs->mp_features1);
+		//console_printf("\tConfiguracion default numero: %d",mpfs->mp_features1);
 		determine_default_configuration(mpfs);	
 	}else{
 		kernel_panic(__FUNCTION__, "Configuracion MPFS invalida");	

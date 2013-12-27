@@ -1,5 +1,6 @@
 ;Este codigo es el codigo de inicializacion de los Application Processors.
 ;Dado que inician en modo real, deben iniciar el procesador desde cero.
+%include "macros/asm_screen_utils.mac"
 BITS 16
 
 section .apstartsection
@@ -7,32 +8,12 @@ global mp_ap_start
 
 jmp mp_ap_start
 
-iniciando_mr_msg db 'Hola! Soy un core...'
-iniciando_mr_len equ    $ - iniciando_mr_msg
+iniciando_ap_msg db '[CPU1] * Core AP iniciado...'
+iniciando_ap_len equ    $ - iniciando_ap_msg
 
 mp_ap_start:
 	;Imprimir mensaje
-	;Cuanto queda imprimir
-	mov cx,iniciando_mr_len
-
-	;Posicion en buffer
-	mov edi,iniciando_mr_msg
-
-	;Color
-	mov ax, 0x200
-
-	;Segmento de video
-	mov bx, 0xb800
-	mov es, bx
+	imprimir_texto_mr iniciando_ap_msg, iniciando_ap_len, 0x0A, 0, 11*80*2 + 8
 	
-	;Posicion en memoria de video
-	mov bx, 23*2*80
-
-.imprimir:
-	mov al, [di]
-	mov [es:bx], ax
-	add bx, 2
-	inc di
-	loop .imprimir
-
-	jmp $
+	cli
+	hlt
