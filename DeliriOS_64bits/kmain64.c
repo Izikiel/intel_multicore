@@ -17,7 +17,7 @@ extern uint64_t end_section_rodata;
 extern uint64_t start_section_bss;
 extern uint64_t end_section_bss;
 
-void startKernel64(){
+void startKernel64_BSPMODE(){
 
 	//En este punto lo que se tiene inicializado es:
 	// - Mapeados con Identity mapping los primeros 2 megas de memoria(con PAE) -> esto se hace en modo protegido de 32
@@ -66,6 +66,10 @@ void startKernel64(){
 	// - TODO: crear funciones en mmu para que sea posible mapear, desmapear paginas, y cambiar el contexto de paginas desde C
 
 	//Disfrutar del tp final DeliriOS.
+}
+
+void startKernel64_APMODE(){
+	//aca el codigo ojo que aparentemente se pisa con otras cosas.
 }
 
 void kernel_panic(const char* functionSender, const char* message){

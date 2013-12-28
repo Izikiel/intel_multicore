@@ -22,7 +22,7 @@ extern habilitar_pic
 extern krnPML4T
 
 ;; startup
-extern startKernel64
+extern startKernel64_BSPMODE
 
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 16
@@ -190,7 +190,7 @@ pd_again:               ; Create a 2 MiB page
     jne pd_again            ; Create 2048 2 MiB page maps.
 
 ; Point cr3 at PML4
-    mov eax, 0x00040000     ; Write-thru (Bit 3)
+    mov eax, 0x00040000
     mov cr3, eax
 
     mov eax, cr4                 ; Set the A-register to control register 4.
@@ -245,7 +245,7 @@ ModoLargoNoDisp:
 BITS 64
 long_mode:
     ;levanto segmentos con valores iniciales
-    XOR eax, eax
+    XOR rax, rax
     MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
     MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
@@ -274,7 +274,7 @@ long_mode:
     STI
 
     ;llamo al entrypoint en kmain64
-    call startKernel64
+    call startKernel64_BSPMODE
 
     ;fin inicio kernel en 64 bits!
     halt: hlt
