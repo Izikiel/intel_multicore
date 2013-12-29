@@ -9,7 +9,7 @@
 
 typedef struct str_gdt_descriptor {
     uint16_t  gdt_length;
-    uint64_t    gdt_addr;/*cambia 64 pero es lo mismo en little endian*/
+    uint64_t    gdt_addr;
 } __attribute__((__packed__)) gdt_descriptor;
 
 typedef struct str_gdt_entry {
