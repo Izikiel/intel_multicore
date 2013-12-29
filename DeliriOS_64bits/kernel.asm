@@ -49,8 +49,11 @@ mensaje_64bitserr_len      equ $ - mensaje_64bitserr_msg
 mensaje_cpuiderr_msg:     db 'FAIL! CPUID unavailable! -> Kernel Halted.'
 mensaje_cpuiderr_len        equ $ - mensaje_cpuiderr_msg
 
-mensaje_paging_msg:             db 'Configuring paging...'
-mensaje_paging_len              equ $ - mensaje_paging_msg
+mensaje_paging4g_msg:             db 'Configuring PAE paging up to 4GB...'
+mensaje_paging4g_len              equ $ - mensaje_paging4g_msg
+
+mensaje_paging64g_msg:             db 'Extending paging up to 64GB...'
+mensaje_paging64g_len              equ $ - mensaje_paging64g_msg
 
 mensaje_interrupt_msg:             db 'Initializing interrupt handling...'
 mensaje_interrupt_len              equ $ - mensaje_interrupt_msg
@@ -100,7 +103,17 @@ kernel:
 ;------------------------------------------------------------------------------------------------------
 
 BITS 32
-protected_mode:    
+protected_mode:   
+    ;limpio los registros
+    xor eax, eax
+    xor ebx, ebx
+    xor ecx, ecx
+    xor edx, edx
+    xor esi, esi
+    xor edi, edi
+    xor ebp, ebp
+    xor esp, esp
+
     ;cargo los selectores de segmento de modo protegido
     xor eax, eax
     mov ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
@@ -139,7 +152,7 @@ protected_mode:
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
 
 ;inicializo paginacion 
-    imprimir_texto_mp mensaje_paging_msg, mensaje_paging_len, 0x0F, 3, 0 
+    imprimir_texto_mp mensaje_paging4g_msg, mensaje_paging4g_len, 0x0F, 3, 0 
 
 ;    Estoy usando paginacion IA-32e => bits CR0.PG=1 + CR4.PAE=1 + EFER.LME=1
 ;    paginas de 2mb
@@ -150,7 +163,7 @@ protected_mode:
 
 ; Mapeo 4GB con paginas de 2MB
 ; la estructura PML4 esta en krnPML4T, creamos la primer entrada aca
-    cld                     ;limpia el direction flag
+    cld                     ;limpia el direction flag -> http://en.wikipedia.org/wiki/Direction_flag
     mov edi, [krnPML4T]     
     mov eax, [krnPDPT]
     or eax, 0x7; attributes nibble
@@ -163,7 +176,7 @@ protected_mode:
 
 ; creo las entradas en PDP
 ; la estructura PDP esta en krnPDPT, creamos las entradas desde este lugar
-    mov ecx, 64             ; hago 64 PDPE entries cada una mapea 1gb de memoria
+    mov ecx, 64             ; hago 64 PDPE entries cada una mapea 1gb de memoria -> mas abajo las mapeo en x64 mode
     mov edi, [krnPDPT]
     mov eax, [krnPDT]     
     or eax, 0x7; attributes nibble
@@ -190,14 +203,14 @@ pd_loop:
     pop eax
     add eax, 0x00200000     ;incremento 2 MB
     inc ecx
-    cmp ecx, 2048*16
-    jne pd_loop            ; Create 2048*16 2 MiB page maps.
+    cmp ecx, 2048
+    jne pd_loop            ; Create 2048 2 MiB page maps.
 
     ; apunto cr3 al PML4
     mov eax, [krnPML4T]
     mov cr3, eax
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging_len
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging4g_len
 
     ;comienzo a inicializar 64 bits
     imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 4, 0    
@@ -249,6 +262,24 @@ ModoLargoNoDisp:
 
 BITS 64
 long_mode:
+    ;limpio los registros
+    xor rax, rax
+    xor rbx, rbx
+    xor rcx, rcx
+    xor rdx, rdx
+    xor rsi, rsi
+    xor rdi, rdi
+    xor rbp, rbp
+    xor rsp, rsp
+    xor r8, r8
+    xor r9, r9
+    xor r10, r10
+    xor r11, r11
+    xor r12, r12
+    xor r13, r13
+    xor r14, r14
+    xor r15, r15
+
     ;levanto segmentos con valores iniciales
     XOR rax, rax
     MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
@@ -263,13 +294,32 @@ long_mode:
     ;setear la pila en para el kernel
     MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
-    
+
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 5, mensaje_inicio64real_len
 
     ;levanto la IDT de 64 bits
     lidt [IDT_DESC]
     call idt_inicializar
+    
+    imprimir_texto_ml mensaje_paging64g_msg, mensaje_paging64g_len, 0x0F, 6, 0
+    
+    ;genero el resto de las estructuras de paginacion para mapear 64 gb
+    ;lo tengo que hacer aca porque la direccion es de 64 bits, en modo protegido de 32 no podia
+    mov rcx, 0x0000000000000000
+    mov rax, 0x000000010000008F
+    mov rdi, [krnPDT]
+    add rdi, 0x4000;los primeros 4gb ya los tengo bien mapeados
+loop_64g_structure:
+    stosq
+    add rax, 0x0000000000200000
+    add rcx, 1
+    cmp rcx, 30720         ; 32768 - 2048 (ya mapeamos 2048*2mb)
+    jne loop_64g_structure
 
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_paging64g_len
+
+    imprimir_texto_ml mensaje_interrupt_msg, mensaje_interrupt_len, 0x0F, 7, 0
+    
     ;configurar controlador de interrupciones
     CALL deshabilitar_pic
     CALL resetear_pic
@@ -277,12 +327,12 @@ long_mode:
 
     ;habilito las interrupciones! :D
     STI
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 7, mensaje_interrupt_len
 
     ;llamo al entrypoint en kmain64
-    xor rdx, rdx
     call startKernel64_BSPMODE
 
-    ;fin inicio kernel en 64 bits!
+    ;fin inicio kernel para BSP en 64 bits!
     halt: hlt
         jmp halt
 

@@ -57,6 +57,16 @@ mr_ap_start:
 
 BITS 32
 protected_mode:    
+    ;limpio los registros
+    xor eax, eax
+    xor ebx, ebx
+    xor ecx, ecx
+    xor edx, edx
+    xor esi, esi
+    xor edi, edi
+    xor ebp, ebp
+    xor esp, esp
+
     ;cargo los selectores de segmento de modo protegido
     xor eax, eax
     mov ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
@@ -73,7 +83,7 @@ protected_mode:
 	;Las estructuras de paginacion ya fueron inicializadas por el BSP
 
 	;apuntar cr3 al PML4
-    mov eax, 0x00040000
+    mov eax, [krnPML4T]
     mov cr3, eax
 
     ;prender el bit 5(6th bit) para activar PAE
@@ -103,6 +113,24 @@ protected_mode:
 
 BITS 64
 long_mode:
+    ;limpio los registros
+    xor rax, rax
+    xor rbx, rbx
+    xor rcx, rcx
+    xor rdx, rdx
+    xor rsi, rsi
+    xor rdi, rdi
+    xor rbp, rbp
+    xor rsp, rsp
+    xor r8, r8
+    xor r9, r9
+    xor r10, r10
+    xor r11, r11
+    xor r12, r12
+    xor r13, r13
+    xor r14, r14
+    xor r15, r15
+
     ;levanto segmentos con valores iniciales
     XOR rax, rax
     MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
@@ -130,8 +158,7 @@ long_mode:
     ;llamo al entrypoint en kmain64
     call startKernel64_APMODE
 
-    ;fin inicio kernel en 64 bits!
-
+    ;fin inicio kernel para AP en 64 bits!
     halt: hlt
         jmp halt
 

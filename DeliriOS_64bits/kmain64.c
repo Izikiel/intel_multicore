@@ -31,8 +31,8 @@ void startKernel64_BSPMODE(){
 	//-----------------------------------------------------------------------------------------------------------------
 
 	//inicializo la consola
-	//pongo 6 porque es la linea donde termina de escribir kernel.asm con las macros de asm
-	console_setYCursor(6);
+	//pongo 8 porque es la linea donde termina de escribir kernel.asm con las macros de asm
+	console_setYCursor(8);
 	console_setXCursor(0);
 
 	console_printf("Configuring timer...");
