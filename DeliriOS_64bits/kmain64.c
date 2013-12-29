@@ -31,17 +31,9 @@ void startKernel64_BSPMODE(){
 	//-----------------------------------------------------------------------------------------------------------------
 
 	//inicializo la consola
-	//pongo 5 porque es la linea donde termina de escribir kernel.asm con las macros de asm
-	console_setYCursor(5);
+	//pongo 6 porque es la linea donde termina de escribir kernel.asm con las macros de asm
+	console_setYCursor(6);
 	console_setXCursor(0);
-	
-	//armo la estructura de paginacion para hacer identitty mapping sobre los primeros 64 gb
-	console_printf("Configuring paging...");
-	
-	init_64gb_identity_mapping(); //TODO: ESTA HARDCODEADO EN ASM!  ==> pasar a C mas bonitamente
-	
-	console_puts("OK!", greenOnBlack);
-	console_printf("\n");
 
 	console_printf("Configuring timer...");
 	

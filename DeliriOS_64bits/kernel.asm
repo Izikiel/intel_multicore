@@ -20,6 +20,9 @@ extern habilitar_pic
 
 ;;paginacion
 extern krnPML4T
+extern krnPDPT
+extern krnPDT
+extern krnPT
 
 ;; startup
 extern startKernel64_BSPMODE
@@ -45,6 +48,12 @@ mensaje_64bitserr_len      equ $ - mensaje_64bitserr_msg
 
 mensaje_cpuiderr_msg:     db 'FAIL! CPUID unavailable! -> Kernel Halted.'
 mensaje_cpuiderr_len        equ $ - mensaje_cpuiderr_msg
+
+mensaje_paging_msg:             db 'Configuring paging...'
+mensaje_paging_len              equ $ - mensaje_paging_msg
+
+mensaje_interrupt_msg:             db 'Initializing interrupt handling...'
+mensaje_interrupt_len              equ $ - mensaje_interrupt_msg
 
 mensaje_ok_msg:             db 'OK!'
 mensaje_ok_len              equ $ - mensaje_ok_msg
@@ -103,12 +112,10 @@ protected_mode:
     mov esp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicioprot_len
-
-    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 3, 0    
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicioprot_len    
 
     ; Chequeo de disponibilidad de uso de CPUID
-
+    ; tomado de http://wiki.osdev.org/User:Stephanvanschaik/Setting_Up_Long_Mode#Detection_of_CPUID
     pushfd               ; Store the FLAGS-register.
     pop eax              ; Restore the A-register.
     mov ecx, eax         ; Set the C-register to the A-register.
@@ -131,76 +138,74 @@ protected_mode:
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
 
-                ;------------------ Hardcode --------------------------
+;inicializo paginacion 
+    imprimir_texto_mp mensaje_paging_msg, mensaje_paging_len, 0x0F, 3, 0 
 
-;;PML4T - 0x40000.
-;;PDPT - 0x41000.
-;;PDT - 0x42000.
-;;PT - 0x43000.
+;    Estoy usando paginacion IA-32e => bits CR0.PG=1 + CR4.PAE=1 + EFER.LME=1
+;    paginas de 2mb
 
-; Clear memory for the Page Descriptor Entries (0x10000 - 0x4FFFF)
-;    mov edi, 0x00010000
-;    mov ecx, 65536
-;    rep stosd
+;symbol containing krnPML4T pointer is krnPML4T
+;symbol containing krnPDPT pointer is krnPDPT
+;symbol containing krnPDT pointer is krnPDT
 
-; Create the Level 4 Page Map. (Maps 4GBs of 2MB pages)
-; First create a PML4 entry.
-; PML4 is stored at 0x0000000000040000, create the first entry there
-; A single PML4 entry can map 512GB with 2MB pages.
-    cld
-    mov edi, 0x00040000     ; Create a PML4 entry for the first 4GB of RAM
-    mov eax, 0x00041007
+; Mapeo 4GB con paginas de 2MB
+; la estructura PML4 esta en krnPML4T, creamos la primer entrada aca
+    cld                     ;limpia el direction flag
+    mov edi, [krnPML4T]     
+    mov eax, [krnPDPT]
+    or eax, 0x7; attributes nibble
     stosd
     xor eax, eax
     stosd
 
-; Create the PDP entries.
-; The first PDP is stored at 0x0000000000041000, create the first entries there
-; A single PDP entry can map 1GB with 2MB pages
-    mov ecx, 64         ; number of PDPE's to make.. each PDPE maps 1GB of physical memory
-    mov edi, 0x00041000
-    mov eax, 0x00050007     ; location of first PD
-create_pdpe:
+    ;Nota http://en.wikipedia.org/wiki/X86_instruction_listings
+    ;stosd es equivalente a *ES:EDI = EAX; => store string double word
+
+; creo las entradas en PDP
+; la estructura PDP esta en krnPDPT, creamos las entradas desde este lugar
+    mov ecx, 64             ; hago 64 PDPE entries cada una mapea 1gb de memoria
+    mov edi, [krnPDPT]
+    mov eax, [krnPDT]     
+    or eax, 0x7; attributes nibble
+crear_pdpentry:
     stosd
     push eax
     xor eax, eax
     stosd
     pop eax
-    add eax, 0x00001000     ; 4K later (512 records x 8 bytes)
+    add eax, 0x00001000     ;avanzo 4k
     dec ecx
     cmp ecx, 0
-    jne create_pdpe
+    jne crear_pdpentry
 
-; Create the PD entries.
-; PD entries are stored starting at 0x0000000000050000 and ending at 0x000000000009FFFF (256 KiB)
-; This gives us room to map 64 GiB with 2 MiB pages
-    mov edi, 0x00050000
-    mov eax, 0x0000008F     ; Bit 7 must be set to 1 as we have 2 MiB pages
+; Crear las entradas en PD
+    mov edi, [krnPDT]
+    mov eax, 0x0000008F     ; para activar paginas de 2MB seteamos el bit 7
     xor ecx, ecx
-pd_again:               ; Create a 2 MiB page
+pd_loop:               
     stosd
     push eax
     xor eax, eax
     stosd
     pop eax
-    add eax, 0x00200000
+    add eax, 0x00200000     ;incremento 2 MB
     inc ecx
-    cmp ecx, 2048
-    jne pd_again            ; Create 2048 2 MiB page maps.
+    cmp ecx, 2048*16
+    jne pd_loop            ; Create 2048*16 2 MiB page maps.
 
-; Point cr3 at PML4
-    mov eax, 0x00040000
+    ; apunto cr3 al PML4
+    mov eax, [krnPML4T]
     mov cr3, eax
 
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging_len
+
+    ;comienzo a inicializar 64 bits
+    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 4, 0    
+    
     ;prender el bit 5(6th bit) para activar PAE
     mov eax, cr4                 
     or eax, 1 << 5               
     mov cr4, eax                 
-    
-
-                                ;--------------- Fin Hardcode --------------------------
-
-;fin activacion PAE y mapeo!, todo listo para levantar 64 bits modo compatibilidad con 32 bits!
 
     mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
     rdmsr                        ; Leemos el registro en EDX:EAX.
@@ -211,9 +216,9 @@ pd_again:               ; Create a 2 MiB page
     or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
     mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_inicio64_len
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_inicio64_len
 
-    imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 4, 0
+    imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 5, 0
     
     ;estamos en modo ia32e compatibilidad con 32 bits
     ;comienzo pasaje a 64 bits puro
@@ -259,7 +264,7 @@ long_mode:
     MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
     
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_inicio64real_len
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 5, mensaje_inicio64real_len
 
     ;levanto la IDT de 64 bits
     lidt [IDT_DESC]
@@ -274,6 +279,7 @@ long_mode:
     STI
 
     ;llamo al entrypoint en kmain64
+    xor rdx, rdx
     call startKernel64_BSPMODE
 
     ;fin inicio kernel en 64 bits!

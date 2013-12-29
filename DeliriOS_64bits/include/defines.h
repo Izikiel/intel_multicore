@@ -14,8 +14,9 @@
 #define VIDEO_MEMORY            0x00000000000B8000 /* direccion fisica del buffer de video */
 
 /*Paginacion PAE*/
-#define KERNEL_PML4T_POINTER 0x0000000000040000
-//las demas estructuras de paginacion estan en kernel.asm las direcciones(sorry, TODO: pasarlas a generico)
+#define KERNEL_PML4T_POINTER 	0x0000000000040000
+#define KERNEL_PDPT_POINTER		0x0000000000041000
+#define KERNEL_PDT_POINTER 		0x0000000000042000
 
 //OJO QUE PARA CADA CORE TIENE QUE HABER PILAS DIFERENTES!
 #define KERNEL_STACK_PTR_BSP 0x0000000000027000
