@@ -70,6 +70,7 @@ void startKernel64_BSPMODE(){
 
 void startKernel64_APMODE(){
 	//aca el codigo ojo que aparentemente se pisa con otras cosas.
+	console_println("[AP] Core AP started up!", greenOnBlack);
 }
 
 void kernel_panic(const char* functionSender, const char* message){

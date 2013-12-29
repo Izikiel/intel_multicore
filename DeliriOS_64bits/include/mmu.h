@@ -2,7 +2,8 @@
 #define __MMU_H__
 
 extern void* krnPML4T;
-extern void* kernelStackPtr;
+extern void* kernelStackPtrBSP;
+extern void* kernelStackPtrAP1;
 
 void init_64gb_identity_mapping();
 

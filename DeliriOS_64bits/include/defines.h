@@ -15,7 +15,11 @@
 
 /*Paginacion PAE*/
 #define KERNEL_PML4T_POINTER 0x0000000000040000
-#define KERNEL_STACK_PTR 0x0000000000027000
+//las demas estructuras de paginacion estan en kernel.asm las direcciones(sorry, TODO: pasarlas a generico)
+
+//OJO QUE PARA CADA CORE TIENE QUE HABER PILAS DIFERENTES!
+#define KERNEL_STACK_PTR_BSP 0x0000000000027000
+#define KERNEL_STACK_PTR_AP1 0x0000000000090000
 
 /* -------------------------------------------------------------------------- */
 

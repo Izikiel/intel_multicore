@@ -11,7 +11,7 @@ extern IDT_DESC
 extern idt_inicializar
 
 ;; STACK
-extern kernelStackPtr
+extern kernelStackPtrBSP
 
 ;; PIC
 extern deshabilitar_pic
@@ -100,8 +100,7 @@ protected_mode:
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
     mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
-    ;setear la pila en 0x27000 para el kernel
-    mov esp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
+    mov esp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicioprot_len
@@ -193,9 +192,10 @@ pd_again:               ; Create a 2 MiB page
     mov eax, 0x00040000
     mov cr3, eax
 
-    mov eax, cr4                 ; Set the A-register to control register 4.
-    or eax, 1 << 5               ; Set the PAE-bit, which is the 6th bit (bit 5).
-    mov cr4, eax                 ; Set control register 4 to the A-register.
+    ;prender el bit 5(6th bit) para activar PAE
+    mov eax, cr4                 
+    or eax, 1 << 5               
+    mov cr4, eax                 
     
 
                                 ;--------------- Fin Hardcode --------------------------
@@ -256,7 +256,7 @@ long_mode:
     MOV ss, ax
 
     ;setear la pila en para el kernel
-    MOV rsp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
+    MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
     
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_inicio64real_len

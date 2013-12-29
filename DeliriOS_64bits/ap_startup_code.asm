@@ -13,7 +13,7 @@ extern GDT_DESC
 extern IDT_DESC
 
 ;; STACK
-extern kernelStackPtr
+extern kernelStackPtrAP1; OJO , OJO , OJO CON ESTO, LAS PILAS DEBEN SER DIFERENTES ENTRE LOS CORES!!!
 
 ;; PIC
 extern deshabilitar_pic
@@ -29,9 +29,6 @@ extern startKernel64_APMODE
 ;; Saltear seccion de datos(para que no se ejecute)
 jmp mr_ap_start
 
-iniciando_ap_msg db '[AP] * Core AP iniciado en modo real...'
-iniciando_ap_len equ    $ - iniciando_ap_msg
-
 ;------------------------------------------------------------------------------------------------------
 ;------------------------------- comienzo modo real ---------------------------------------------------
 ;------------------------------------------------------------------------------------------------------
@@ -43,9 +40,6 @@ mr_ap_start:
 
     ; cargar la GDT; ES UNICA PARA TODOS LOS CORES        
     lgdt [GDT_DESC]
-
-	;Imprimir mensaje
-	imprimir_texto_mr iniciando_ap_msg, iniciando_ap_len, 0x0A, 0, 11*80*2 + 8
 
     ; setear el bit PE del registro CR0
     mov EAX, CR0;levanto registro CR0 para pasar a modo protegido
@@ -71,21 +65,21 @@ protected_mode:
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
     mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
-    ;setear la pila en 0x27000 para el kernel
-    mov esp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
+    mov esp, [kernelStackPtrAP1];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
     ;Los chequeos de cpuid y disponibilidad de modo x64 ya fueron hechos por el
     ;BSP, de forma que en este punto deberiamos tener x64 en todos los cores
 	;Las estructuras de paginacion ya fueron inicializadas por el BSP
 
-	;Point cr3 at PML4
+	;apuntar cr3 al PML4
     mov eax, 0x00040000
     mov cr3, eax
 
-    mov eax, cr4                 ; Set the A-register to control register 4.
-    or eax, 1 << 5               ; Set the PAE-bit, which is the 6th bit (bit 5).
-    mov cr4, eax                 ; Set control register 4 to the A-register.
+    ;prender el bit 5(6th bit) para activar PAE
+    mov eax, cr4                 
+    or eax, 1 << 5               
+    mov cr4, eax                 
 
     mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
     rdmsr                        ; Leemos el registro en EDX:EAX.
@@ -121,10 +115,10 @@ long_mode:
     MOV ss, ax
 
     ;setear la pila en para el kernel
-    MOV rsp, [kernelStackPtr];la pila va a partir de kernelStackPtr(expand down, OJO)
+    MOV rsp, [kernelStackPtrAP1];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
 
-    ;levanto la IDT de 64 bits
+    ;levanto la IDT de 64 bits, es unica para todos los cores
     lidt [IDT_DESC]
     ;la IDT esta inicializada por el BSP
 

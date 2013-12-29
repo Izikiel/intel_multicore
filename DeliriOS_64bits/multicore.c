@@ -362,7 +362,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 			sleep(1); //Dormir un poco mas de 20 milisegundos (0.055 segundos)
 			wait_for_ipi_reception();
 		}
-		console_printf("\tPrendi el core %u\n",proci);
+		console_printf("\t* [Core %d AP]Enviada signal de inicio!\n", proci);
 		//TODO: Verificar que el core haya levantado programaticamente.
 	}
 }
