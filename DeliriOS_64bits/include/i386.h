@@ -31,6 +31,9 @@ extern uint64_t getCR2();
 extern uint64_t getCR3();
 extern uint64_t getCR4();
 extern uint64_t getCR8();
+extern void setRSP(uint64_t value);
+extern void setRBP(uint64_t value);
+
 extern uint64_t getRFLAGS();
 extern void haltCpu();
 

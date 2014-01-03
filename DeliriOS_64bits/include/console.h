@@ -44,6 +44,7 @@
 
 #define redOnBlack (C_BG_BLACK | C_FG_RED)
 #define greenOnBlack (C_BG_BLACK | C_FG_GREEN)
+#define brownOnBlack (C_BG_BLACK | C_FG_BROWN)
 #define whiteOnRed (C_BG_RED | C_FG_WHITE)
 #define whiteOnBlack (C_BG_BLACK | C_FG_WHITE)
 #define whiteOnBlue (C_BG_BLUE | C_FG_WHITE)
@@ -68,6 +69,7 @@ void console_setXCursor(uint32_t number);
 void console_setYCursor(uint32_t number);
 
 void console_set_panic_format();
+void console_printf_change_format(uint8_t format);
 
 void console_moveUp();
 void console_moveBack(bool fromSystem);

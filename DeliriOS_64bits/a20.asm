@@ -2,13 +2,13 @@ BITS 16
 
 section .text
 
-habilitando: db 'Activating A20........'
+habilitando: db '[BSP]Activating A20........'
 habilitando_len equ $ - habilitando
 
-deshabilitando: db 'Deactivating A20......'
+deshabilitando: db '[BSP]Deactivating A20......'
 deshabilitando_len equ $ - deshabilitando
 
-checkeando: db 'Checking A20.........'
+checkeando: db '[BSP]Checking A20.........'
 checkeando_len equ $ - checkeando
 
 mensajeOK: db 'OK!'

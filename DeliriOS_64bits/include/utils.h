@@ -11,7 +11,7 @@
 //impl en i386.asm
 extern void breakpoint();
 
-void memcpy(void* dst, const void *src, uint32_t byteCount);
+void memcpy(const void* dst, const void *src, uint32_t byteCount);
 void memset(void* dst, uint8_t value, uint32_t length);
 uint32_t strlen(const char* str);
 void strrev(char s[]);

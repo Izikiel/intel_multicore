@@ -34,28 +34,28 @@ JMP kernel
 ;;
 ;; Seccion de datos
 ;; -------------------------------------------------------------------------- ;;
-mensaje_inicioprot_msg:     db 'Starting up in protected mode...'
+mensaje_inicioprot_msg:     db '[BSP]Starting up in protected mode...'
 mensaje_inicioprot_len      equ $ - mensaje_inicioprot_msg
 
-mensaje_inicio64_msg:     db 'Starting up in long mode(IA32e compatibility mode)...'
+mensaje_inicio64_msg:     db '[BSP]Starting up in long mode(IA32e compatibility mode)...'
 mensaje_inicio64_len      equ $ - mensaje_inicio64_msg
 
-mensaje_inicio64real_msg:     db 'Starting up in full long mode...'
+mensaje_inicio64real_msg:     db '[BSP]Starting up in full long mode...'
 mensaje_inicio64real_len      equ $ - mensaje_inicio64real_msg
 
-mensaje_64bitserr_msg:     db 'FAIL! 64 bits mode unavailable! -> Kernel Halted.'
+mensaje_64bitserr_msg:     db '[BSP]FAIL! 64 bits mode unavailable! -> Kernel Halted.'
 mensaje_64bitserr_len      equ $ - mensaje_64bitserr_msg
 
-mensaje_cpuiderr_msg:     db 'FAIL! CPUID unavailable! -> Kernel Halted.'
+mensaje_cpuiderr_msg:     db '[BSP]FAIL! CPUID unavailable! -> Kernel Halted.'
 mensaje_cpuiderr_len        equ $ - mensaje_cpuiderr_msg
 
-mensaje_paging4g_msg:             db 'Configuring PAE paging up to 4GB...'
+mensaje_paging4g_msg:             db '[BSP]Configuring PAE paging up to 4GB...'
 mensaje_paging4g_len              equ $ - mensaje_paging4g_msg
 
-mensaje_paging64g_msg:             db 'Extending paging up to 64GB...'
+mensaje_paging64g_msg:             db '[BSP]Extending paging up to 64GB...'
 mensaje_paging64g_len              equ $ - mensaje_paging64g_msg
 
-mensaje_interrupt_msg:             db 'Initializing interrupt handling...'
+mensaje_interrupt_msg:             db '[BSP]Initializing interrupt handling...'
 mensaje_interrupt_len              equ $ - mensaje_interrupt_msg
 
 mensaje_ok_msg:             db 'OK!'

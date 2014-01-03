@@ -55,6 +55,9 @@ check_valid_mpfs(const mp_float_struct * mpfs)
 static mp_float_struct *
 find_floating_pointer_struct(void)
 {
+	//HARDCODE!
+	//return (mp_float_struct*)0xfba20;
+
 	//Header y zonas a revisar
 	static const char MPSIG[]	= "_MP_";
 	static const uint64_t MPLEN		= sizeof(MPSIG)-1;
@@ -72,16 +75,23 @@ find_floating_pointer_struct(void)
 	};
 
 	//Buscar header en las zonas indicadas
+	console_printf("-> Searching for floating pointer struct in:\n");
 	mp_float_struct * mpfs = NULL;
 	for(uint64_t i = 0; i < ZONES; i++){
 		uint8_t * st = (uint8_t *) zones[i].start;
 		uint8_t * en = (uint8_t *) zones[i].end;
+		console_printf("\t* Zone %d [%u..%u]", i, st, en);
 		for(uint8_t * p = st; p <= en; p++){
-			if(memcmp(p,MPSIG,MPLEN) == 0){
+			if(memcmp(p, MPSIG, MPLEN) == 0){
 				mpfs = (mp_float_struct *) p;
+				console_printf_change_format(greenOnBlack);
+				console_printf("\n\t\t-> Found in zone (%d) at%u\n", i, mpfs);
 				goto found;
 			}
 		}
+		console_printf_change_format(redOnBlack);
+		console_printf("\t-> Not found!\n");
+		console_printf_change_format(modoEscrituraTexto);
 	}
 
 found:
@@ -89,8 +99,9 @@ found:
 		kernel_panic(__FUNCTION__, "Estructura MPFS no encontrada");
 		return NULL;
 	}
-
+	
 	if(!check_valid_mpfs(mpfs)){
+		breakpoint();
 		kernel_panic(__FUNCTION__, "Estructura MPFS con checksum invalido");
 		return NULL;
 	}
@@ -362,7 +373,9 @@ turn_on_aps(uint32_t ap_startup_code_page)
 			sleep(1); //Dormir un poco mas de 20 milisegundos (0.055 segundos)
 			wait_for_ipi_reception();
 		}
-		console_printf("\t* [Core %d AP]Enviada signal de inicio!\n", proci);
+		console_printf_change_format(greenOnBlack);
+		console_printf("\t-> [Core %d AP]Enviada signal de inicio!\n", proci);
+		console_printf_change_format(modoEscrituraTexto);
 		//TODO: Verificar que el core haya levantado programaticamente.
 	}
 }

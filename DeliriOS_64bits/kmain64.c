@@ -5,6 +5,7 @@
 #include <timer.h>
 #include <multicore.h>
 #include <utils.h>
+#include <asserts.h>
 
 extern uint64_t start_section_text;
 extern uint64_t end_section_text;
@@ -16,6 +17,21 @@ extern uint64_t start_section_rodata;
 extern uint64_t end_section_rodata;
 extern uint64_t start_section_bss;
 extern uint64_t end_section_bss;
+
+void reallocateStack(void* newBase){
+	//void* actualRbp = (void*) getRBP();
+	//void* actualRsp = (void*) getRSP();
+	//uint64_t stackSize = (void*) actualRbp-actualRsp;//crece al reves la pila
+	//void* newRSP = (void*) newBase - stackSize;
+	//console_printf("Moving stack sized %d bytes from [%u..%u] to [%u..%u]\n", stackSize, actualRbp, actualRsp, newBase, newRSP);
+	//copio la pila
+	//memcpy(newRSP, actualRsp, stackSize);
+	//fail_if(memcmp(newRSP+2, actualRsp+2, stackSize-2) != 0)//ignoro la dir de retorno
+	////update the system registers
+	//setRBP((uint64_t) newBase);
+	//setRSP((uint64_t) newRSP);
+	//breakpoint();
+}
 
 void startKernel64_BSPMODE(){
 
@@ -35,23 +51,30 @@ void startKernel64_BSPMODE(){
 	console_setYCursor(8);
 	console_setXCursor(0);
 
-	console_printf("Configuring timer...");
+	console_printf("[BSP]Configuring timer...");
 	
 	initialize_timer();
 	
 	console_puts("OK!", greenOnBlack);
 	console_printf("\n");
 
-	console_printf("Starting up multicore mode...\n");	
-	console_printf("AP CPUs starting at RIP: %u\n", &ap_startup_code_page);
-	multiprocessor_init();
-	console_println("Multicore started OK!", greenOnBlack);
+	console_printf("[BSP]Reallocating stack...");	
+	reallocateStack(kmalloc(3/*3 paginas de 4k*/, "") + 3*0x1000/*como es expand down pongo el final de la region reservada*/);
+	console_puts("OK!", greenOnBlack);
+	console_printf("\n");
+
+	console_printf("[BSP]Starting up multicore mode...\n");	
+	console_printf("[BSP]AP CORE(s) starting at RIP: %u\n", &ap_startup_code_page);
+	multiprocessor_init();	
+	console_printf_change_format(greenOnBlack);
+	console_printf("[BSP] Multicore started OK!\n");
+	console_printf_change_format(modoEscrituraTexto);
 
 	//inicializar consola y dar bienvenida
-	console_printf("\n\n");
-	console_println("DeliriOS started up.", greenOnBlack);
+	console_printf_change_format(greenOnBlack);
+	console_printf("[BSP] DeliriOS started up\n");
+	console_printf_change_format(modoEscrituraTexto);
 	console_initialize_console();
-
 
 	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!
 	// - TODO: esta hardcodeado en asm lo de mapear los primeros 4 gb
@@ -61,7 +84,9 @@ void startKernel64_BSPMODE(){
 }
 
 void startKernel64_APMODE(){
-	console_println("[AP] Core AP started up!", greenOnBlack);
+	console_printf_change_format(greenOnBlack);
+	console_printf("[AP] Core AP started up!\n");
+	console_printf_change_format(modoEscrituraTexto);
 }
 
 void kernel_panic(const char* functionSender, const char* message){

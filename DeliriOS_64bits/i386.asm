@@ -26,6 +26,8 @@ global getCR2
 global getCR3
 global getCR4
 global getRFLAGS
+global setRSP
+global setRBP
 global haltCpu
 global irq_cli
 global irq_sti
@@ -145,6 +147,14 @@ getCR8:
 getRFLAGS:
 	pushfq;push 64 bits rflags
 	pop RAX;read them into rax
+	ret
+
+setRSP:
+	mov rsp, rdi
+	ret
+
+setRBP:
+	mov rbp, rdi
 	ret
 
 haltCpu:

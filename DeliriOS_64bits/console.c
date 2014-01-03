@@ -24,6 +24,9 @@ static uint32_t cursorBufferSize = 4;
 //flag de kernel_panic
 static bool panicFormat = false;
 
+//formato personalizable en printf
+static uint8_t formatoPrintf = modoEscrituraTexto;
+
 //para levantar mas de una linea cuando leo de la pantalla un comando
 static uint64_t columnOverflowLineOffset=0;
 
@@ -217,10 +220,14 @@ void console_printf(const char* msg, ...)
         va_end(l);
 }
 
+void console_printf_change_format(uint8_t format){
+	formatoPrintf = format;
+}
+
 // Tomado de juampi OS
 void console_vprintf(const char* msg, va_list l)
 {
-		uint16_t outputFormat = (panicFormat == true ? modoEscrituraBSOD : modoEscrituraTexto);
+		uint16_t outputFormat = (panicFormat == true ? modoEscrituraBSOD : formatoPrintf);
         uint64_t i;
         char buffer[64];
         for(i = 0; msg[i]; i++) {

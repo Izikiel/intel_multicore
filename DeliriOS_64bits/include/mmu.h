@@ -22,7 +22,7 @@ extern void* kernelStackPtrBSP;
 extern void* kernelStackPtrAP1;
 
 //memory manager
-void* kmalloc(uint64_t bytes, char* description);
+void* kmalloc(uint64_t pageCount/*las paginas son de 4k*/, char* description);
 void kfree(void* pointer);
 
 #endif	/* !__MMU_H__ */
