@@ -40,6 +40,7 @@ do_checksum(const void * p, unsigned int len)
 		sum += bytes[i];	
 	}
 
+	breakpoint();
 	return sum == 0;
 }
 
@@ -47,6 +48,7 @@ static bool
 check_valid_mpfs(const mp_float_struct * mpfs)
 {
 	if(memcmp(mpfs->signature,"_MP_",strlen("_MP_"))){
+		breakpoint();
 		return false;
 	}
 	return do_checksum(mpfs,mpfs->length * 16);
@@ -60,7 +62,7 @@ find_floating_pointer_struct(void)
 
 	//Header y zonas a revisar
 	static const char MPSIG[]	= "_MP_";
-	static const uint64_t MPLEN		= sizeof(MPSIG)-1;
+	//static const uint64_t MPLEN		= sizeof(MPSIG)-1;
 	static const uint64_t ZONES		= 3;
 
 	//Direcciones son inclusive (intervalo cerrado).
@@ -82,7 +84,13 @@ find_floating_pointer_struct(void)
 		uint8_t * en = (uint8_t *) zones[i].end;
 		console_printf("\t* Zone %d [%u..%u]", i, st, en);
 		for(uint8_t * p = st; p <= en; p++){
-			if(memcmp(p, MPSIG, MPLEN) == 0){
+			
+			console_putc('c', greenOnBlack);
+			if( (p[0] == MPSIG[0]) && 
+				(p[1] == MPSIG[1]) && 
+				(p[2] == MPSIG[2]) && 
+				(p[3] == MPSIG[3]) 
+			){
 				mpfs = (mp_float_struct *) p;
 				console_printf_change_format(greenOnBlack);
 				console_printf("\n\t\t-> Found in zone (%d) at%u\n", i, mpfs);

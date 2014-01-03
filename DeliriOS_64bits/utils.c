@@ -232,17 +232,17 @@ void strcat(char* dst, const char* src)
         dst[i] = '\0';
 }
 
-int memcmp(const void* _m1, const void* _m2, uint64_t bytes)
+int64_t memcmp(const void* _m1, const void* _m2, uint64_t bytes)
 {
         const char* m1 = _m1, * m2 = _m2;
         for(uint64_t i = 0; i < bytes; i++)
                 if(m1[i] != m2[i]) {
-                        return (m1[i]-m2[i] < 0) ? -1 : 1;
+                    return (m1[i]-m2[i] < 0) ? -1 : 1;
                 }			               
         return 0;
 }
 
-int strcmp(const char* str1, const char* str2)
+int64_t strcmp(const char* str1, const char* str2)
 {
         uint64_t i;
         for(i = 0; str1[i] == str2[i]; i++)

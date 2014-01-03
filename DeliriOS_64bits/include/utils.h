@@ -6,8 +6,6 @@
 #define min(a,b) (((a)<(b))?(a):(b))
 #define max(a,b) (((a)>(b))?(a):(b))
 
-#define BOCHSBREAK __asm__ __volatile__("xchg %bx,%bx")
-
 //impl en i386.asm
 extern void breakpoint();
 
@@ -22,8 +20,8 @@ char* getError(uint32_t codError);
 
 void strcpy(char* dst, const char* src);
 void strcat(char* dst, const char* src);
-int memcmp(const void* _m1, const void* _m2, uint64_t bytes);
-int strcmp(const char* str1, const char* str2);
+int64_t memcmp(const void* _m1, const void* _m2, uint64_t bytes);
+int64_t strcmp(const char* str1, const char* str2);
 void strncpy(char* dst, const char* src, uint64_t len);
 //-----------------------------------------------
 

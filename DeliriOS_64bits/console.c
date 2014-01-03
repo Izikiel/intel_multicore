@@ -4,6 +4,7 @@
 #include <utils.h>
 #include <vargs.h>
 #include <asserts.h>
+#include <i386.h>
 
 //NOTA:ojo que como es puntero a short, incrementar el puntero corre solo sizeof(uint16_t) = 2 bytes
 static uint16_t* _outputMemoryPtr = (uint16_t*) VIDEO_MEMORY;
@@ -331,6 +332,8 @@ void console_putc(char caracter, uint8_t format){
             console_hide_text_cursor();            
 			break;
 		default:
+			fail_unless(currentCol<80);
+			fail_unless(currentLine<25);
 			console_pos_putc(caracter, format, currentCol, currentLine);
 			//avanzar columna
 			currentCol++;
@@ -358,6 +361,11 @@ void console_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
 {
 	uint16_t offset = posX + posY * VIDEO_COLS;	
 	uint16_t pixel = (format << 8) | caracter;
+	if(offset<4000){
+		setRSP(offset);
+		breakpoint();			
+	}
+	fail_unless(offset<4000);
 	*(_outputMemoryPtr + offset) = pixel;
 }
 

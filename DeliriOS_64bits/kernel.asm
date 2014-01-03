@@ -55,7 +55,7 @@ mensaje_paging4g_len              equ $ - mensaje_paging4g_msg
 mensaje_paging64g_msg:             db '[BSP]Extending paging up to 64GB...'
 mensaje_paging64g_len              equ $ - mensaje_paging64g_msg
 
-mensaje_interrupt_msg:             db '[BSP]Initializing interrupt handling...'
+mensaje_interrupt_msg:             db '[BSP]Resetting interrupt PIC...'
 mensaje_interrupt_len              equ $ - mensaje_interrupt_msg
 
 mensaje_ok_msg:             db 'OK!'
@@ -325,8 +325,6 @@ loop_64g_structure:
     CALL resetear_pic
     CALL habilitar_pic  
 
-    ;habilito las interrupciones! :D
-    STI
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 7, mensaje_interrupt_len
 
     ;llamo al entrypoint en kmain64

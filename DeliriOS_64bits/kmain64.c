@@ -6,6 +6,7 @@
 #include <multicore.h>
 #include <utils.h>
 #include <asserts.h>
+#include <irq.h>
 
 extern uint64_t start_section_text;
 extern uint64_t end_section_text;
@@ -65,7 +66,7 @@ void startKernel64_BSPMODE(){
 
 	console_printf("[BSP]Starting up multicore mode...\n");	
 	console_printf("[BSP]AP CORE(s) starting at RIP: %u\n", &ap_startup_code_page);
-	multiprocessor_init();	
+	multiprocessor_init();
 	console_printf_change_format(greenOnBlack);
 	console_printf("[BSP] Multicore started OK!\n");
 	console_printf_change_format(modoEscrituraTexto);
@@ -76,9 +77,8 @@ void startKernel64_BSPMODE(){
 	console_printf_change_format(modoEscrituraTexto);
 	console_initialize_console();
 
-	// - TODO: alinear la pila a 16 bytes en todos los calls a C desde asm!
-	// - TODO: esta hardcodeado en asm lo de mapear los primeros 4 gb
-	// - TODO: crear funciones en mmu para que sea posible mapear, desmapear paginas, y cambiar el contexto de paginas desde C
+	//habilitar interrupciones
+	irq_sti();
 
 	//Disfrutar del tp final DeliriOS.
 }
@@ -87,6 +87,9 @@ void startKernel64_APMODE(){
 	console_printf_change_format(greenOnBlack);
 	console_printf("[AP] Core AP started up!\n");
 	console_printf_change_format(modoEscrituraTexto);
+	
+	//habilitar interrupciones
+	irq_sti();
 }
 
 void kernel_panic(const char* functionSender, const char* message){

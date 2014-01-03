@@ -15,11 +15,6 @@ extern IDT_DESC
 ;; STACK
 extern kernelStackPtrAP1; OJO , OJO , OJO CON ESTO, LAS PILAS DEBEN SER DIFERENTES ENTRE LOS CORES!!!
 
-;; PIC
-extern deshabilitar_pic
-extern resetear_pic
-extern habilitar_pic
-
 ;;paginacion
 extern krnPML4T
 
@@ -151,9 +146,6 @@ long_mode:
     ;la IDT esta inicializada por el BSP
 
     ;el controlador de interrupciones ya esta inicializado por el BSP
-
-    ;habilito las interrupciones! :D
-    STI
 
     ;llamo al entrypoint en kmain64
     call startKernel64_APMODE
