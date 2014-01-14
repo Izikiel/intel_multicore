@@ -1,4 +1,4 @@
-#include <console.h>
+
 #include <multicore.h>
 #include <asserts.h>
 #include <utils.h>
@@ -40,7 +40,6 @@ do_checksum(const void * p, unsigned int len)
 		sum += bytes[i];	
 	}
 
-	breakpoint();
 	return sum == 0;
 }
 
@@ -48,7 +47,6 @@ static bool
 check_valid_mpfs(const mp_float_struct * mpfs)
 {
 	if(memcmp(mpfs->signature,"_MP_",strlen("_MP_"))){
-		breakpoint();
 		return false;
 	}
 	return do_checksum(mpfs,mpfs->length * 16);
@@ -58,11 +56,11 @@ static mp_float_struct *
 find_floating_pointer_struct(void)
 {
 	//HARDCODE!
-	//return (mp_float_struct*)0xfba20;
+	return (mp_float_struct*)0xfba20;
 
 	//Header y zonas a revisar
 	static const char MPSIG[]	= "_MP_";
-	//static const uint64_t MPLEN		= sizeof(MPSIG)-1;
+	static const uint64_t MPLEN		= sizeof(MPSIG)-1;
 	static const uint64_t ZONES		= 3;
 
 	//Direcciones son inclusive (intervalo cerrado).
@@ -77,40 +75,34 @@ find_floating_pointer_struct(void)
 	};
 
 	//Buscar header en las zonas indicadas
-	console_printf("-> Searching for floating pointer struct in:\n");
+	//console_printf("-> Searching for floating pointer struct in:\n");
 	mp_float_struct * mpfs = NULL;
 	for(uint64_t i = 0; i < ZONES; i++){
 		uint8_t * st = (uint8_t *) zones[i].start;
 		uint8_t * en = (uint8_t *) zones[i].end;
-		console_printf("\t* Zone %d [%u..%u]", i, st, en);
-		for(uint8_t * p = st; p <= en; p++){
-			
-			console_putc('c', greenOnBlack);
-			if( (p[0] == MPSIG[0]) && 
-				(p[1] == MPSIG[1]) && 
-				(p[2] == MPSIG[2]) && 
-				(p[3] == MPSIG[3]) 
-			){
+		//console_printf("\t* Zone %d [%u..%u]", i, st, en);
+		for(uint8_t * p = st; p <= en; p++){			
+			if(memcmp(p, MPSIG, MPLEN) == 0){
 				mpfs = (mp_float_struct *) p;
-				console_printf_change_format(greenOnBlack);
-				console_printf("\n\t\t-> Found in zone (%d) at%u\n", i, mpfs);
+				//console_printf_change_format(greenOnBlack);
+				//console_printf("\n\t\t-> Found in zone (%d) at%u\n", i, mpfs);
 				goto found;
 			}
 		}
-		console_printf_change_format(redOnBlack);
-		console_printf("\t-> Not found!\n");
-		console_printf_change_format(modoEscrituraTexto);
+		//console_printf_change_format(redOnBlack);
+		//console_printf("\t-> Not found!\n");
+		//console_printf_change_format(modoEscrituraTexto);
 	}
 
 found:
 	if(mpfs == NULL){
-		kernel_panic(__FUNCTION__, "Estructura MPFS no encontrada");
+		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Estructura MPFS no encontrada");
 		return NULL;
 	}
 	
 	if(!check_valid_mpfs(mpfs)){
 		breakpoint();
-		kernel_panic(__FUNCTION__, "Estructura MPFS con checksum invalido");
+		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Estructura MPFS con checksum invalido");
 		return NULL;
 	}
 
@@ -381,9 +373,9 @@ turn_on_aps(uint32_t ap_startup_code_page)
 			sleep(1); //Dormir un poco mas de 20 milisegundos (0.055 segundos)
 			wait_for_ipi_reception();
 		}
-		console_printf_change_format(greenOnBlack);
-		console_printf("\t-> [Core %d AP]Enviada signal de inicio!\n", proci);
-		console_printf_change_format(modoEscrituraTexto);
+		//console_printf_change_format(greenOnBlack);
+		//console_printf("\t-> [Core %d AP]Enviada signal de inicio!\n", proci);
+		//console_printf_change_format(modoEscrituraTexto);
 		//TODO: Verificar que el core haya levantado programaticamente.
 	}
 }
@@ -478,6 +470,6 @@ void multiprocessor_init()
 		//console_printf("\tConfiguracion default numero: %d",mpfs->mp_features1);
 		determine_default_configuration(mpfs);	
 	}else{
-		kernel_panic(__FUNCTION__, "Configuracion MPFS invalida");	
+		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Configuracion MPFS invalida");	
 	}
 }

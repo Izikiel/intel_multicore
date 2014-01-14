@@ -20,13 +20,10 @@ extern kernel_panic
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
+            ;xchg bx, bx
             add rsp, 8;desapilo (e ignoro) el error code.
             pushaq
             imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1    
-            ;mov rdi, interrupt_base_msg%1
-            ;call kernel_panic
-
-            ;voy a usar convencion C -> preservar r12 a r15 y rbp , alinear la pila a 16 bytes
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
@@ -43,10 +40,9 @@ extern kernel_panic
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
         
         _isr%1:
+        ;xchg bx, bx
             pushaq
             imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1   
-            ;mov rdi, interrupt_base_msg%1
-            ;call kernel_panic
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
@@ -123,5 +119,5 @@ _isr33:
 ;Sirve para evitar interrupciones espurias
 global _isr_spurious
 _isr_spurious:
-
+    xchg bx, bx
     iretq

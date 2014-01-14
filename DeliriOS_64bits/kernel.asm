@@ -26,6 +26,10 @@ extern krnPT
 
 ;; startup
 extern startKernel64_BSPMODE
+extern initialize_timer
+extern multiprocessor_init
+extern console_setYCursor
+extern console_setXCursor
 
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 16
@@ -55,8 +59,14 @@ mensaje_paging4g_len              equ $ - mensaje_paging4g_msg
 mensaje_paging64g_msg:             db '[BSP]Extending paging up to 64GB...'
 mensaje_paging64g_len              equ $ - mensaje_paging64g_msg
 
-mensaje_interrupt_msg:             db '[BSP]Resetting interrupt PIC...'
+mensaje_interrupt_msg:             db '[BSP]Initializing interrupt handling...'
 mensaje_interrupt_len              equ $ - mensaje_interrupt_msg
+
+mensaje_timer_msg:             db '[BSP]Configuring timer...'
+mensaje_timer_len              equ $ - mensaje_timer_msg
+
+mensaje_multicore_msg:             db '[BSP]Starting up multicore...'
+mensaje_multicore_len              equ $ - mensaje_multicore_msg
 
 mensaje_ok_msg:             db 'OK!'
 mensaje_ok_len              equ $ - mensaje_ok_msg
@@ -325,14 +335,26 @@ loop_64g_structure:
     CALL resetear_pic
     CALL habilitar_pic  
 
+    ;habilito las interrupciones! necesario para timer
+    STI
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 7, mensaje_interrupt_len
+
+    ;initialize_timer -> para multicore init es necesario por los core_sleep
+    imprimir_texto_ml mensaje_timer_msg, mensaje_timer_len, 0x0F, 8, 0
+    call initialize_timer
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 8, mensaje_timer_len
+
+    ;inicializamos multicore
+    imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 9, 0
+    call multiprocessor_init
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 9, mensaje_multicore_len
 
     ;llamo al entrypoint en kmain64
     call startKernel64_BSPMODE
 
     ;fin inicio kernel para BSP en 64 bits!
-    halt: hlt
-        jmp halt
+    haltBspCore: hlt
+        jmp haltBspCore
 
 ;; -------------------------------------------------------------------------- ;;
 

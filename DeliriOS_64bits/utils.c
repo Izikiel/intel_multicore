@@ -1,5 +1,4 @@
 #include <utils.h>
-#include <console.h>
 
 void memcpy(const void* dst, const void* src, uint32_t byteCount){	
 	char* dst8 = (char*)dst;
@@ -38,7 +37,7 @@ uint64_t atoi(const char* string)
 			signMinus=true;
 		}else{
 			res=0;
-			console_printf("La cadena '%s' no es un numero valido\n", string);
+			//console_printf("La cadena '%s' no es un numero valido\n", string);
 			break;
 		}
 		i++;
@@ -232,24 +231,24 @@ void strcat(char* dst, const char* src)
         dst[i] = '\0';
 }
 
-int64_t memcmp(const void* _m1, const void* _m2, uint64_t bytes)
+uint64_t memcmp(const void* _m1, const void* _m2, uint64_t bytes)
 {
         const char* m1 = _m1, * m2 = _m2;
         for(uint64_t i = 0; i < bytes; i++)
                 if(m1[i] != m2[i]) {
-                    return (m1[i]-m2[i] < 0) ? -1 : 1;
+                    return 1;
                 }			               
         return 0;
 }
 
-int64_t strcmp(const char* str1, const char* str2)
+uint64_t strcmp(const char* str1, const char* str2)
 {
         uint64_t i;
         for(i = 0; str1[i] == str2[i]; i++)
                 if(str1[i] == '\0') {
-                        return 0;
+                    return 0;
                 }
-        return str1[i]-str2[i];
+        return 1;
 }
 
 void strncpy(char* dst, const char* src, uint64_t len)
@@ -261,33 +260,4 @@ void strncpy(char* dst, const char* src, uint64_t len)
                 }
                 dst[i] = src[i];
         }
-}
-
-//Devuelve la cantidad de apariciones del caracter en la string 
-//comenzando desde str[startIndex].
-uint32_t needleCount(const char *str, const char needle, const uint32_t startIndex)
-{
-	uint32_t j=0;
-	uint32_t i=startIndex;
-	while(str[i] != '\0'){
-		if(str[i] == needle){
-			j++;
-		}
-		i++;
-	}
-	return j;
-}
-
-//Devuelve el indice de la primera aparicion del caracter en la string 
-//comenzando desde str[startIndex]. En caso de no encontrarlo, devuelve -1
-int32_t nextTokenIdx(const char *str, const char delimiter, const uint32_t startIndex)
-{
-	uint32_t i=startIndex;
-	while(str[i] != '\0'){
-		if(str[i] == delimiter){
-			return i;
-		}
-		i++;
-	}
-	return i;
 }

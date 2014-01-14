@@ -1,12 +1,10 @@
 #include <kmain64.h>
 #include <i386.h>
-#include <console.h>
 #include <mmu.h>
 #include <timer.h>
 #include <multicore.h>
 #include <utils.h>
 #include <asserts.h>
-#include <irq.h>
 
 extern uint64_t start_section_text;
 extern uint64_t end_section_text;
@@ -19,123 +17,20 @@ extern uint64_t end_section_rodata;
 extern uint64_t start_section_bss;
 extern uint64_t end_section_bss;
 
-void reallocateStack(void* newBase){
-	//void* actualRbp = (void*) getRBP();
-	//void* actualRsp = (void*) getRSP();
-	//uint64_t stackSize = (void*) actualRbp-actualRsp;//crece al reves la pila
-	//void* newRSP = (void*) newBase - stackSize;
-	//console_printf("Moving stack sized %d bytes from [%u..%u] to [%u..%u]\n", stackSize, actualRbp, actualRsp, newBase, newRSP);
-	//copio la pila
-	//memcpy(newRSP, actualRsp, stackSize);
-	//fail_if(memcmp(newRSP+2, actualRsp+2, stackSize-2) != 0)//ignoro la dir de retorno
-	////update the system registers
-	//setRBP((uint64_t) newBase);
-	//setRSP((uint64_t) newRSP);
+void startKernel64_BSPMODE(){
+	//breakpoint en entry point de bsp
 	//breakpoint();
 }
 
-void startKernel64_BSPMODE(){
-
-	//En este punto lo que se tiene inicializado es:
-	// - Mapeados con Identity mapping los primeros 2 megas de memoria(con PAE) -> esto se hace en modo protegido de 32
-	// 	 para poder pasar a modo largo sin problemas.
-	// - IDT de 64 bits y ISR que captura las excepciones y los irq de reloj y teclado
-	// - Callbacks de la ISR de reloj y teclado a contextManager
-	// - Driver de pantalla que permite imprimir Strings y Numeros en forma abstracta
-	// - Consola de comandos y parser de input
-	// - interfaz para poder obtener todos los registros del CPU desde C
-
-	//-----------------------------------------------------------------------------------------------------------------
-
-	//inicializo la consola
-	//pongo 8 porque es la linea donde termina de escribir kernel.asm con las macros de asm
-	console_setYCursor(8);
-	console_setXCursor(0);
-
-	console_printf("[BSP]Configuring timer...");
-	
-	initialize_timer();
-	
-	console_puts("OK!", greenOnBlack);
-	console_printf("\n");
-
-	console_printf("[BSP]Reallocating stack...");	
-	reallocateStack(kmalloc(3/*3 paginas de 4k*/, "") + 3*0x1000/*como es expand down pongo el final de la region reservada*/);
-	console_puts("OK!", greenOnBlack);
-	console_printf("\n");
-
-	console_printf("[BSP]Starting up multicore mode...\n");	
-	console_printf("[BSP]AP CORE(s) starting at RIP: %u\n", &ap_startup_code_page);
-	multiprocessor_init();
-	console_printf_change_format(greenOnBlack);
-	console_printf("[BSP] Multicore started OK!\n");
-	console_printf_change_format(modoEscrituraTexto);
-
-	//inicializar consola y dar bienvenida
-	console_printf_change_format(greenOnBlack);
-	console_printf("[BSP] DeliriOS started up\n");
-	console_printf_change_format(modoEscrituraTexto);
-	console_initialize_console();
-
-	//habilitar interrupciones
-	irq_sti();
-
-	//Disfrutar del tp final DeliriOS.
-}
-
 void startKernel64_APMODE(){
-	console_printf_change_format(greenOnBlack);
-	console_printf("[AP] Core AP started up!\n");
-	console_printf_change_format(modoEscrituraTexto);
-	
-	//habilitar interrupciones
-	irq_sti();
+	//breakpoint en entry point de ap
+	//breakpoint();
+	//estan deshabilitadas las interrupciones enmascarables!
+	//habilito interrupciones
+	//irq_sti();
 }
 
-void kernel_panic(const char* functionSender, const char* message){
-	console_set_panic_format();
-	console_clear();
-	console_printf("[KERNEL PANIC]: %s\n", message);
-
-	console_printf("\nFuncion que produjo el error:\t%s\n", functionSender);
-
-	console_printf("\nEstado de los registros:");
-	console_printf("\nRAX = %u", getRAX());
-	console_printf("\tRBX = %u", getRBX());
-	console_printf("\nRCX = %u", getRCX());
-	console_printf("\tRDX = %u", getRDX());
-	console_printf("\nRSI = %u", getRSI());
-	console_printf("\tRDI = %u", getRDI());
-	console_printf("\nRBP = %u", getRBP());
-	console_printf("\tRSP = %u", getRSP());
-	console_printf("\nR8  = %u", getR8());
-	console_printf("\tR9  = %u", getR9());
-	console_printf("\nR10 = %u", getR10());
-	console_printf("\tR11 = %u", getR11());
-	console_printf("\nR12 = %u", getR12());
-	console_printf("\tR13 = %u", getR13());
-	console_printf("\nR14 = %u", getR14());
-	console_printf("\tR15 = %u", getR15());
-	console_printf("\nRIP = %u", getRIP());
-	console_printf("\tCS  = %u", getCS());
-	console_printf("\nDS  = %u", getDS());
-	console_printf("\tES  = %u", getES());
-	console_printf("\nFS  = %u", getFS());
-	console_printf("\tGS  = %u", getGS());
-	console_printf("\nSS  = %u", getSS());
-	console_printf("\tCR0 = %u", getCR0());
-	console_printf("\nCR2 = %u", getCR2());
-	console_printf("\tCR3 = %u", getCR3());
-	console_printf("\nCR4 = %u", getCR4());
-	console_printf("\tRFLAGS = %u\n", getRFLAGS());
-
-	//info de como linkea todo en memoria
-	console_printf("section_text: 			[%u..%u)\n", &start_section_text, &end_section_text);
-	console_printf("ap_startup_code_page: 	[%u..%u)\n", &ap_startup_code_page, &end_ap_startup_code_page);
-	console_printf("section_data: 			[%u..%u)\n", &start_section_data, &end_section_data);
-	console_printf("section_rodata: 		[%u..%u)\n", &start_section_rodata, &end_section_rodata);
-	console_printf("section_bss: 			[%u..%u)\n", &start_section_bss, &end_section_bss);
-
-	console_hide_text_cursor();
+void kernel_panic(const char* functionSender, const uint64_t lineError, const char* fileError, const char* message){
+	breakpoint();
 	haltCpu();
 }

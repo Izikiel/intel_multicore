@@ -1,5 +1,4 @@
 #include <timer.h>
-#include <console.h>
 #include <irq.h>
 #include <asserts.h>
 #include <ports.h>
@@ -55,7 +54,7 @@ bool sleep(const uint64_t ticksCount){
 	irq_cli();
 	uint64_t freeInstance = getFreeInstance();
 	if(freeInstance == MAX_INSTANCES){//fallar si no hay instancias libres
-		console_printf("No hay instancias libres para un sleep, intente nuevamente\n");
+		//console_printf("No hay instancias libres para un sleep, intente nuevamente\n");
 		irq_sti();
 		return false;
 	}
@@ -71,6 +70,7 @@ bool sleep(const uint64_t ticksCount){
 
 	irq_sti();
 
+	//todo, cambiar por hlt jmp cmp
 	while(sleep_pool[freeInstance]>0);//sleep until irq clock calls finish
 
 	return true;

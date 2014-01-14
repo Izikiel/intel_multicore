@@ -3,7 +3,7 @@
 #include <types.h>
 
 /*Regiones hardcodeadas de memoria usadas por el kernel:
-
+//pueden cambiar, ver en defines.h
 *Paginacion IA32e
 PML4 -> 0x140000..0x140ffff  => 512 entries * 8 bytes(64bits) cada una
 solo se instancio la primera entrada de PML4
@@ -20,9 +20,5 @@ extern uint64_t* krnPDPT;
 extern uint64_t* krnPDT;
 extern void* kernelStackPtrBSP;
 extern void* kernelStackPtrAP1;
-
-//memory manager
-void* kmalloc(uint64_t pageCount/*las paginas son de 4k*/, char* description);
-void kfree(void* pointer);
 
 #endif	/* !__MMU_H__ */

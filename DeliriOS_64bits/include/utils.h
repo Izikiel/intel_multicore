@@ -20,17 +20,8 @@ char* getError(uint32_t codError);
 
 void strcpy(char* dst, const char* src);
 void strcat(char* dst, const char* src);
-int64_t memcmp(const void* _m1, const void* _m2, uint64_t bytes);
-int64_t strcmp(const char* str1, const char* str2);
+uint64_t memcmp(const void* _m1, const void* _m2, uint64_t bytes);
+uint64_t strcmp(const char* str1, const char* str2);
 void strncpy(char* dst, const char* src, uint64_t len);
-//-----------------------------------------------
-
-//Devuelve el indice de la primera aparicion del caracter en la string 
-//comenzando desde str[startIndex]. En caso de no encontrarlo, devuelve -1
-int32_t nextTokenIdx(const char *str, const char delimiter, const uint32_t startIndex);
-
-//Devuelve la cantidad de apariciones del caracter en la string 
-//comenzando desde str[startIndex].
-uint32_t needleCount(const char *str, const char needle, const uint32_t startIndex);
 
 #endif  /* !__utils_H__ */

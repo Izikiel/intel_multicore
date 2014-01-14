@@ -24,6 +24,9 @@ extern startKernel64_APMODE
 ;; Saltear seccion de datos(para que no se ejecute)
 jmp mr_ap_start
 
+mensaje_ap_started_msg:             db '[AP]Core woke up in x64 mode!'
+mensaje_ap_started_len              equ $ - mensaje_ap_started_msg
+
 ;------------------------------------------------------------------------------------------------------
 ;------------------------------- comienzo modo real ---------------------------------------------------
 ;------------------------------------------------------------------------------------------------------
@@ -147,11 +150,14 @@ long_mode:
 
     ;el controlador de interrupciones ya esta inicializado por el BSP
 
+    ;imprimir mensaje en pantalla
+    imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, 10, 0
+
     ;llamo al entrypoint en kmain64
     call startKernel64_APMODE
 
     ;fin inicio kernel para AP en 64 bits!
-    halt: hlt
-        jmp halt
+    haltApCore: hlt
+        jmp haltApCore
 
 ; -------------------------------------------------------------------------- ;;
