@@ -31,6 +31,13 @@ extern multiprocessor_init
 extern console_setYCursor
 extern console_setXCursor
 
+;;mergesort cosas
+extern mergesort
+extern array_global
+extern start_point
+extern done
+extern mergesort_pm
+
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 16
 JMP kernel
@@ -71,6 +78,9 @@ mensaje_multicore_len              equ $ - mensaje_multicore_msg
 mensaje_ok_msg:             db 'OK!'
 mensaje_ok_len              equ $ - mensaje_ok_msg
 
+array_prueba:   db 'ndjeropaktjclqa'
+array_len:  equ $ - array_prueba
+
 ;;
 ;; Seccion de código.
 ;; -------------------------------------------------------------------------- ;;
@@ -83,7 +93,7 @@ kernel:
     ; Deshabilitar interrupciones
     cli
 
-    ; habilitar A20    
+    ; habilitar A20
     call habilitar_A20
 
     ;desaparecer cursor en pantalla
@@ -93,7 +103,7 @@ kernel:
     dec BH
     set_cursor
 
-    ; cargar la GDT        
+    ; cargar la GDT
     lgdt [GDT_DESC]
 
     imprimir_texto_mr mensaje_inicioprot_msg, mensaje_inicioprot_len, 0x0F, 0, 320
@@ -113,7 +123,7 @@ kernel:
 ;------------------------------------------------------------------------------------------------------
 
 BITS 32
-protected_mode:   
+protected_mode:
     ;limpio los registros
     xor eax, eax
     xor ebx, ebx
@@ -130,12 +140,12 @@ protected_mode:
     mov ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     mov es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
+    mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
     mov esp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicioprot_len    
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicioprot_len
 
     ; Chequeo de disponibilidad de uso de CPUID
     ; tomado de http://wiki.osdev.org/User:Stephanvanschaik/Setting_Up_Long_Mode#Detection_of_CPUID
@@ -155,14 +165,14 @@ protected_mode:
 
     ;Deteccion de modo 64 bits y mensaje de error sino esta disponible halteamos.
     mov eax, 0x80000000    ; pasamos parametros 0x80000000.
-    cpuid                  
+    cpuid
     cmp eax, 0x80000001    ; 0x80000001 significa que esta habilitado.
     jb ModoLargoNoDisp    ; si es menor, modo largo no esta disponible
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
 
-;inicializo paginacion 
-    imprimir_texto_mp mensaje_paging4g_msg, mensaje_paging4g_len, 0x0F, 3, 0 
+;inicializo paginacion
+    imprimir_texto_mp mensaje_paging4g_msg, mensaje_paging4g_len, 0x0F, 3, 0
 
 ;    Estoy usando paginacion IA-32e => bits CR0.PG=1 + CR4.PAE=1 + EFER.LME=1
 ;    paginas de 2mb
@@ -174,7 +184,7 @@ protected_mode:
 ; Mapeo 4GB con paginas de 2MB
 ; la estructura PML4 esta en krnPML4T, creamos la primer entrada aca
     cld                     ;limpia el direction flag -> http://en.wikipedia.org/wiki/Direction_flag
-    mov edi, [krnPML4T]     
+    mov edi, [krnPML4T]
     mov eax, [krnPDPT]
     or eax, 0x7; attributes nibble
     stosd
@@ -188,7 +198,7 @@ protected_mode:
 ; la estructura PDP esta en krnPDPT, creamos las entradas desde este lugar
     mov ecx, 64             ; hago 64 PDPE entries cada una mapea 1gb de memoria -> mas abajo las mapeo en x64 mode
     mov edi, [krnPDPT]
-    mov eax, [krnPDT]     
+    mov eax, [krnPDT]
     or eax, 0x7; attributes nibble
 crear_pdpentry:
     stosd
@@ -205,7 +215,7 @@ crear_pdpentry:
     mov edi, [krnPDT]
     mov eax, 0x0000008F     ; para activar paginas de 2MB seteamos el bit 7
     xor ecx, ecx
-pd_loop:               
+pd_loop:
     stosd
     push eax
     xor eax, eax
@@ -223,12 +233,12 @@ pd_loop:
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging4g_len
 
     ;comienzo a inicializar 64 bits
-    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 4, 0    
-    
+    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 4, 0
+
     ;prender el bit 5(6th bit) para activar PAE
-    mov eax, cr4                 
-    or eax, 1 << 5               
-    mov cr4, eax                 
+    mov eax, cr4
+    or eax, 1 << 5
+    mov cr4, eax
 
     mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
     rdmsr                        ; Leemos el registro en EDX:EAX.
@@ -242,25 +252,25 @@ pd_loop:
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_inicio64_len
 
     imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 5, 0
-    
+
     ;estamos en modo ia32e compatibilidad con 32 bits
     ;comienzo pasaje a 64 bits puro
 
     jmp 00010000b:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
     ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
-    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
+    ;aca setie el selector de segmento cs al segmento de codigo del kernel
 
 ; Funciones auxiliares en 32 bits!
 CPUIDNoDisponible:
 imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
-    
+
     cli
     hlt
     jmp CPUIDNoDisponible
 
-ModoLargoNoDisp:    
+ModoLargoNoDisp:
     imprimir_texto_mp mensaje_64bitserr_msg, mensaje_64bitserr_len, 0x0C, 3, mensaje_inicio64_len
-    
+
     cli
     hlt
     jmp ModoLargoNoDisp
@@ -296,8 +306,8 @@ long_mode:
     MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
-    
+    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
+
     ;cargo el selector de pila en el segmento de datos del kernel
     MOV ss, ax
 
@@ -310,9 +320,9 @@ long_mode:
     ;levanto la IDT de 64 bits
     lidt [IDT_DESC]
     call idt_inicializar
-    
+
     imprimir_texto_ml mensaje_paging64g_msg, mensaje_paging64g_len, 0x0F, 6, 0
-    
+
     ;genero el resto de las estructuras de paginacion para mapear 64 gb
     ;lo tengo que hacer aca porque la direccion es de 64 bits, en modo protegido de 32 no podia
     mov rcx, 0x0000000000000000
@@ -329,11 +339,11 @@ loop_64g_structure:
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_paging64g_len
 
     imprimir_texto_ml mensaje_interrupt_msg, mensaje_interrupt_len, 0x0F, 7, 0
-    
+
     ;configurar controlador de interrupciones
     CALL deshabilitar_pic
     CALL resetear_pic
-    CALL habilitar_pic  
+    CALL habilitar_pic
 
     ;habilito las interrupciones! necesario para timer
     STI
@@ -352,8 +362,23 @@ loop_64g_structure:
     ;llamo al entrypoint en kmain64
     call startKernel64_BSPMODE
 
+    mov rdi, array_prueba
+    mov rsi, array_len
+
+    call mergesort
+
+    imprimir_texto_ml  array_prueba, array_len, 0x02, 9, 0
+
     ;fin inicio kernel para BSP en 64 bits!
+            xchg bx, bx
+    call mergesort_pm
+
     haltBspCore: hlt
+        cmp byte [done], 1
+        jne haltBspCore
+            xchg bx, bx
+
+        imprimir_texto_ml array_global, 100, 0x02, 11, 0
         jmp haltBspCore
 
 ;; -------------------------------------------------------------------------- ;;

@@ -21,6 +21,13 @@ extern krnPML4T
 ;; startup
 extern startKernel64_APMODE
 
+;;mergesort cosas
+extern start
+extern array_global
+extern start_point
+extern done
+extern mergesort
+
 ;; Saltear seccion de datos(para que no se ejecute)
 jmp mr_ap_start
 
@@ -34,9 +41,9 @@ mr_ap_start:
     ; Deshabilitar interrupciones
     cli
 
-    ; A20 YA ESTA HABILITADO POR EL BSP    
+    ; A20 YA ESTA HABILITADO POR EL BSP
 
-    ; cargar la GDT; ES UNICA PARA TODOS LOS CORES        
+    ; cargar la GDT; ES UNICA PARA TODOS LOS CORES
     lgdt [GDT_DESC]
 
     ; setear el bit PE del registro CR0
@@ -54,7 +61,7 @@ mr_ap_start:
 ;------------------------------------------------------------------------------------------------------
 
 BITS 32
-protected_mode:    
+protected_mode:
     ;limpio los registros
     xor eax, eax
     xor ebx, ebx
@@ -71,7 +78,7 @@ protected_mode:
     mov ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     mov es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
+    mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
     mov esp, [kernelStackPtrAP1];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
@@ -85,9 +92,9 @@ protected_mode:
     mov cr3, eax
 
     ;prender el bit 5(6th bit) para activar PAE
-    mov eax, cr4                 
-    or eax, 1 << 5               
-    mov cr4, eax                 
+    mov eax, cr4
+    or eax, 1 << 5
+    mov cr4, eax
 
     mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
     rdmsr                        ; Leemos el registro en EDX:EAX.
@@ -103,7 +110,7 @@ protected_mode:
 
     jmp 00010000b:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
     ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
-    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
+    ;aca setie el selector de segmento cs al segmento de codigo del kernel
 
 ;------------------------------------------------------------------------------------------------------
 ;------------------------------- comienzo modo largo --------------------------------------------------
@@ -135,8 +142,8 @@ long_mode:
     MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
-    
+    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
+
     ;cargo el selector de pila en el segmento de datos del kernel
     MOV ss, ax
 
@@ -158,6 +165,17 @@ long_mode:
 
     ;fin inicio kernel para AP en 64 bits!
     haltApCore: hlt
+        cmp byte [start], 0
+        je haltApCore
+
+        mov rsi, [start_point]
+        mov rdi, array_global
+        add rdi, rsi
+
+        call mergesort
+        mov byte [done], 1
+            xchg bx, bx
+
         jmp haltApCore
 
 ; -------------------------------------------------------------------------- ;;
