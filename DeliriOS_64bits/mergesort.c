@@ -1,14 +1,12 @@
 #include "types.h"
 
-uint8_t array_global[] = {24, 62, 46, 64, 55, 18, 84, 98, 82, 76, 60,
- 28, 30, 85, 99, 0, 96, 7, 34, 31, 80, 5, 89, 78, 43, 57, 8, 97,
- 66, 2, 69, 93, 70, 21, 90, 37, 67, 47, 68, 94, 29, 59, 12, 58,
- 79, 86, 71, 15, 11, 32, 39, 74, 22, 36, 72, 17, 65, 54, 38, 4,
- 73, 19, 88, 13, 1, 45, 51, 23, 42, 49, 41, 9, 91, 53, 48, 14, 52,
- 6, 10, 40, 83, 81, 3, 20, 25, 26, 35, 16, 75, 33, 27, 50, 56, 92,
- 87, 77, 44, 61, 95, 63};
+uint8_t array_global[] = {'z', 's', 'x', 'j', 'k', 'n', 'q', 'l',
+ 'b', 'c', 'h', 'g', 'u', 'p', 'i', 'r', 'w', 'a', 'y', 'm', 'e',
+  'o', 'd', 'f', 't', 'v', 'V', 'K', 'B', 'U', 'S', 'P', 'M', 'N',
+   'W', 'D', 'C', 'O', 'A', 'L', 'G', 'H', 'F', 'Y', 'R', 'J', 'I',
+    'Z', 'T', 'Q', 'X', 'E'};
 
-uint8_t start_point = 50;
+uint8_t start_point = 26;
 
 volatile uint8_t start = 0;
 volatile uint8_t done = 0;
@@ -21,10 +19,10 @@ void mergesort(uint8_t* array, uint32_t len){
 
     uint32_t len1 = len/2;
     uint32_t len2 = len%2 ? (len+1)/2 : len/2;
-    mergesort(array, len1);
-    mergesort(array + len2, len2);
     uint8_t* half1 = array;
-    uint8_t* half2 = array + len2;
+    uint8_t* half2 = array + len1;
+    mergesort(half1, len1);
+    mergesort(half2, len2);
     uint8_t result[len];
 
     uint32_t i= 0; uint32_t j= 0; uint32_t k = 0;
@@ -61,6 +59,7 @@ void mergesort(uint8_t* array, uint32_t len){
 void mergesort_pm(){
     uint8_t* half1 = array_global;
     start = 1;
-    mergesort(half1, 50);
-    start = 0;
+    mergesort(half1, start_point);
+    for(;!done;);
+    //start = 0;
 }

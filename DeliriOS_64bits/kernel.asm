@@ -362,23 +362,21 @@ loop_64g_structure:
     ;llamo al entrypoint en kmain64
     call startKernel64_BSPMODE
 
-    mov rdi, array_prueba
-    mov rsi, array_len
+    ;mov rdi, array_global
+    ;mov rsi, 52
 
-    call mergesort
+    ;call mergesort
 
-    imprimir_texto_ml  array_prueba, array_len, 0x02, 9, 0
+    ;imprimir_texto_ml  array_global, 52, 0x02, 11, 0
 
     ;fin inicio kernel para BSP en 64 bits!
-            xchg bx, bx
+
     call mergesort_pm
 
-    haltBspCore: hlt
-        cmp byte [done], 1
-        jne haltBspCore
-            xchg bx, bx
+    imprimir_texto_ml array_global, 52, 0x02, 12, 0
 
-        imprimir_texto_ml array_global, 100, 0x02, 11, 0
+    haltBspCore:
+        hlt
         jmp haltBspCore
 
 ;; -------------------------------------------------------------------------- ;;

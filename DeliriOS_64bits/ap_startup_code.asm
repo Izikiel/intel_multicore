@@ -164,18 +164,22 @@ long_mode:
     call startKernel64_APMODE
 
     ;fin inicio kernel para AP en 64 bits!
-    haltApCore: hlt
-        cmp byte [start], 0
-        je haltApCore
+    start_sort:
+        ;cmp byte [start], 0
+        ;je start_sort
+        xor rsi, rsi
+        xor rdi, rdi
 
         mov rsi, [start_point]
         mov rdi, array_global
+        ;xchg bx, bx
         add rdi, rsi
 
         call mergesort
         mov byte [done], 1
-            xchg bx, bx
+        imprimir_texto_ml array_global, 52, 0x02, 11, 0
 
+    haltApCore:
         jmp haltApCore
 
 ; -------------------------------------------------------------------------- ;;
