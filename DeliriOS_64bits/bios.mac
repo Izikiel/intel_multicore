@@ -1,0 +1,58 @@
+%macro bios_clrscr 1 ; color
+	mov bh, %1
+	mov ax, 0x0600
+	xor cx, cx
+	mov dx, 25 << 8 | 80
+	int 0x10
+%endmacro
+
+%macro bios_write 5 ; msg, len, color, x, y
+	mov ax, 0x1301
+	mov bx, %3
+	%if %2 <> cx
+	mov cx, %2
+	%endif
+	%if %1 <> dx
+	mov dx, (%4)
+	%endif
+	%if %5 <> 0
+	add dh, (%5) 
+	%endif
+	%if %1 <> bp
+	mov bp, %1
+	%endif
+	int 0x10
+%endmacro
+
+%macro bios_disk_read 3 ; LBA sector, dest_addr, n_sectors
+	%if %1 <> ax
+	mov ax, %1
+	%endif
+	div BYTE [BOOT+FAT12_SectorsPerHead]
+	mov cl, ah
+	inc cl ; A quién garcha se le ocurrió que los sectores arrancan de 1? EH?
+	xor ah, ah
+	div BYTE [BOOT+FAT12_HeadsPerCylinder]
+	mov dh, ah
+	mov ch, al
+	mov dl, 0x00 ; Floppy A
+	mov ah, 0x02
+	mov al, (%3)
+	%if %2 <> bx
+	mov bx, %2
+	%endif
+	
+	int 0x13
+%endmacro
+
+%macro bios_disk_reset 1 ; disk_no
+	mov dl, %1
+	xor ah, ah
+	int 0x13
+%endmacro
+
+%macro bios_disk_park 1 ; disk_no
+	mov dl, %1
+	mov ah, 0x19
+	int 0x13
+%endmacro

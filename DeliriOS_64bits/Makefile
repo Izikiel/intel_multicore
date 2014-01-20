@@ -1,5 +1,12 @@
 MCOPY=mcopy
 
+BOOTLOADER_SRC=floppyboot.asm
+BOOTLOADER_BIN=floppyboot.bin
+
+DISK_IMG=diskette.img
+DISK_MOUNT_DIR=diskette
+DISK_LABEL=ORGA2
+
 KERNEL_SRC=kernel.asm
 KERNEL_OBJ=kernel.o
 KERNEL_BIN=kernel.bin
@@ -17,9 +24,6 @@ DEPEND = Makefile\
 OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o contextManager.o utils.o kmain64.o \
 	i386.o timer.o multicore.o cmos.o\
 	ap_startup_code.o mergesort.o
-
-DISK_IMG=diskette.img
-DISK_IMG_BZ=diskette.img.bz2
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I./include
@@ -46,7 +50,13 @@ all: console_clear clean image
 %.o: %.asm
 	$(NASM) $(NASMFLAGS) -o $@ $^
 
+bootloader: $(BOOTLOADER_SRC)
+	@echo 'Compilando el bootloader...'
+	nasm -fbin $(BOOTLOADER_SRC) -o $(BOOTLOADER_BIN)
+	@echo ''
+
 kernel.bin: $(OBJ)
+	@echo ''
 	@echo 'Linkeando kernel...'
 	$(LD) $(LDFLAGS) -o $@ $(OBJ)
 	@echo 'Generando imagen del kernel...'
@@ -56,14 +66,29 @@ kernel.bin: $(OBJ)
 	rm kernel.bin.tmp
 	@echo ''
 
-image: kernel.bin $(DEPEND) $(DISK_IMG)
-	@echo 'Copiando el $(KERNEL_BIN) a la imagen de diskette'
-	$(MCOPY) -o -i $(DISK_IMG) $(KERNEL_BIN) ::/
+image: bootloader kernel.bin $(DEPEND)
+	@echo 'Generando una imagen de diskette vacía...'
+	dd bs=512 count=2880 if=/dev/zero of=$(DISK_IMG)
+	@echo ''
+
+	@echo 'Formateando la imagen de diskette...'
+	sudo mkfs.msdos -F 12 $(DISK_IMG) -n $(DISK_LABEL)
+	@echo ''
+
+	@echo 'Escribiendo el bootsector en la imagen de diskette...'
+	dd if=$(BOOTLOADER_BIN) of=$(DISK_IMG) count=1 seek=0 conv=notrunc
+	@echo ''
+
+	@if [ -f $(KERNEL_BIN) ] ; then \
+		echo 'Copiando el $(KERNEL_BIN) a la imagen de diskette\n'\
+		$(MCOPY) -i $(DISK_IMG) $(KERNEL_BIN) ::/ ;\
+		$(MCOPY) -i $(DISK_IMG) $(KERNEL_BIN) ::/ ;\
+	else \
+		echo 'No se copio el kernel porque no hay' ;\
+	fi
+
 	@echo 'Corriendo bochs'
 	./bochs/bin/bochs -q -f bochsrc
-
-$(DISK_IMG): $(DISK_IMG_BZ)
-	bzip2 -dk $(DISK_IMG_BZ)
 
 console_clear:
 	reset
@@ -74,3 +99,4 @@ clean:
 	rm -f *.bin
 	rm -f *.tmp
 	rm -f $(DISK_IMG)
+	@echo ''

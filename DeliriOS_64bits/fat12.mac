@@ -1,0 +1,36 @@
+
+; Bootsector FAT12 offsets
+%define FAT12_OEM_Identifier     0x03 ; len = 8
+%define FAT12_BytesPerSector     0x0B ; len = 2
+%define FAT12_SectorsPerCluster  0x0D ; len = 1
+%define FAT12_ReservedSectors    0x0E ; len = 2
+%define FAT12_NumberOfFATs       0x10 ; len = 1
+%define FAT12_RootEntries        0x11 ; len = 2
+%define FAT12_NumberOfSectors    0x13 ; len = 2
+%define FAT12_MediaDescriptor    0x15 ; len = 1
+%define FAT12_SectorsPerFAT      0x16 ; len = 2
+%define FAT12_SectorsPerHead     0x18 ; len = 2
+%define FAT12_HeadsPerCylinder   0x1A ; len = 2
+
+%define FAT12_HiddenSectors      0x1C ; len = 4 ; ignore
+%define FAT12_BigNumberOfSectors 0x20 ; len = 4 ; for FAT 16/32
+%define FAT12_Ignore             0x24 ; len = 2
+%define FAT12_BootSignature      0x26 ; len = 1
+%define FAT12_VolumeId           0x27 ; len = 4
+%define FAT12_VolumeLabel        0x2B ; len = 11
+%define FAT12_FSType             0x36 ; len = 8
+
+; Directory entries offsets
+%define FAT_DE_Filename          0x00 ; len = 8
+%define FAT_DE_Extension         0x08 ; len = 3
+%define FAT_DE_Attrib            0x0B ; len = 1
+%define FAT_DE_Reserved          0x0C ; len = 2
+%define FAT_DE_CreationTime      0x0E ; len = 2
+%define FAT_DE_CreationDate      0x10 ; len = 2
+%define FAT_DE_AccessDate        0x12 ; len = 2
+%define FAT_DE_Ignore            0x14 ; len = 2
+%define FAT_DE_LastWriteTime     0x16 ; len = 2
+%define FAT_DE_LastWriteDate     0x18 ; len = 2
+%define FAT_DE_FirstCluster      0x1A ; len = 2
+%define FAT_DE_FileSize          0x1C ; len = 4
+%define FAT_DE__                 0x20 ; end

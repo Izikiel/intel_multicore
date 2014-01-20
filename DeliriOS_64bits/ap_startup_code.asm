@@ -165,8 +165,8 @@ long_mode:
 
     ;fin inicio kernel para AP en 64 bits!
     start_sort:
-        ;cmp byte [start], 0
-        ;je start_sort
+        cmp byte [start], 0
+        je start_sort
         xor rsi, rsi
         xor rdi, rdi
 
