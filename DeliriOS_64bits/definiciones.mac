@@ -1,6 +1,0 @@
-%define SEG_DATA   0x9B00
-%define ADDR_STACK 0x5000 
-%define ADDR_KERN  0x1200
-%define ADDR_BOOT  0x1000
-%define ADDR_BOOTSEC 0x7C00
-%define SEG_VIDEO  0xB800

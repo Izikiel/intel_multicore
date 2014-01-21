@@ -1,8 +1,10 @@
 megs: 128
 romimage: file=run/share/BIOS-bochs-latest
 vgaromimage: file=run/share/VGABIOS-lgpl-latest
-boot: floppy
-floppya: 1_44="diskette.img", status=inserted
+ata0-master: type=disk, path=hdd.img, mode=flat
+boot:disk
+#boot: floppy
+#floppya: 1_44="diskette.img", status=inserted
 magic_break: enabled=1
 mouse: enabled=0
 port_e9_hack: enabled=1

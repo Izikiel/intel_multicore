@@ -1,11 +1,13 @@
 MCOPY=mcopy
 
-BOOTLOADER_SRC=floppyboot.asm
-BOOTLOADER_BIN=floppyboot.bin
+BOOTLOADER_SRC=bootsector.asm
+BOOTLOADER_BIN=bootsector.bin
 
-DISK_IMG=diskette.img
-DISK_MOUNT_DIR=diskette
-DISK_LABEL=ORGA2
+#DISKETTE_IMG=diskette.img
+#DISKETTE_LABEL=ORGA2
+
+DISK_IMG=hdd.img
+DISK_LABEL=DeliriOS
 
 KERNEL_SRC=kernel.asm
 KERNEL_OBJ=kernel.o
@@ -43,6 +45,8 @@ QUIET = @
 .PHONY=clean all image
 
 all: console_clear clean image
+	@echo 'Corriendo bochs'
+	./bochs/bin/bochs -q -f bochsrc
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -67,28 +71,45 @@ kernel.bin: $(OBJ)
 	@echo ''
 
 image: bootloader kernel.bin $(DEPEND)
-	@echo 'Generando una imagen de diskette vacía...'
-	dd bs=512 count=2880 if=/dev/zero of=$(DISK_IMG)
+#	@echo 'Generando una imagen de diskette vacía...'
+#	dd bs=512 count=2880 if=/dev/zero of=$(DISKETTE_IMG)
+#	@echo ''
+#
+#	@echo 'Formateando la imagen de diskette...'
+#	sudo mkfs.msdos -F 12 $(DISKETTE_IMG) -n "$(DISKETTE_LABEL)"
+#	@echo ''
+#
+#	@echo 'Escribiendo el bootsector en la imagen de diskette...'
+#	dd if=$(BOOTLOADER_BIN) of=$(DISKETTE_IMG) count=1 seek=0 conv=notrunc
+#	@echo ''
+
+#	@if [ -f $(KERNEL_BIN) ] ; then \
+#		echo 'Copiando el $(KERNEL_BIN) a la imagen de diskette\n'\
+#		$(MCOPY) -i $(DISKETTE_IMG) $(KERNEL_BIN) ::/ ;\
+#		$(MCOPY) -i $(DISKETTE_IMG) $(KERNEL_BIN) ::/ ;\
+#	else \
+#		echo 'No se copio el kernel porque no hay' ;\
+#	fi
+
+	@echo 'Generando una imagen de disco vacía...'
+	dd bs=1024 count=20480 if=/dev/zero of=$(DISK_IMG)
 	@echo ''
 
-	@echo 'Formateando la imagen de diskette...'
-	sudo mkfs.msdos -F 12 $(DISK_IMG) -n $(DISK_LABEL)
+	@echo 'Formateando la imagen de disco en fat16...'
+	sudo mkfs.msdos -F 16 $(DISK_IMG) -n "$(DISK_LABEL)"
 	@echo ''
 
-	@echo 'Escribiendo el bootsector en la imagen de diskette...'
+	@echo 'Escribiendo el bootsector en la imagen de disco...'
 	dd if=$(BOOTLOADER_BIN) of=$(DISK_IMG) count=1 seek=0 conv=notrunc
 	@echo ''
 
-	@if [ -f $(KERNEL_BIN) ] ; then \
-		echo 'Copiando el $(KERNEL_BIN) a la imagen de diskette\n'\
-		$(MCOPY) -i $(DISK_IMG) $(KERNEL_BIN) ::/ ;\
-		$(MCOPY) -i $(DISK_IMG) $(KERNEL_BIN) ::/ ;\
-	else \
-		echo 'No se copio el kernel porque no hay' ;\
-	fi
-
-	@echo 'Corriendo bochs'
-	./bochs/bin/bochs -q -f bochsrc
+#	@if [ -f $(KERNEL_BIN) ] ; then \
+#		echo 'Copiando el $(KERNEL_BIN) a la imagen de diskette\n'\
+#		$(MCOPY) -i $(DISK_IMG) $(KERNEL_BIN) ::/ ;\
+#		$(MCOPY) -i $(DISK_IMG) $(KERNEL_BIN) ::/ ;\
+#	else \
+#		echo 'No se copio el kernel porque no hay' ;\
+#	fi
 
 console_clear:
 	reset
@@ -98,5 +119,11 @@ clean:
 	rm -f *.o
 	rm -f *.bin
 	rm -f *.tmp
+	#rm -f $(DISKETTE_IMG)
 	rm -f $(DISK_IMG)
+	@echo ''
+
+usb: console_clear clean image
+	@echo 'Escribiendo el bootsector en el usb...'
+	sudo dd if=$(BOOTLOADER_BIN) of=/dev/sdb count=1 seek=0 conv=notrunc
 	@echo ''
