@@ -27,6 +27,11 @@ extern array_global
 extern start_point
 extern done
 extern mergesort
+extern do_reverse_merge
+extern start_merge
+extern temp2
+extern arr_len
+extern copy
 
 ;; Saltear seccion de datos(para que no se ejecute)
 jmp mr_ap_start
@@ -164,22 +169,30 @@ long_mode:
     call startKernel64_APMODE
 
     ;fin inicio kernel para AP en 64 bits!
+
     start_sort:
-        ;cmp byte [start], 0
-        ;je start_sort
+        cmp byte [start], 0
+        je start_sort
         xor rsi, rsi
         xor rdi, rdi
+        xor rdx, rdx
 
-        mov rsi, [start_point]
+        mov esi, [start_point]
         mov rdi, array_global
-        ;xchg bx, bx
+        mov rdx, 1
+
         add rdi, rsi
 
         call mergesort
         mov byte [done], 1
         imprimir_texto_ml array_global, 52, 0x02, 11, 0
 
+    start_merge_:
+        call do_reverse_merge
+
+
     haltApCore:
+        imprimir_texto_ml array_global, 52, 0x02, 11, 0
         jmp haltApCore
 
 ; -------------------------------------------------------------------------- ;;

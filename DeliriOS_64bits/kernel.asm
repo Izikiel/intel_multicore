@@ -373,10 +373,9 @@ loop_64g_structure:
 
     call mergesort_pm
 
-    imprimir_texto_ml array_global, 52, 0x02, 12, 0
 
     haltBspCore:
-        hlt
+        imprimir_texto_ml array_global, 52, 0x02, 12, 0
         jmp haltBspCore
 
 ;; -------------------------------------------------------------------------- ;;
