@@ -8,6 +8,7 @@ SECTIONS
 		start_mb_header = .;
 		*(.__mbHeader)
         . = ALIGN(4096);
+        end_mb_header = .;
 	}
 
     .text : 
