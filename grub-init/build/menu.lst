@@ -1,0 +1,4 @@
+title DeliriOS
+root (fd0)
+kernel /kernel.bin
+boot

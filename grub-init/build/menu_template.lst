@@ -1,0 +1,5 @@
+title JuampiOS
+root (fd0)
+kernel /kernel.bin
+{{modules}}
+boot
