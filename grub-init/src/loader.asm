@@ -1,5 +1,42 @@
+;3.2 Machine state
+;
+;When the boot loader invokes the 32-bit operating system, the machine must have the following state:
+;
+;‘EAX’
+;    Must contain the magic value ‘0x2BADB002’; the presence of this value indicates to the operating system ;that it was loaded by a Multiboot-compliant boot loader (e.g. as opposed to another type of boot loader that ;the operating system can also be loaded from).
+;‘EBX’
+;    Must contain the 32-bit physical address of the Multiboot information structure provided by the boot loader (see Boot information format).
+;‘CS’
+;   Must be a 32-bit read/execute code segment with an offset of ‘0’ and a limit of ‘0xFFFFFFFF’. The exact value is undefined.
+;‘DS’
+;‘ES’
+;‘FS’
+;‘GS’
+;‘SS’
+;    Must be a 32-bit read/write data segment with an offset of ‘0’ and a limit of ‘0xFFFFFFFF’. The exact values are all undefined.
+;‘A20 gate’
+;    Must be enabled.
+;‘CR0’
+;    Bit 31 (PG) must be cleared. Bit 0 (PE) must be set. Other bits are all undefined.
+;‘EFLAGS’
+;    Bit 17 (VM) must be cleared. Bit 9 (IF) must be cleared. Other bits are all undefined. 
+;
+;All other processor registers and flag bits are undefined. This includes, in particular:
+;
+;‘ESP’
+;    The OS image must create its own stack as soon as it needs one.
+;‘GDTR’
+;    Even though the segment registers are set up as described above, the ‘GDTR’ may be invalid, so the OS image ;must not load any segment registers (even just reloading the same values!) until it sets up its own ‘GDT’.
+;‘IDTR’
+;    The OS image must leave interrupts disabled until it sets up its own IDT. 
+
+;However, other machine state should be left by the boot loader in normal working order, i.e. as initialized by ;the bios (or DOS, if that's what the boot loader runs from). In other words, the operating system should be ;able to make bios calls and such after being loaded, as long as it does not overwrite the bios data structures ;before doing so. Also, the boot loader must leave the pic programmed with the normal bios/DOS values, even if ;it changed them during the switch to 32-bit mode.
+
+
+
 %include "src/asm_screen_utils.mac"
 ;La idea es bootear con GRUB.
+BITS 32
 global loader                          
 extern kmain                            ; kmain es el punto de entrada al kernel posta, esta en un archivo aparte
  
@@ -25,21 +62,20 @@ section .text
 
 ;El codigo genuino del loader
 loader:
+_start:
+	;ver arriba state machine para ver como esta la pc en este lugar
 	mov  esp, stack + STACKSIZE         ; Ponemos la pila
 	mov  ebp, stack + STACKSIZE	    ; Ponemos el piso de la pila
 
 	imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 9, 0
 
-
 	push eax                            ; Pusheamos el magic number.
 	push ebx                            ; Pusheamos la informacion. Esto sirve para por ejemplo obtener cuanta ram tenemos.
 
-	cli
 	call kmain					        ; Llamamos al kernel posta
 	
 	add esp, 8;desapilo parametros a kmain
 
-	cli
 .hang:
 	hlt                                 ; Halt por si no funca kmain (no deberia).
 	jmp  .hang

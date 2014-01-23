@@ -3,7 +3,7 @@ ASM=nasm
 LINKER=ld
 LINK.o=ld
 
-CFLAGS=-m32 -O2 -std=c99 -Werror -Wall -Wextra\
+CFLAGS=-m32 -std=c99 -Werror -Wall -O0\
 	-Wno-unused-parameter -Wno-override-init\
 	-Wunreachable-code -Wshadow -Wcast-qual \
 	-Wformat=2 -Wwrite-strings -Wstrict-prototypes\
@@ -11,9 +11,10 @@ CFLAGS=-m32 -O2 -std=c99 -Werror -Wall -Wextra\
 	-Wjump-misses-init -Wlogical-op\
 	-nostdlib -fno-builtin -nostartfiles\
 	-nodefaultlibs -fno-stack-protector -I./include
+
 NASMFLAGS=-i./include/ -f elf32
 LINKSCRIPT=build/linker_script.ld
-LINKERFLAGS=-melf_i386 -T $(LINKSCRIPT)
+LINKERFLAGS=-static -melf_i386 -T $(LINKSCRIPT)
 
 .PHONY=all clean
 
@@ -27,52 +28,40 @@ CDEPS=$(patsubst %.o,%.d,$(COBJS))
 BOCHSDIR?=./bochs/bin
 BOCHSCONF?=run/bochsrc.txt
 
--include $(CDEPS)
-
 %.o: %.c
+	@echo 'Compilando Codigo C...'
 	$(CC) -c $(CFLAGS) $*.c -o $*.o
-	$(CC) -MM $(CFLAGS) $*.c > $*.d
-	@mv -f $*.d $*.d.tmp
-	@sed -e 's|.*:|$*.o:|' < $*.d.tmp > $*.d
-	@sed -e 's/.*://' -e 's/\\$$//' < $*.d.tmp | fmt -1 | \
-		sed -e 's/^ *//' -e 's/$$/:/' >> $*.d
-	@rm -f $*.d.tmp
+	@echo ''
 
 %.o: %.asm
+	@echo 'Compilando Codigo Assembler...'
 	$(ASM) $(NASMFLAGS) -o $@ $^
+	@echo ''
 
 kernel.bin: $(COBJS) $(ASMOBJS)
+	@echo 'Linkeando Kernel...'
 	$(LINKER) $(LINKERFLAGS) -o $@ $^
+	@echo ''
 
-all: kernel.bin Makefile build/linker_script.ld
+all: clearScr clean kernel.bin
+	@echo 'Creando imagen de kernel...'
 	./make_kernel_binary.sh
+	@echo ''
 
 run-bochs: all
+	@echo 'Instalando y corriendo bochs...'
 	./install_bochs.sh
 	$(BOCHSDIR)/bochs -q -f $(BOCHSCONF)
 
 run-qemu: all
 	qemu -smp 2 -cpu pentium -fda floppy.img
 
-clean:
-	rm -rf $(ASMOBJS) $(COBJS) $(CDEPS)\
-	   	kernel.bin floppy.img bochs.tar.gz\
-		types.vim
+clean: clearScr
+	@echo 'Limpiando todo...'
+	rm -rf $(ASMOBJS) $(COBJS) $(CDEPS) kernel.bin floppy.img bochs.tar.gz
+	@echo ''
 
-zipped: clean
-	tar zcvf entrega.tar.gz\
-		./Makefile\
-		./floppy_raw.img\
-		./run\
-		./build\
-		./src\
-		./test\
-		./include
-
-types: types.vim
-types.vim: $(CSOURCES) $(CHEADERS)
-	ctags --c-kinds=gstu -o- $^ |\
-		awk 'BEGIN{printf("syntax keyword Type\t")}\
-			{printf("%s ", $$1)}END{print ""}' > $@
+clearScr:
+	clear
 
 .DEFAULT_GOAL := all
