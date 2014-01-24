@@ -1,0 +1,8 @@
+default 0
+timeout 2
+
+title DeliriOS
+root (fd0)
+kernel /bootstrap32.elf32
+module /kernel64.bin64
+boot

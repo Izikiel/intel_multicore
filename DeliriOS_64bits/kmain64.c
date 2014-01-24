@@ -8,7 +8,6 @@
 
 extern uint64_t start_section_text;
 extern uint64_t end_section_text;
-//extern uint64_t ap_startup_code_page;		 ya esta en multicore.h
 extern uint64_t end_ap_startup_code_page;
 extern uint64_t start_section_data;
 extern uint64_t end_section_data;

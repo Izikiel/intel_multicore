@@ -1,7 +1,6 @@
 %include "macros/asm_screen_utils.mac"
-%include "macros/real_mode_macros.mac"
 
-global kernel
+global protected_mode
 
 ;; GDT
 extern GDT_DESC
@@ -22,25 +21,26 @@ extern habilitar_pic
 extern krnPML4T
 extern krnPDPT
 extern krnPDT
-extern krnPT
 
 ;; startup
 extern startKernel64_BSPMODE
 extern initialize_timer
 extern multiprocessor_init
-extern console_setYCursor
-extern console_setXCursor
+
+;;mergesort cosas
+extern mergesort
+extern array_global
+extern start_point
+extern done
+extern mergesort_pm
 
 ;; Saltear seccion de datos(para que no se ejecute)
-BITS 16
-JMP kernel
+BITS 32
+JMP protected_mode
 
 ;;
 ;; Seccion de datos
 ;; -------------------------------------------------------------------------- ;;
-mensaje_inicioprot_msg:     db '[BSP]Starting up in protected mode...'
-mensaje_inicioprot_len      equ $ - mensaje_inicioprot_msg
-
 mensaje_inicio64_msg:     db '[BSP]Starting up in long mode(IA32e compatibility mode)...'
 mensaje_inicio64_len      equ $ - mensaje_inicio64_msg
 
@@ -71,50 +71,31 @@ mensaje_multicore_len              equ $ - mensaje_multicore_msg
 mensaje_ok_msg:             db 'OK!'
 mensaje_ok_len              equ $ - mensaje_ok_msg
 
-;;
-;; Seccion de código.
-;; -------------------------------------------------------------------------- ;;
-
-;------------------------------------------------------------------------------------------------------
-;------------------------------- comienzo modo real ---------------------------------------------------
-;------------------------------------------------------------------------------------------------------
-BITS 16
-kernel:
-    ; Deshabilitar interrupciones
-    cli
-
-    ; habilitar A20    
-    call habilitar_A20
-
-    ;desaparecer cursor en pantalla
-    mov BL, 0
-    dec BL
-    mov BH, 0
-    dec BH
-    set_cursor
-
-    ; cargar la GDT        
-    lgdt [GDT_DESC]
-
-    imprimir_texto_mr mensaje_inicioprot_msg, mensaje_inicioprot_len, 0x0F, 0, 320
-
-    ; setear el bit PE del registro CR0
-    mov EAX, CR0;levanto registro CR0 para pasar a modo protegido
-    or EAX, 1;hago un or con una mascara de 0...1 para setear el bit de modo protegido
-    mov CR0, EAX
-
-    ; pasar a modo protegido
-    jmp 00001000b:protected_mode; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
-    ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
-    ;aca setie el selector de segmento cs al segmento de codigo del kernel
+mensaje_fail_msg:             db 'FAIL!'
+mensaje_fail_len              equ $ - mensaje_fail_msg
 
 ;------------------------------------------------------------------------------------------------------
 ;------------------------------- comienzo modo protegido ----------------------------------------------
 ;------------------------------------------------------------------------------------------------------
 
 BITS 32
-protected_mode:   
-    ;limpio los registros
+;Pasaje de parametros:
+;   - en eax viene el puntero en donde grub comenzo a cargar el modulo
+;   - en ebx viene el puntero a la informacion de grub multiboot_info_t* (ver multiboot.h)
+;
+;Notas:
+;   - El comienzo del modulo en memoria por grub puede cambiar, pero SIEMPRE va a ser por encima del primer mega
+;       con lo cual todas las estructuras, incluidas GDT, IDT, etc estan por encima del mega, en modo protegido
+;       no hay problema para cargarla, pero es bueno anotar esto. 
+protected_mode:
+    ; recargar la GDT -> vengo del entorno de grub donde la GDT puede ser basura
+    ; ver http://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Machine-state
+    lgdt [GDT_DESC]
+
+    ;limpio la pantalla(macro en asm_screen_utils.mac)
+    limpiar_pantalla_mp
+
+    ;limpio los registros para generar un entorno mas estable
     xor eax, eax
     xor ebx, ebx
     xor ecx, ecx
@@ -130,12 +111,10 @@ protected_mode:
     mov ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     mov es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
+    mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
     mov esp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
-
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicioprot_len    
 
     ; Chequeo de disponibilidad de uso de CPUID
     ; tomado de http://wiki.osdev.org/User:Stephanvanschaik/Setting_Up_Long_Mode#Detection_of_CPUID
@@ -155,14 +134,14 @@ protected_mode:
 
     ;Deteccion de modo 64 bits y mensaje de error sino esta disponible halteamos.
     mov eax, 0x80000000    ; pasamos parametros 0x80000000.
-    cpuid                  
+    cpuid
     cmp eax, 0x80000001    ; 0x80000001 significa que esta habilitado.
     jb ModoLargoNoDisp    ; si es menor, modo largo no esta disponible
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
 
-;inicializo paginacion 
-    imprimir_texto_mp mensaje_paging4g_msg, mensaje_paging4g_len, 0x0F, 3, 0 
+;inicializo paginacion
+    imprimir_texto_mp mensaje_paging4g_msg, mensaje_paging4g_len, 0x0F, 0, 0
 
 ;    Estoy usando paginacion IA-32e => bits CR0.PG=1 + CR4.PAE=1 + EFER.LME=1
 ;    paginas de 2mb
@@ -174,7 +153,7 @@ protected_mode:
 ; Mapeo 4GB con paginas de 2MB
 ; la estructura PML4 esta en krnPML4T, creamos la primer entrada aca
     cld                     ;limpia el direction flag -> http://en.wikipedia.org/wiki/Direction_flag
-    mov edi, [krnPML4T]     
+    mov edi, [krnPML4T]
     mov eax, [krnPDPT]
     or eax, 0x7; attributes nibble
     stosd
@@ -188,7 +167,7 @@ protected_mode:
 ; la estructura PDP esta en krnPDPT, creamos las entradas desde este lugar
     mov ecx, 64             ; hago 64 PDPE entries cada una mapea 1gb de memoria -> mas abajo las mapeo en x64 mode
     mov edi, [krnPDPT]
-    mov eax, [krnPDT]     
+    mov eax, [krnPDT]
     or eax, 0x7; attributes nibble
 crear_pdpentry:
     stosd
@@ -205,7 +184,7 @@ crear_pdpentry:
     mov edi, [krnPDT]
     mov eax, 0x0000008F     ; para activar paginas de 2MB seteamos el bit 7
     xor ecx, ecx
-pd_loop:               
+pd_loop:
     stosd
     push eax
     xor eax, eax
@@ -220,15 +199,15 @@ pd_loop:
     mov eax, [krnPML4T]
     mov cr3, eax
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging4g_len
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 0, mensaje_paging4g_len
 
     ;comienzo a inicializar 64 bits
-    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 4, 0    
-    
+    imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 1, 0
+
     ;prender el bit 5(6th bit) para activar PAE
-    mov eax, cr4                 
-    or eax, 1 << 5               
-    mov cr4, eax                 
+    mov eax, cr4
+    or eax, 1 << 5
+    mov cr4, eax
 
     mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
     rdmsr                        ; Leemos el registro en EDX:EAX.
@@ -239,28 +218,28 @@ pd_loop:
     or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
     mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
 
-    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_inicio64_len
+    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 1, mensaje_inicio64_len
 
-    imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 5, 0
-    
+    imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 2, 0
+
     ;estamos en modo ia32e compatibilidad con 32 bits
     ;comienzo pasaje a 64 bits puro
 
     jmp 00010000b:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
     ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
-    ;aca setie el selector de segmento cs al segmento de codigo del kernel 
+    ;aca setie el selector de segmento cs al segmento de codigo del kernel
 
 ; Funciones auxiliares en 32 bits!
 CPUIDNoDisponible:
-imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 3, mensaje_inicio64_len
-    
+imprimir_texto_mp mensaje_cpuiderr_msg, mensaje_cpuiderr_len, 0x0C, 0, mensaje_inicio64_len
+
     cli
     hlt
     jmp CPUIDNoDisponible
 
-ModoLargoNoDisp:    
-    imprimir_texto_mp mensaje_64bitserr_msg, mensaje_64bitserr_len, 0x0C, 3, mensaje_inicio64_len
-    
+ModoLargoNoDisp:
+    imprimir_texto_mp mensaje_64bitserr_msg, mensaje_64bitserr_len, 0x0C, 0, mensaje_inicio64_len
+
     cli
     hlt
     jmp ModoLargoNoDisp
@@ -296,8 +275,8 @@ long_mode:
     MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel    
-    
+    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
+
     ;cargo el selector de pila en el segmento de datos del kernel
     MOV ss, ax
 
@@ -305,14 +284,14 @@ long_mode:
     MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
 
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 5, mensaje_inicio64real_len
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicio64real_len
 
     ;levanto la IDT de 64 bits
     lidt [IDT_DESC]
     call idt_inicializar
-    
-    imprimir_texto_ml mensaje_paging64g_msg, mensaje_paging64g_len, 0x0F, 6, 0
-    
+
+    imprimir_texto_ml mensaje_paging64g_msg, mensaje_paging64g_len, 0x0F, 3, 0
+
     ;genero el resto de las estructuras de paginacion para mapear 64 gb
     ;lo tengo que hacer aca porque la direccion es de 64 bits, en modo protegido de 32 no podia
     mov rcx, 0x0000000000000000
@@ -326,36 +305,36 @@ loop_64g_structure:
     cmp rcx, 30720         ; 32768 - 2048 (ya mapeamos 2048*2mb)
     jne loop_64g_structure
 
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_paging64g_len
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging64g_len
 
-    imprimir_texto_ml mensaje_interrupt_msg, mensaje_interrupt_len, 0x0F, 7, 0
-    
+    imprimir_texto_ml mensaje_interrupt_msg, mensaje_interrupt_len, 0x0F, 4, 0
+
     ;configurar controlador de interrupciones
     CALL deshabilitar_pic
     CALL resetear_pic
-    CALL habilitar_pic  
+    CALL habilitar_pic
 
-    ;habilito las interrupciones! necesario para timer
+    ;habilito las interrupciones! necesario para timer y core_sleep
     STI
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 7, mensaje_interrupt_len
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_interrupt_len
 
     ;initialize_timer -> para multicore init es necesario por los core_sleep
-    imprimir_texto_ml mensaje_timer_msg, mensaje_timer_len, 0x0F, 8, 0
+    imprimir_texto_ml mensaje_timer_msg, mensaje_timer_len, 0x0F, 5, 0
     call initialize_timer
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 8, mensaje_timer_len
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 5, mensaje_timer_len
 
     ;inicializamos multicore
-    imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 9, 0
-    call multiprocessor_init
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 9, mensaje_multicore_len
+    imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
+    ;call multiprocessor_init
+    ;imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
+    imprimir_texto_ml mensaje_fail_msg, mensaje_fail_len, 0x0C, 6, mensaje_multicore_len
 
     ;llamo al entrypoint en kmain64
     call startKernel64_BSPMODE
 
     ;fin inicio kernel para BSP en 64 bits!
-    haltBspCore: hlt
+
+    haltBspCore:
         jmp haltBspCore
 
 ;; -------------------------------------------------------------------------- ;;
-
-%include "a20.asm"

@@ -1,10 +1,3 @@
-MCOPY=mcopy
-
-KERNEL_SRC=kernel.asm
-KERNEL_OBJ=kernel.o
-KERNEL_BIN=kernel.bin
-LINKSCRIPT=linker_script.ld 
-
 DEPEND = Makefile\
 	kernel.asm isr.asm cmos.asm i386.asm\
 	contextManager.c gdt.c idt.c mmu.c ports.c utils.c kmain64.c \
@@ -12,22 +5,25 @@ DEPEND = Makefile\
 	./include/contextManager.h ./include/defines.h ./include/gdt.h ./include/idt.h\
 	./include/isr.h ./include/mmu.h ./include/ports.h ./include/vargs.h\
 	./include/types.h ./include/utils.h ./include/kmain64.h \
-	./include/irq.h ./include/i386.h ./include/timer.h ./include/multicore.h 
+	./include/irq.h ./include/i386.h ./include/timer.h ./include/multicore.h
 
 OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o contextManager.o utils.o kmain64.o \
 	i386.o timer.o multicore.o cmos.o\
-	ap_startup_code.o
-
-DISK_IMG=diskette.img
-DISK_IMG_BZ=diskette.img.bz2
+	ap_startup_code.o mergesort.o
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I./include
 
+#variables
+KERNEL_SRC=kernel.asm
+KERNEL_OBJ=kernel.o
+KERNEL_BIN=kernel.bin
+LINKSCRIPT=linker_script.ld
+
 CODESIZE=262144
 KERNELSIZE=262144
 
-#variables
+#flags ans binaries
 CC=gcc
 NASM=nasm
 NASMFLAGS=-felf64 -I./include/
@@ -36,9 +32,9 @@ LDFLAGS=-static -melf_x86_64 -T $(LINKSCRIPT)
 
 QUIET = @
 
-.PHONY=clean all image 
+.PHONY=clean all image
 
-all: console_clear clean image
+all: console_clear clean kernel.bin $(DEPEND)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -47,30 +43,19 @@ all: console_clear clean image
 	$(NASM) $(NASMFLAGS) -o $@ $^
 
 kernel.bin: $(OBJ)
+	@echo ''
 	@echo 'Linkeando kernel...'
 	$(LD) $(LDFLAGS) -o $@ $(OBJ)
-	@echo 'Generando imagen del kernel...'
-	mv kernel.bin kernel.bin.tmp
-	dd if=/dev/zero of=kernel.bin bs=1 count=$(KERNELSIZE) conv=notrunc status=noxfer > /dev/null 2>&1
-	dd if=kernel.bin.tmp of=kernel.bin bs=1 count=$(CODESIZE) conv=notrunc status=noxfer > /dev/null 2>&1
-	rm kernel.bin.tmp
-	@echo ''	
+	@echo ''
+	@echo 'Copiando el binario a grub-init...'
+	cp kernel.bin ../grub-init/kernel64.bin64
+	@echo ''
 
-image: kernel.bin $(DEPEND) $(DISK_IMG)
-	@echo 'Copiando el $(KERNEL_BIN) a la imagen de diskette'
-	$(MCOPY) -o -i $(DISK_IMG) $(KERNEL_BIN) ::/	
-	@echo 'Corriendo bochs'
-	./bochs/bin/bochs -q -f bochsrc
-
-$(DISK_IMG): $(DISK_IMG_BZ)
-	bzip2 -dk $(DISK_IMG_BZ)
-
-console_clear: 
+console_clear:
 	reset
 
 clean:
 	@echo 'Limpiando todo...'
 	rm -f *.o
 	rm -f *.bin
-	rm -f *.tmp
-	rm -f $(DISK_IMG)
+	@echo ''

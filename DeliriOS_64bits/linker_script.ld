@@ -1,9 +1,8 @@
 OUTPUT_FORMAT("binary")
-ENTRY(kernel)
-/*ap_startup_code_page = 0x2000;*/
+ENTRY(protected_mode)
 SECTIONS
 {
-    . = 0x1200;
+    . = 0x117000;/*esto es porque grub carga el modulo aca, super hardcode !!*/
 
     .text : 
     {
@@ -16,7 +15,7 @@ SECTIONS
     /*aca . esta alineado a 4k!*/
     .apstartsection :
     {
-        ap_startup_code_page = .;
+        ap_startup_code_page = 0x2000;  /*SUPER HARD CODE !!*/
         *(.apstartsection)
         . = ALIGN(4096);
         end_ap_startup_code_page = .;

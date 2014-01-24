@@ -1,6 +1,19 @@
 %ifndef __asm_screen_utils.mac__
 %define __asm_screen_utils.mac__
 
+;; Limpia la pantalla en modo protegido
+%macro limpiar_pantalla_mp 0
+mov ax, 0x0720 ; formato fondo negro letra blanca y caracter 32 en decimal espacio
+mov ecx, 0
+cicloLimpiarPantalla:
+    cmp ecx, 4000;80*25 posiciones de 2 bytes cada una => 80*2*25 = 4000
+    je finCicloLimpiarPantalla
+    mov [ecx+0xb8000], ax
+    add ecx, 2
+jmp cicloLimpiarPantalla
+finCicloLimpiarPantalla:
+%endmacro
+
 ;; imprimir_texto_ml:
 ;;  Description:
 ;;      Imprime un string en la seccion especificada de la memoria de Video.
