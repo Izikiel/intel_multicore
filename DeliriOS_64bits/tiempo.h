@@ -13,27 +13,7 @@
 		: "=r" (start_high), "=r" (start_low)               \
 		: /* no input */                                    \
 		: "%eax"                                            \
-	);                                                      \
-	                                                        \
-	__asm__ __volatile__ (									\
-		"cpuid\n\t"                                         \
-		"rdtsc\n\t"                                         \
-		"mov %%edx, %0\n\t"                                 \
-		"mov %%eax, %1\n\t"                                 \
-		: "=r" (start_high), "=r" (start_low)               \
-		: /* no input */									\
-		: "%eax"                                            \
-	);                                                      \
-	                                                        \
-	__asm__ __volatile__ (                                  \
-		"cpuid\n\t"                                         \
-		"rdtsc\n\t"											\
-		"mov %%edx, %0\n\t"                                 \
-		"mov %%eax, %1\n\t"                                 \
-		: "=r" (start_high), "=r" (start_low)               \
-		: /* no input */                                    \
-		: "%eax"                                            \
-	);														\
+	);                                                      \														\
 															\
 	start = (((unsigned long long int) start_high) << 32) | \
 		(unsigned long long int) (start_low);				\
