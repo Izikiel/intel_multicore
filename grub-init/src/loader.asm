@@ -32,60 +32,67 @@
 
 ;However, other machine state should be left by the boot loader in normal working order, i.e. as initialized by ;the bios (or DOS, if that's what the boot loader runs from). In other words, the operating system should be ;able to make bios calls and such after being loaded, as long as it does not overwrite the bios data structures ;before doing so. Also, the boot loader must leave the pic programmed with the normal bios/DOS values, even if ;it changed them during the switch to 32-bit mode.
 
-
-
 %include "src/asm_screen_utils.mac"
-;La idea es bootear con GRUB.
 BITS 32
 global loader                          
 extern kmain                            ; kmain es el punto de entrada al kernel posta, esta en un archivo aparte
  
-;Header multiboot de GRUB
-MODULEALIGN equ  1<<0                   ; align loaded modules on page boundaries
-MEMINFO     equ  1<<1                   ; provide memory map
-FLAGS       equ  MODULEALIGN | MEMINFO  ; this is the Multiboot 'flag' field
-MAGIC       equ    0x1BADB002           ; 'magic number' lets bootloader find the header
-CHECKSUM    equ -(MAGIC + FLAGS)        ; checksum required
-
 section .data
-mensaje_ok_msg:             db 'Grub loader OK!'
-mensaje_ok_len              equ $ - mensaje_ok_msg
+	;Header multiboot de GRUB
+	MODULEALIGN equ  1<<0                   ; align loaded modules on page boundaries
+	MEMINFO     equ  1<<1                   ; provide memory map
+	FLAGS       equ  MODULEALIGN | MEMINFO  ; this is the Multiboot 'flag' field
+	MAGIC       equ    0x1BADB002           ; 'magic number' lets bootloader find the header
+	CHECKSUM    equ -(MAGIC + FLAGS)        ; checksum required
 
-section .__mbHeader 
-;AOUT KLUDGE 
-align 4
-	dd MAGIC
-	dd FLAGS
-	dd CHECKSUM
+	mensaje_ok_msg:             db 'Grub loader OK!'
+	mensaje_ok_len              equ $ - mensaje_ok_msg
+
+section .__mbHeader
+	align 4
+	multiboot_header: 
+		dd MAGIC
+		dd FLAGS
+		dd CHECKSUM
  
 section .text
 
-;El codigo genuino del loader
-loader:
-_start:
-	;ver arriba state machine para ver como esta la pc en este lugar
-	mov  esp, stack + STACKSIZE         ; Ponemos la pila
-	mov  ebp, stack + STACKSIZE	    ; Ponemos el piso de la pila
+	;El codigo genuino del loader
+	loader:
+	_start:
+		;ver arriba state machine para ver como esta la pc en este lugar
+		mov  esp, stack + STACKSIZE         ; Ponemos la pila
+		mov  ebp, stack + STACKSIZE	    ; Ponemos el piso de la pila
 
-	imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 9, 0
+		imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 9, 0
 
-	push eax                            ; Pusheamos el magic number.
-	push ebx                            ; Pusheamos la informacion. Esto sirve para por ejemplo obtener cuanta ram tenemos.
+		push eax                            ; Pusheamos el magic number.
+		push ebx                            ; Pusheamos la informacion. Esto sirve para por ejemplo obtener cuanta ram tenemos.
 
-	call kmain					        ; Llamamos al kernel posta
-	
-	add esp, 8;desapilo parametros a kmain
+		call kmain					        ; Llamamos al kernel posta
 
-.hang:
-	hlt                                 ; Halt por si no funca kmain (no deberia).
-	jmp  .hang
- 
+		;restauro el ptr al multiboot_header
+		pop ebx
+		;desapilo el magic number luego del llamado
+		add esp, 4
+
+		;kmain me devolvio el puntero al entrypoint de DeliriOS o NULL si hubo error
+		cmp eax, 0x0;NULL
+		je hang
+		;si no es null paso por ebx el puntero a la informacion de grub multiboot_info_t* 
+		;(ver multiboot.h) y salta al entrypoint de DeliriOS
+		jmp eax
+
+	hang:
+		hlt                                 ; Halt por si no funca kmain (no deberia).
+		jmp  hang
+	 
 
 section .bss
 
-;Pila
-;Reservamos un espacio de pila inicial, 64K
-STACKSIZE equ 0x10000                    
-align 4
-stack:
-	resb STACKSIZE                      ; Reservamos la cantidad de la pila que queremos
+	;Pila
+	;Reservamos un espacio de pila inicial del loader, 64K
+	STACKSIZE equ 0x10000                    
+	align 4
+	stack:
+		resb STACKSIZE                      ; Reservamos la cantidad de la pila que queremos

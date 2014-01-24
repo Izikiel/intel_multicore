@@ -1,9 +1,14 @@
 #!/bin/bash
-
-# Este script se utiliza para pasar el binario del kernel a una imagen de 
-# bochs, incluyendo ademas todos los modulos.
-
+#preparo la imagen de grub virgen
 cp floppy_raw.img floppy.img
- 
-e2cp kernel.bin floppy.img:/
+
+#copio el loader de 32 bits
+e2cp bootstrap32.elf32 floppy.img:/
+#recompilo el OS y lo copio al floppy
+@echo 'Recompilando DeliriOS...'
+pushd ../DeliriOS_64bits
+make
+popd
+e2cp kernel64.bin64 floppy.img:/
+#copio el menu de grub
 e2cp build/menu.lst floppy.img:/boot/grub/menu.lst
