@@ -16,12 +16,17 @@ const uint32_t arr_len = 52;
 
 uint8_t start_merge = 0;
 
-volatile uint8_t start = 0;
-volatile uint8_t done = 0;
+uint8_t start = 0;
+uint8_t done = 0;
 
-void mergesort(uint8_t* array, uint32_t len, char id){
-    // array[5] = 'a';
-    // return;
+uint32_t len;
+uint32_t half_len;
+uint32_t full_array;
+
+uint8_t finish = 0;
+
+
+void mergesort(uint32_t* array, uint32_t len){
 
     if (len <= 1) {
         return;
@@ -29,11 +34,11 @@ void mergesort(uint8_t* array, uint32_t len, char id){
 
     uint32_t len1 = len/2;
     uint32_t len2 = len%2 ? (len+1)/2 : len/2;
-    uint8_t* half1 = array;
-    uint8_t* half2 = array + len1;
+    uint32_t* half1 = array;
+    uint32_t* half2 = array + len1;
     mergesort(half1, len1, id);
     mergesort(half2, len2, id);
-    uint8_t result[len];
+    uint32_t result[len];
 
     uint32_t i= 0; uint32_t j= 0; uint32_t k = 0;
 
@@ -66,9 +71,9 @@ void mergesort(uint8_t* array, uint32_t len, char id){
     return;
 }
 
-void swap(uint8_t ar[], uint32_t i, uint32_t j) { uint32_t t=ar[i]; ar[i]=ar[j]; ar[j]=t; };
+void swap(uint32_t ar[], uint32_t i, uint32_t j) { uint32_t t=ar[i]; ar[i]=ar[j]; ar[j]=t; };
 
-void limit_merge(uint8_t arr[], uint8_t copy[], uint32_t low, uint32_t mid, uint32_t high, uint32_t size) {
+void limit_merge(uint32_t arr[], uint32_t copy[], uint32_t low, uint32_t mid, uint32_t high, uint32_t size) {
         uint32_t i,j,k,l,s=size;
         l=low;
         i=0;
@@ -103,7 +108,7 @@ void limit_merge(uint8_t arr[], uint8_t copy[], uint32_t low, uint32_t mid, uint
         }
 }
 
-void limit_merge_reverse(uint8_t arr[], uint8_t copy[], uint32_t low, uint32_t mid, uint32_t high, uint32_t size) {
+void limit_merge_reverse(uint32_t arr[], uint32_t copy[], uint32_t low, uint32_t mid, uint32_t high, uint32_t size) {
         uint32_t i,j,k,l,s=size;
         l=mid;
         i=size-1;
@@ -138,7 +143,7 @@ void limit_merge_reverse(uint8_t arr[], uint8_t copy[], uint32_t low, uint32_t m
         }
 }
 
-void copy(uint8_t a[], uint32_t ia, uint8_t b[], uint32_t ib, uint32_t size) {
+void copy(uint32_t a[], uint32_t ia, uint32_t b[], uint32_t ib, uint32_t size) {
   uint32_t i;
   for(i=0;i<size;i++){
     a[ia] = b[ib];
@@ -149,9 +154,9 @@ void copy(uint8_t a[], uint32_t ia, uint8_t b[], uint32_t ib, uint32_t size) {
 
 
 void mergesort_pm(){
-    uint8_t* half1 = array_global;
+    uint32_t* half1 = array_global;
     start = 1;
-    mergesort(half1, start_point, 0);
+    mergesort(half1, start_point);
     for(;!done;);
     done = 0;
     start_merge = 1;
@@ -171,3 +176,51 @@ void do_reverse_merge(){
     copy(array_global, start_point, temp2, 0, start_point);
     done = 1;
 }
+
+
+void mergesort_core1(){
+    uint32_t temp_array_1[half_len];
+    uint32_t* half_array = full_array;
+
+    start = 1;
+    mergesort(half_array, half_len);
+    for(;!done;);
+
+    start = 0;
+    done = 0;
+    start_merge = 1;
+
+    limit_merge(full_array, temp_array_1, 0, (half_len) - 1, len - 1, half_len);
+    for(;!done;);
+
+    start_merge = 0;
+
+    done = 0;
+
+    copy(full_array, 0, temp_array_1, 0, len);
+
+}
+
+void mergesort_core2(){
+    for(;!finish;){
+
+        for(;!start;);
+
+        uint32_t* half_array = full_array + half_len;
+
+        mergesort(half_array, half_len);
+        done = 1;
+       
+        for (;!start_merge;);
+
+        uint32_t temp_array_2[half_len];
+
+        limit_merge_reverse(full_array, temp_array_2, 0, half_len - 1, len - 1, half_len);
+
+        copy(full_array, half_len, temp_array_2, 0, half_len);
+
+        done = 1;
+    }
+
+}
+
