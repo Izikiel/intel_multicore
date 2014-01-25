@@ -14,10 +14,12 @@ def generate_test_data():
 		while size < 4*1024*1024:
 			data.append(generate_random_array(size))
 			size *= 2
-		
+
 		str_data = str(data)
 		str_data = str_data.replace("[","\n{")
 		str_data = str_data.replace("]","}")
+		str_data += ";"
+		str_data = "uint32_t test_data[][] = " + str_data
 		t_data_file.write(str_data)
 
 
