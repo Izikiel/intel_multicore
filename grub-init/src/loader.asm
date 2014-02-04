@@ -35,8 +35,9 @@
 %include "src/asm_screen_utils.mac"
 BITS 32
 global loader                          
+global apStartupCode
 extern kmain                            ; kmain es el punto de entrada al kernel posta, esta en un archivo aparte
- 
+
 section .data
 	;Header multiboot de GRUB
 	MODULEALIGN equ  1<<0                   ; align loaded modules on page boundaries
@@ -46,7 +47,7 @@ section .data
 	CHECKSUM    equ -(MAGIC + FLAGS)        ; checksum required
 
 	mensaje_ok_msg:             db 'Grub loader OK!'
-	mensaje_ok_len              equ $ - mensaje_ok_msg
+	mensaje_ok_len              equ $ - mensaje_ok_msg	
 
 section .__mbHeader
 	align 4
@@ -59,7 +60,6 @@ section .text
 
 	;El codigo genuino del loader
 	loader:
-	_start:
 		;ver arriba state machine para ver como esta la pc en este lugar
 		mov  esp, stack + STACKSIZE         ; Ponemos la pila
 		mov  ebp, stack + STACKSIZE	    ; Ponemos el piso de la pila
@@ -77,6 +77,14 @@ section .text
 		add esp, 4
 
 		;kmain me devolvio el puntero al entrypoint de DeliriOS o NULL si hubo error
+
+		;en ecx dejo el puntero al comienzo del stage2 del loader de los ap o NULL si hubo error
+		mov ecx, [apStartupCode]
+		;la idea es que un stage1 de los ap ocupe lo menos posible y haga jmp a memoria alta
+		;porque tengo que pisar grub para poner el ip en memoria baja y comenzar en modo real en los aps...
+		;ps. el stage1 del loader de los ap va si o si abajo del mega, pisamos grub, ver en
+		;linker script de DeliriOS donde esta pegoteado eso, seguramente en 0x2000, pero revisar
+		;por si en el futuro se cambia...		
 		cmp eax, 0x0;NULL
 		je hang
 		;si no es null paso por ebx el puntero a la informacion de grub multiboot_info_t* 
@@ -84,10 +92,10 @@ section .text
 		jmp eax
 
 	hang:
+		xchg bx, bx
 		hlt                                 ; Halt por si no funca kmain (no deberia).
 		jmp  hang
 	 
-
 section .bss
 
 	;Pila
@@ -96,3 +104,5 @@ section .bss
 	align 4
 	stack:
 		resb STACKSIZE                      ; Reservamos la cantidad de la pila que queremos
+
+	apStartupCode: resb 4;reservo memoria 32 bits

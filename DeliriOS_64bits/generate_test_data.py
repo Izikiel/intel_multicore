@@ -15,11 +15,12 @@ def generate_test_data():
 			data.append(generate_random_array(size))
 			size *= 2
 
+		header = "#include <types.h> \n uint32_t test_data[%d][] = "%len(data)
 		str_data = str(data)
 		str_data = str_data.replace("[","\n{")
 		str_data = str_data.replace("]","}")
 		str_data += ";"
-		str_data = "uint32_t test_data[][] = " + str_data
+		str_data = header + str_data
 		t_data_file.write(str_data)
 
 

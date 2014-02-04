@@ -3,6 +3,7 @@
 #include <asserts.h>
 #include <utils.h>
 #include <ports.h>
+#include <console.h>
 #include <idt.h>
 #include <timer.h>
 
@@ -101,7 +102,6 @@ found:
 	}
 	
 	if(!check_valid_mpfs(mpfs)){
-		breakpoint();
 		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Estructura MPFS con checksum invalido");
 		return NULL;
 	}
@@ -420,6 +420,8 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 
 	//Se require que la pagina donde se inicia a ejecutar el codigo 16 bits
 	//de modo real del AP este alineada a pagina.
+	//__asm __volatile("xchg %%bx, %%bx" : :);
+	//__asm __volatile("xchg %%bx, %%bx" : :);	
 	fail_unless((ap_symb & 0xFFF) == 0);
 	turn_on_aps(ap_symb);
 }
@@ -452,6 +454,7 @@ void multiprocessor_init()
 	//console_cls();
 	check_struct_sizes();
 
+
 	//Detectar MPFS
 	mp_float_struct * mpfs = find_floating_pointer_struct();
 	if(mpfs == NULL){
@@ -461,7 +464,7 @@ void multiprocessor_init()
 	//console_printf("\n\tEstructura MPFS encontrada: %u\n", mpfs);
 
 	//Recorrer estructura y determinar los cores
-	if(mpfs->config != 0){
+	if(mpfs->config != 0){		
 		//Configuracion hay que determinarla
 		//console_printf("\tConfiguracion a determinar\n");
 		determine_cpu_configuration(mpfs);

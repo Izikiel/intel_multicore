@@ -1,6 +1,9 @@
 #include <multiboot.h>
 #include <utils.h>
 
+extern void* apStartupCode;
+void* ap_startup_code_page = (void*)0x2000;
+
 //Encontrar un modulo dado su path. No estoy seguro de que tan portable
 //es pero simplifica bastante la vida.
 module_t * module_by_path(const multiboot_info_t * mbd, const char * path){
@@ -15,6 +18,10 @@ module_t * module_by_path(const multiboot_info_t * mbd, const char * path){
 	return NULL;
 }
 
+/*
+En eax devuelvo el puntero a DeliriOs
+En la variable externa devuelvo el puntero al stage2 de los ap
+*/
 void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 {
 	//Chequeamos el magic number que viene de grub
@@ -32,7 +39,7 @@ void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 		//scrn_printf("Mapa de memoria de GRUB invalido");
 		return NULL;
 	}
-
+	
 	//Hold on bitches, nasty code ahead !!
 
 	//Explico esto con una gran sonrisa. Grub me cargo un "modulo" en alguna parte
@@ -49,5 +56,23 @@ void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 	}
 
 	void * entryPoint = (void *) deliriOSBinary->mod_start;
+
+	//Cargo en ebx el stage2 de los aps-
+	module_t * apStartupCodeModule = module_by_path(mbd, "/ap_startup_code");
+
+	if(apStartupCodeModule == NULL){
+		//scrn_print("Modulo no encontrado.");
+		apStartupCode = NULL;
+	}
+
+	apStartupCode = (void *) apStartupCodeModule->mod_start;
+
+	//Copiar el codigo de inicio de procesador AP a la direccion indicada
+	//__asm __volatile("xchg %%bx, %%bx" : :);
+	//__asm __volatile("xchg %%bx, %%bx" : :);
+	memcpy(ap_startup_code_page, apStartupCode,
+		apStartupCodeModule->mod_end - apStartupCodeModule->mod_start);
+	//__asm __volatile("xchg %%bx, %%bx" : :);
+
 	return entryPoint;
 }

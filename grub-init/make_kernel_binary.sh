@@ -10,5 +10,6 @@ pushd ../DeliriOS_64bits
 make
 popd
 e2cp kernel64.bin64 floppy.img:/
+e2cp ap_startup_code floppy.img:/
 #copio el menu de grub
 e2cp build/menu.lst floppy.img:/boot/grub/menu.lst

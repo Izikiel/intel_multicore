@@ -5,4 +5,5 @@ title DeliriOS
 root (fd0)
 kernel /bootstrap32.elf32
 module /kernel64.bin64
+module /ap_startup_code
 boot

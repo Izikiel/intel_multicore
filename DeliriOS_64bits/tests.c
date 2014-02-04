@@ -14,7 +14,7 @@ void test_1_core(){
 
 		// ver q tiene silvio para hacer esto print(stop-start);
 
-		
+
 	}
 }
 
@@ -35,7 +35,7 @@ void test_2_cores(){
 
 		MEDIR_TIEMPO_STOP(stop);
 
-		print(stop-start);
+		//print(stop-start);
 
 	}
 

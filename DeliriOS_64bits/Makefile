@@ -1,14 +1,14 @@
 DEPEND = Makefile\
 	kernel.asm isr.asm cmos.asm i386.asm\
-	contextManager.c gdt.c idt.c mmu.c ports.c utils.c kmain64.c \
+	contextManager.c gdt.c idt.c mmu.c ports.c utils.c kmain64.c console.c\
 	timer.c multicore.c \
 	./include/contextManager.h ./include/defines.h ./include/gdt.h ./include/idt.h\
 	./include/isr.h ./include/mmu.h ./include/ports.h ./include/vargs.h\
-	./include/types.h ./include/utils.h ./include/kmain64.h \
+	./include/types.h ./include/utils.h ./include/kmain64.h ./include/console.h\
 	./include/irq.h ./include/i386.h ./include/timer.h ./include/multicore.h
 
 OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o contextManager.o utils.o kmain64.o \
-	i386.o timer.o multicore.o cmos.o\
+	i386.o timer.o multicore.o cmos.o console.o\
 	ap_startup_code.o mergesort.o
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \

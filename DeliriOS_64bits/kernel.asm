@@ -22,6 +22,10 @@ extern krnPML4T
 extern krnPDPT
 extern krnPDT
 
+;; consola
+extern console_setYCursor
+extern console_setXCursor
+
 ;; startup
 extern startKernel64_BSPMODE
 extern initialize_timer
@@ -33,6 +37,12 @@ extern array_global
 extern start_point
 extern done
 extern mergesort_pm
+
+;Ap stage2
+global apStartupPtr
+
+;grub info
+global grubInfoStruct
 
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 32
@@ -74,6 +84,9 @@ mensaje_ok_len              equ $ - mensaje_ok_msg
 mensaje_fail_msg:             db 'FAIL!'
 mensaje_fail_len              equ $ - mensaje_fail_msg
 
+apStartupPtr: resb 4;reservo 4 bytes(32 bits)
+grubInfoStruct: resb 4;reservo 4 bytes(32 bits)
+
 ;------------------------------------------------------------------------------------------------------
 ;------------------------------- comienzo modo protegido ----------------------------------------------
 ;------------------------------------------------------------------------------------------------------
@@ -82,6 +95,7 @@ BITS 32
 ;Pasaje de parametros:
 ;   - en eax viene el puntero en donde grub comenzo a cargar el modulo
 ;   - en ebx viene el puntero a la informacion de grub multiboot_info_t* (ver multiboot.h)
+;   - en ecx viene el puntero al codigo de los aps
 ;
 ;Notas:
 ;   - El comienzo del modulo en memoria por grub puede cambiar, pero SIEMPRE va a ser por encima del primer mega
@@ -91,6 +105,9 @@ protected_mode:
     ; recargar la GDT -> vengo del entorno de grub donde la GDT puede ser basura
     ; ver http://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Machine-state
     lgdt [GDT_DESC]
+
+    mov [grubInfoStruct], ebx;copio el ptr a la info de grub
+    mov [apStartupPtr], ecx;copio el ptr startup del ap    
 
     ;limpio la pantalla(macro en asm_screen_utils.mac)
     limpiar_pantalla_mp
@@ -309,6 +326,13 @@ loop_64g_structure:
 
     imprimir_texto_ml mensaje_interrupt_msg, mensaje_interrupt_len, 0x0F, 4, 0
 
+    ;inicializo la consola
+
+    mov rdi, 7
+    call console_setYCursor
+    mov rdi, 0
+    call console_setXCursor
+
     ;configurar controlador de interrupciones
     CALL deshabilitar_pic
     CALL resetear_pic
@@ -322,12 +346,10 @@ loop_64g_structure:
     imprimir_texto_ml mensaje_timer_msg, mensaje_timer_len, 0x0F, 5, 0
     call initialize_timer
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 5, mensaje_timer_len
-
     ;inicializamos multicore
     imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
-    ;call multiprocessor_init
-    ;imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
-    imprimir_texto_ml mensaje_fail_msg, mensaje_fail_len, 0x0C, 6, mensaje_multicore_len
+    call multiprocessor_init
+    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 
     ;llamo al entrypoint en kmain64
     call startKernel64_BSPMODE

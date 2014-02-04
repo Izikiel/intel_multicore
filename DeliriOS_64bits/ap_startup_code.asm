@@ -1,56 +1,22 @@
-cli 
-hlt
-;;Este codigo es el codigo de inicializacion de los Application Processors.
-;;Dado que inician en modo real, deben iniciar el procesador desde cero.
+;section .text
 ;BITS 16
-;%include "macros/asm_screen_utils.mac"
-;%include "macros/real_mode_macros.mac"
-;
-;section .apstartsection
-;
-;;; GDT
-;extern GDT_DESC
-;
-;;; IDT
-;extern IDT_DESC
-;
-;;; STACK
-;extern kernelStackPtrAP1; OJO , OJO , OJO CON ESTO, LAS PILAS DEBEN SER DIFERENTES ENTRE LOS CORES!!!
-;
-;;;paginacion
-;extern krnPML4T
-;
-;;; startup
-;extern startKernel64_APMODE
-;
-;;;mergesort cosas
-;extern start
-;extern array_global
-;extern start_point
-;extern done
-;extern mergesort
-;extern do_reverse_merge
-;extern start_merge
-;extern temp2
-;extern arr_len
-;extern copy
-;
 ;;; Saltear seccion de datos(para que no se ejecute)
 ;jmp mr_ap_start
-;
-;mensaje_ap_started_msg:             db '[AP]Core woke up in x64 mode!'
-;mensaje_ap_started_len              equ $ - mensaje_ap_started_msg
 ;
 ;;------------------------------------------------------------------------------------------------------
 ;;------------------------------- comienzo modo real ---------------------------------------------------
 ;;------------------------------------------------------------------------------------------------------
 ;mr_ap_start:
+;	;crear una mini gdt y saltar al stage2 con un jmp far
 ;    ; Deshabilitar interrupciones
 ;    cli
+;    xchg bx, bx
+;    mov ax, 303
+;    hlt
 ;
-;    ; A20 YA ESTA HABILITADO POR EL BSP
-;
-;    ; cargar la GDT; ES UNICA PARA TODOS LOS CORES
+    ; A20 YA ESTA HABILITADO POR EL BSP
+
+    ; cargar la GDT; ES UNICA PARA TODOS LOS CORES
 ;    lgdt [GDT_DESC]
 ;
 ;    ; setear el bit PE del registro CR0
@@ -62,14 +28,14 @@ hlt
 ;    jmp 00001000b:protected_mode; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
 ;    ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
 ;    ;aca setie el selector de segmento cs al segmento de codigo del kernel
-;
-;;------------------------------------------------------------------------------------------------------
-;;------------------------------- comienzo modo protegido ----------------------------------------------
-;;------------------------------------------------------------------------------------------------------
-;
+
+;------------------------------------------------------------------------------------------------------
+;------------------------------- comienzo modo protegido ----------------------------------------------
+;------------------------------------------------------------------------------------------------------
+
 ;BITS 32
-;protected_mode:
-;    ;limpio los registros
+;ap_protected_mode:
+    ;limpio los registros
 ;    xor eax, eax
 ;    xor ebx, ebx
 ;    xor ecx, ecx
