@@ -6,7 +6,7 @@ all: clean ap_startup_code
 	nasm -felf32 -o $@ $^
 
 ap_startup_code: ap_startup_code.o
-	ld $(LDFLAGS) -e mp_ap_start -Ttext 0x2000 -o $@ $^
+	ld $(LDFLAGS) -Ttext 0x2000 -o $@ $^
 	cp $@ ../grub-init/$@
 
 clean:

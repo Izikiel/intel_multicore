@@ -3,41 +3,78 @@
 BITS 16
 
 section .text
-global mp_ap_start
+;global mp_ap_start
 
-jmp mp_ap_start
+jmp mr_ap_start
 
-iniciando_mr_msg db 'Hola! Soy un core...'
+iniciando_mr_msg db 'Hola! Soy un core protegido! :D'
 iniciando_mr_len equ    $ - iniciando_mr_msg
 
-mp_ap_start:
-	;Imprimir mensaje
-	;Cuanto queda imprimir
-	mov cx,iniciando_mr_len
+gdt: dq 0x0
 
-	;Posicion en buffer
-	mov edi,iniciando_mr_msg
+code: dd 0x0000FFFF
+	  dd 0x00CF9A00
 
-	;Color
-	mov ax, 0x200
+data: dd 0x0000FFFF
+	  dd 0x00CF9200
 
-	;Segmento de video
-	mov bx, 0xb800
-	mov es, bx
+gdt_desc:   dw $ - gdt
+            dd gdt
 
-	;Posicion en memoria de video
-	mov bx, 23*2*80
+mr_ap_start:
+	cli
+    ;hlt
 
-.imprimir:
-	mov al, [di]
-	mov [es:bx], ax
-	add bx, 2
-	inc di
-	loop .imprimir
+    ; A20 YA ESTA HABILITADO POR EL BSP
 
-	jmp $
+    ; cargar la GDT;
+    lgdt [gdt_desc]
 
+    ; setear el bit PE del registro CR0
+    mov eax, CR0;levanto registro CR0 para pasar a modo protegido
+    or eax, 1;hago un or con una mascara de 0...1 para setear el bit de modo protegido
+    mov CR0, eax
 
+    ; pasar a modo protegido
+    jmp 0x8:f_mp_ap_start; saltamos a modo protegido, modificamos el cs con un jump y la eip(program counter)
+    ;{index:1 | gdt/ldt: 0 | rpl: 00} => 1000
+    ;aca setie el selector de segmento cs al segmento de codigo del kernel
+
+BITS 32
+
+f_mp_ap_start:
+	mov ax, 0x10
+	mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
+    mov ss, ax
+
+	jmp $;true_mp_ap_start
+
+    ;falta para el modulo posta el codigo para medir tiempo
+
+    ;xchg bx, bx
+    ;mov ax, 1
+;
+	;mov ecx,iniciando_mr_len
+;
+	;;Posicion en buffer
+	;mov edi,iniciando_mr_msg
+;
+	;;Color
+	;mov ax, 0x200
+;
+	;;Posicion en memoria de video
+	;mov ebx, 23*2*80 + 0xb8000  ; fila 23 + seccion de video
+;
+;.imprimir:
+	;mov al, [edi]
+	;mov [ebx], ax
+	;add ebx, 2
+	;inc edi
+	;loop .imprimir
 
 
 

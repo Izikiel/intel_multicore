@@ -4,9 +4,11 @@ if [[ $1 == 'r' ]]; then
 	pushd ./grub-init/
 	make run-bochs
 	popd
-fi
-if [[ $1 == 'c' ]]; then
+elif [[ $1 == 'c' ]]; then
 	pushd ./grub-init/
 	make
 	popd
+else
+	echo 'r : compile + run'
+	echo 'c : compile'
 fi
