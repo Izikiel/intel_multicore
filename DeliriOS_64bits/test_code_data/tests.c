@@ -14,7 +14,6 @@ void test_1_core(){
 
 		// ver q tiene silvio para hacer esto print(stop-start);
 
-
 	}
 }
 

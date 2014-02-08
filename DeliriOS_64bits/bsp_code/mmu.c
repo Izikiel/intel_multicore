@@ -2,9 +2,11 @@
 #include <defines.h>
 
 void* kernelStackPtrBSP = (void*)KERNEL_STACK_PTR_BSP;
-void* kernelStackPtrAP1 = (void*)KERNEL_STACK_PTR_AP1;
-void* kernelStackPtrAP2 = (void*)KERNEL_STACK_PTR_AP2;
-void* kernelStackPtrAP3 = (void*)KERNEL_STACK_PTR_AP3;
+
+void* core_stack_ptrs[16] = {(void*) KERNEL_STACK_PTR_BSP,
+						(void*) KERNEL_STACK_PTR_AP1,
+						(void*) KERNEL_STACK_PTR_AP2,
+						(void*) KERNEL_STACK_PTR_AP3,};
 
 /*
 	Estoy usando paginacion IA-32e => bits CR0.PG=1 + CR4.PAE=1 + EFER.LME=1

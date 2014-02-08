@@ -20,5 +20,6 @@ extern uint64_t* krnPDPT;
 extern uint64_t* krnPDT;
 extern void* kernelStackPtrBSP;
 extern void* kernelStackPtrAP1;
+extern void* core_stack_ptrs[];
 
 #endif	/* !__MMU_H__ */

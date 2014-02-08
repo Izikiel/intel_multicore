@@ -14,7 +14,7 @@ module_t * module_by_path(const multiboot_info_t * mbd, const char * path){
 		if(strcmp(str,path) == 0){
 			return &modules[i];
 		}
-	}	
+	}
 	return NULL;
 }
 
@@ -39,7 +39,7 @@ void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 		//scrn_printf("Mapa de memoria de GRUB invalido");
 		return NULL;
 	}
-	
+
 	//Hold on bitches, nasty code ahead !!
 
 	//Explico esto con una gran sonrisa. Grub me cargo un "modulo" en alguna parte
@@ -57,7 +57,12 @@ void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 
 	void * entryPoint = (void *) deliriOSBinary->mod_start;
 
-	//Cargo en ebx el stage2 de los aps-
+	// module_t * apFullCodeModule = module_by_path(mbd, "/ap_full_code.bin64");
+	// if (apFullCodeModule == NULL)
+	// {
+	// 	return NULL;
+	// }
+
 	module_t * apStartupCodeModule = module_by_path(mbd, "/ap_startup_code");
 
 	if(apStartupCodeModule == NULL){
@@ -73,6 +78,18 @@ void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 	memcpy(ap_startup_code_page, apStartupCode,
 		apStartupCodeModule->mod_end - apStartupCodeModule->mod_start);
 	//__asm __volatile("xchg %%bx, %%bx" : :);
+
+	// uint32_t* srch_pointer = (uint32_t*) ap_startup_code_page;
+
+	// for (int i = 0; i < 10 ; ++i)
+	// {
+	// 	if (srch_pointer[i] == 0xABBAABBA){
+	// 		srch_pointer[i] = 0xbacabaca;//(uint32_t*) apStartupCodeModule->mod_start;
+	// 		__asm __volatile("xchg %%bx, %%bx" : :);
+	// 		__asm __volatile("xchg %%bx, %%bx" : :);
+	// 		break;
+	// 	}
+	// }
 
 	return entryPoint;
 }

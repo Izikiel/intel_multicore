@@ -11,6 +11,7 @@ extern idt_inicializar
 
 ;; STACK
 extern kernelStackPtrBSP
+extern core_stack_ptrs
 
 ;; PIC
 extern deshabilitar_pic
@@ -43,6 +44,14 @@ global apStartupPtr
 
 ;grub info
 global grubInfoStruct
+
+%macro get_lapic_id 0  ; para distinguir los procesadores entre si
+    xor eax, eax       ; manual de intel capitulo 10 tabla 10-1 Local APIC Register Address Map
+    mov eax, 0xfee00020 ;si no lo hago asi en 64 bochs me enchufa 0xffffffff adelante y boom!
+    mov eax, [eax]
+    shr eax, 24
+    and eax, 0xFF
+%endmacro
 
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 32
@@ -124,13 +133,14 @@ protected_mode:
 
     ;cargo los selectores de segmento de modo protegido
     xor eax, eax
-    mov ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
+    mov ax, 3<<3;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
     mov ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     mov es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
-    mov esp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
+    get_lapic_id
+    mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
     ; Chequeo de disponibilidad de uso de CPUID
@@ -242,7 +252,7 @@ pd_loop:
     ;estamos en modo ia32e compatibilidad con 32 bits
     ;comienzo pasaje a 64 bits puro
 
-    jmp 00010000b:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
+    jmp 2<<3:long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
     ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
     ;aca setie el selector de segmento cs al segmento de codigo del kernel
 
@@ -288,7 +298,7 @@ long_mode:
 
     ;levanto segmentos con valores iniciales
     XOR rax, rax
-    MOV ax, 00011000b;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
+    MOV ax, 3<<3;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
     MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
     MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
@@ -298,7 +308,9 @@ long_mode:
     MOV ss, ax
 
     ;setear la pila en para el kernel
-    MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
+    get_lapic_id
+    mov esp, [core_stack_ptrs + eax * 4]
+    ;MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
 
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicio64real_len
