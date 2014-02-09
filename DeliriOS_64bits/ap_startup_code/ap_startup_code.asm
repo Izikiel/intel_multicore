@@ -18,12 +18,6 @@ gdt: dq 0x0
 code_s32: dd 0x0000FFFF
 	      dd 0x00CF9800
 
-code_s64: dd 0x0000FFFF
-		  dd 0x00AF9800 ; ver gdt.c en bsp_code
-
-data_s: dd 0x0000FFFF
-	    dd 0x00CF9200
-
 gdt_desc:   dw $ - gdt
             dd gdt
 
@@ -49,18 +43,6 @@ mr_ap_start:
 BITS 32
 
 f_mp_ap_start:
-	mov ax, 3<<3 ; 3 << 3, segmento de datos
-	; cargo selectores de segmento
-	mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-
-    mov ss, ax
-
-    xor eax, eax
-    xor ebx, ebx
-
     jmp $
 
 	jmp [ap_full_code]

@@ -1,5 +1,18 @@
 section .text
 
+%include "../macros/asm_screen_utils.mac"
+
+;; GDT
+extern GDT_DESC
+
+;; IDT
+extern IDT_DESC
+
+;;paginacion
+extern krnPML4T
+
+;; STACK
+extern core_stack_ptrs
 ;------------------------------------------------------------------------------------------------------
 ;------------------------------- comienzo modo protegido ----------------------------------------------
 ;------------------------------------------------------------------------------------------------------
@@ -16,11 +29,22 @@ BITS 32
 
 jmp ap_protected_mode
 
-krnPML4T: dq 0xb0b
-stack_pointer_table: times 16 dd 0x0 ; defino tabla donde guardar los stack pointers iniciales
+;krnPML4T: dq 0xb0b
+;stack_pointer_table: times 16 dd 0x0 ; defino tabla donde guardar los stack pointers iniciales
 
 ap_protected_mode:
-    limpio los registros
+;    limpio los registros
+    lgdt [GDT_DESC]
+    
+    mov ax, 3<<3 ; 3 << 3, segmento de datos
+    ; cargo selectores de segmento
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+
+    mov ss, ax
+
     xor eax, eax
     xor ebx, ebx
     xor ecx, ecx
@@ -31,8 +55,7 @@ ap_protected_mode:
     xor esp, esp
 
     get_lapic_id
-
-    mov esp, [stack_pointer_table + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
+    mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
     ;Los chequeos de cpuid y disponibilidad de modo x64 ya fueron hechos por el
@@ -100,7 +123,8 @@ long_mode:
     MOV ss, ax
 
     ;setear la pila en para el kernel
-    MOV rsp, [kernelStackPtrAP1];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
+    get_lapic_id
+    mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
 
     ;levanto la IDT de 64 bits, es unica para todos los cores
