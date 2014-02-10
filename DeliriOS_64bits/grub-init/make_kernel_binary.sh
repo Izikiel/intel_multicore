@@ -14,7 +14,12 @@ pushd ../ap_code
 make clean
 make
 popd
+pushd ../ap_startup_code
+make clean
+make
+popd
 e2cp kernel64.bin64 floppy.img:/
 e2cp ap_startup_code floppy.img:/
+e2cp ap_full_code.bin64 floppy.img:/
 #copio el menu de grub
 e2cp build/menu.lst floppy.img:/boot/grub/menu.lst

@@ -1,25 +1,37 @@
 ;Este codigo es el codigo de inicializacion de los Application Processors.
 ;Dado que inician en modo real, deben iniciar el procesador desde cero.
+
+global _start
+
+%define breakpoint xchg bx, bx
+
 BITS 16
 
 section .text
+_start:
 
-jmp mr_ap_start
+    jmp mr_ap_start
 
 ; data_area
-; ver como carajo setear ! :D
 
-align_var: dw 0xb0b0
+align 4
 ap_full_code: dd 0xABBAABBA ; puntero al inicio del codigo de modulo estilo sueco
-
-
+;mini gdt para mp
 gdt: dq 0x0
 
 code_s32: dd 0x0000FFFF
 	      dd 0x00CF9800
 
+code_s64: dd 0x0000FFFF
+          dd 0x00AF9800
+
+data_s: dd 0x0000FFFF
+        dd 0x00CF9200
+
 gdt_desc:   dw $ - gdt
             dd gdt
+
+krnPML4T: dd 0x740000 ; segun defines.h
 
 mr_ap_start:
 	cli
@@ -43,8 +55,31 @@ mr_ap_start:
 BITS 32
 
 f_mp_ap_start:
-    jmp $
+    mov ax, 3<<3
+    mov ds, ax
+    mov es, ax
+    mov fs, ax
+    mov gs, ax
+    mov ss, ax
 
-	jmp [ap_full_code]
+    ;apuntar cr3 al PML4
+    mov eax, [krnPML4T]
+    mov cr3, eax
+
+    ;prender el bit 5(6th bit) para activar PAE
+    mov eax, cr4
+    or eax, 1 << 5
+    mov cr4, eax
+
+    mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
+    rdmsr                        ; Leemos el registro en EDX:EAX.
+    or eax, 1 << 8               ; Seteamos el bit de modo largo que es el noveno bit (contando desde 0) osea el bit 8.
+    wrmsr                        ; Escribimos nuevamente al registro.
+
+    mov eax, cr0                 ; Obtenemos el registro de control 0 actual.
+    or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
+    mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
+
+    jmp [ap_full_code]
 
     ;falta para el modulo posta el codigo para medir tiempo

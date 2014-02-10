@@ -1,21 +1,21 @@
 DEPEND = Makefile\
-	ap_full_code.asm ../common_code/gdt.c ../common_code/isr.asm \
-	../common_code/mmu.c ../common_code/contextManager.c \
+	ap_full_code.asm ../common_code/mmu.c ../common_code/isr.asm \
+	 ../common_code/contextManager.c \
 	../include/contextManager.h ../include/defines.h ../include/gdt.h ../include/idt.h \
-	../include/isr.h ../include/mmu.h ../include/ports.h  ../include/types.h \
+	../include/mmu.h ../include/isr.h  ../include/ports.h  ../include/types.h \
 	../include/irq.h ../include/i386.h ../include/timer.h
 
 KERNEL_SRC=ap_full_code.asm
 KERNEL_OBJ=ap_full_code.o
 
 
-OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o \
-	../common_code/mmu.o ../common_code/idt.o \
+OBJ=$(KERNEL_OBJ) ../common_code/mmu.o ../common_code/ports.o \
+	 ../common_code/idt.o \
 	../common_code/isr.o ../common_code/contextManager.o \
 	../common_code/i386.o ../common_code/timer.o
 
 LD=ld
-LDFLAGS_full=-static -melf_x86_64 
+LDFLAGS_full=-static -m elf_x86_64 -T $(LINKSCRIPT)
 
 CC=gcc
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
@@ -23,6 +23,8 @@ CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
 
 NASM=nasm
 NASMFLAGS=-felf64 -I../include/
+
+LINKSCRIPT=linker_script.ld
 
 
 QUIET = @
@@ -43,6 +45,7 @@ common_code:
 
 ap_full_code.bin: $(OBJ)
 	$(LD) $(LDFLAGS) -o $@ $(OBJ)
+	cp ap_full_code.bin ../grub-init/ap_full_code.bin64
 
 clean:
 	rm -rf *.o

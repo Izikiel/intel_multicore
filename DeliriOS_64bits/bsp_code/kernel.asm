@@ -46,11 +46,10 @@ global apStartupPtr
 global grubInfoStruct
 
 %macro get_lapic_id 0  ; para distinguir los procesadores entre si
-    xor eax, eax       ; manual de intel capitulo 10 tabla 10-1 Local APIC Register Address Map
-    mov eax, 0xfee00020 ;si no lo hago asi en 64 bochs me enchufa 0xffffffff adelante y boom!
-    mov eax, [eax]
-    shr eax, 24
-    and eax, 0xFF
+    xor eax, eax ; por si las moscas
+    mov eax, 0xb ; Manual de intel capitulo 8.4.5 Read 32-bit APIC ID from CPUID leaf 0BH
+    cpuid
+    mov eax, edx
 %endmacro
 
 ;; Saltear seccion de datos(para que no se ejecute)

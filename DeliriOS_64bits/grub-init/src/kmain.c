@@ -56,12 +56,12 @@ void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 	}
 
 	void * entryPoint = (void *) deliriOSBinary->mod_start;
+	module_t * apFullCodeModule = module_by_path(mbd, "/ap_full_code.bin64");
 
-	// module_t * apFullCodeModule = module_by_path(mbd, "/ap_full_code.bin64");
-	// if (apFullCodeModule == NULL)
-	// {
-	// 	return NULL;
-	// }
+	if (apFullCodeModule == NULL)
+	{
+		return NULL;
+	}
 
 	module_t * apStartupCodeModule = module_by_path(mbd, "/ap_startup_code");
 
@@ -77,19 +77,19 @@ void* kmain(const multiboot_info_t* mbd, unsigned long magic)
 	//__asm __volatile("xchg %%bx, %%bx" : :);
 	memcpy(ap_startup_code_page, apStartupCode,
 		apStartupCodeModule->mod_end - apStartupCodeModule->mod_start);
-	//__asm __volatile("xchg %%bx, %%bx" : :);
+	// __asm __volatile("xchg %%bx, %%bx" : :);
 
-	// uint32_t* srch_pointer = (uint32_t*) ap_startup_code_page;
+	uint32_t* srch_pointer = (uint32_t*) ap_startup_code_page;
 
-	// for (int i = 0; i < 10 ; ++i)
-	// {
-	// 	if (srch_pointer[i] == 0xABBAABBA){
-	// 		srch_pointer[i] = 0xbacabaca;//(uint32_t*) apStartupCodeModule->mod_start;
-	// 		__asm __volatile("xchg %%bx, %%bx" : :);
-	// 		__asm __volatile("xchg %%bx, %%bx" : :);
-	// 		break;
-	// 	}
-	// }
+	for (int i = 0; i < 10 ; ++i)
+	{
+		if (srch_pointer[i] == 0xABBAABBA){
+			srch_pointer[i] = apFullCodeModule->mod_start;
+			// __asm __volatile("xchg %%bx, %%bx" : :);
+			// __asm __volatile("xchg %%bx, %%bx" : :);
+			break;
+		}
+	}
 
 	return entryPoint;
 }

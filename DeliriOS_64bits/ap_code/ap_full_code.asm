@@ -1,95 +1,35 @@
+;ORG 0x121000
+
 section .text
 
-%include "../macros/asm_screen_utils.mac"
+global _start
 
-;; GDT
-extern GDT_DESC
+%include "../macros/asm_screen_utils.mac"
 
 ;; IDT
 extern IDT_DESC
 
-;;paginacion
-extern krnPML4T
-
 ;; STACK
 extern core_stack_ptrs
-;------------------------------------------------------------------------------------------------------
-;------------------------------- comienzo modo protegido ----------------------------------------------
-;------------------------------------------------------------------------------------------------------
 
 %macro get_lapic_id 0  ; para distinguir los procesadores entre si
-    xor eax, eax       ; manual de intel capitulo 10 tabla 10-1 Local APIC Register Address Map
-    mov eax, 0xfee00020 ;si no lo hago asi en 64 bochs me enchufa 0xffffffff adelante y boom!
-    mov eax, [eax]
-    shr eax, 24
-    and eax, 0xFF
+    xor rax, rax ; por si las moscas
+    mov eax, 0xb ; Manual de intel capitulo 8.4.5 Read 32-bit APIC ID from CPUID leaf 0BH
+    cpuid
+    mov eax, edx
 %endmacro
 
+%define breakpoint xchg bx, bx
+
 BITS 32
+_start:
+    jmp (2<<3):long_mode
 
-jmp ap_protected_mode
-
-;krnPML4T: dq 0xb0b
-;stack_pointer_table: times 16 dd 0x0 ; defino tabla donde guardar los stack pointers iniciales
-
-ap_protected_mode:
-;    limpio los registros
-    lgdt [GDT_DESC]
-    
-    mov ax, 3<<3 ; 3 << 3, segmento de datos
-    ; cargo selectores de segmento
-    mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-
-    mov ss, ax
-
-    xor eax, eax
-    xor ebx, ebx
-    xor ecx, ecx
-    xor edx, edx
-    xor esi, esi
-    xor edi, edi
-    xor ebp, ebp
-    xor esp, esp
-
-    get_lapic_id
-    mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
-    mov ebp, esp;pongo base y tope juntos.
-
-    ;Los chequeos de cpuid y disponibilidad de modo x64 ya fueron hechos por el
-    ;BSP, de forma que en este punto deberiamos tener x64 en todos los cores
-	;Las estructuras de paginacion ya fueron inicializadas por el BSP
-
-	;apuntar cr3 al PML4
-    mov eax, [krnPML4T]
-    mov cr3, eax
-
-    ;prender el bit 5(6th bit) para activar PAE
-    mov eax, cr4
-    or eax, 1 << 5
-    mov cr4, eax
-
-    mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
-    rdmsr                        ; Leemos el registro en EDX:EAX.
-    or eax, 1 << 8               ; Seteamos el bit de modo largo que es el noveno bit (contando desde 0) osea el bit 8.
-    wrmsr                        ; Escribimos nuevamente al registro.
-
-    mov eax, cr0                 ; Obtenemos el registro de control 0 actual.
-    or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
-    mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
-
-    ;estamos en modo ia32e compatibilidad con 32 bits
-    ;comienzo pasaje a 64 bits puro
-
-    jmp (1<<2):long_mode; saltamos a modo largo, modificamos el cs con un jump y la eip(program counter)
-    ;{index:2 | gdt/ldt: 0 | rpl: 00} => 00010000
-    ;aca setie el selector de segmento cs al segmento de codigo del kernel
 
 ;------------------------------------------------------------------------------------------------------
 ;------------------------------- comienzo modo largo --------------------------------------------------
 ;------------------------------------------------------------------------------------------------------
+
 
 BITS 64
 long_mode:
@@ -111,22 +51,26 @@ long_mode:
     xor r14, r14
     xor r15, r15
 
-    ;levanto segmentos con valores iniciales
-    XOR rax, rax
-    MOV ax, 3 << 3;{index:3 | gdt/ldt: 0 | rpl: 00} segmento de datos de kernel
-    MOV ds, ax;cargo como selector de segmento de datos al descriptor del indice 2 que corresponde a los datos del kernel
-    MOV es, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    MOV fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-    MOV gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
-
-    ;cargo el selector de pila en el segmento de datos del kernel
-    MOV ss, ax
 
     ;setear la pila en para el kernel
     get_lapic_id
-    mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
-    MOV rbp, rsp;pongo base y tope juntos.
+    
+    ;xor rax, rax
+    ;mov eax, 0xfee00020
+    ;mov eax, [eax]
+    ;shr eax, 24
+    ;and eax, 0xFF
+    ;breakpoint
+    ; deberia ser asi, pero ta reventando en 64 leyendo fruta :(
 
+
+    mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
+    
+
+    
+    MOV rbp, rsp<;pongo base y tope juntos.
+
+    xchg bx, bx
     ;levanto la IDT de 64 bits, es unica para todos los cores
     lidt [IDT_DESC]
     ;la IDT esta inicializada por el BSP
