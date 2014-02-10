@@ -68,7 +68,7 @@ long_mode:
     
 
     
-    MOV rbp, rsp<;pongo base y tope juntos.
+    MOV rbp, rsp;pongo base y tope juntos.
 
     xchg bx, bx
     ;levanto la IDT de 64 bits, es unica para todos los cores
