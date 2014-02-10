@@ -1,5 +1,5 @@
 OUTPUT_FORMAT("binary")
-ENTRY(_start)
+ENTRY(go64)
 SECTIONS
 {
     . = 0x121000; /* hardcodeo a lo silvio, me fije donde grub lo pone */

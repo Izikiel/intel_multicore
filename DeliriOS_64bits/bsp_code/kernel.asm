@@ -45,13 +45,25 @@ global apStartupPtr
 ;grub info
 global grubInfoStruct
 
-%macro get_lapic_id 0  ; para distinguir los procesadores entre si
-    xor eax, eax ; por si las moscas
-    mov eax, 0xb ; Manual de intel capitulo 8.4.5 Read 32-bit APIC ID from CPUID leaf 0BH
-    cpuid
-    mov eax, edx
+%macro get_lapic_id32 0  ; para distinguir los procesadores entre si
+    ;xor rax, rax ; por si las moscas
+    ;mov eax, 0xb ; Manual de intel capitulo 8.4.5 Read 32-bit APIC ID from CPUID leaf 0BH
+    ;cpuid
+    ;mov eax, edx ; esta version describe topologia, capaz varia con una maquina real
+    xor eax, eax
+    mov eax, 0xfee00020
+    mov eax, [eax]
+    shr eax, 24
+    and eax, 0xFF
 %endmacro
 
+%macro get_lapic_id 0
+    xor rax, rax
+    mov eax, 0xfee00020
+    mov eax, [eax]
+    shr eax, 24
+    and eax, 0xFF
+%endmacro
 ;; Saltear seccion de datos(para que no se ejecute)
 BITS 32
 JMP protected_mode
@@ -138,8 +150,8 @@ protected_mode:
     mov fs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov gs, ax;cargo tambien estos selectores auxiliares con el descriptor de datos del kernel
     mov ss, ax;cargo el selector de pila en el segmento de datos del kernel
-    get_lapic_id
-    mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
+    get_lapic_id32
+    mov esp, [core_stack_ptrs + eax * 8];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     mov ebp, esp;pongo base y tope juntos.
 
     ; Chequeo de disponibilidad de uso de CPUID
@@ -308,7 +320,7 @@ long_mode:
 
     ;setear la pila en para el kernel
     get_lapic_id
-    mov esp, [core_stack_ptrs + eax * 4]
+    mov esp, [core_stack_ptrs + eax * 8]
     ;MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicio64real_len

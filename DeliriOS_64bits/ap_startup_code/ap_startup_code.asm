@@ -9,14 +9,14 @@ BITS 16
 
 section .text
 _start:
-
     jmp mr_ap_start
 
 ; data_area
 
 align 4
 ap_full_code: dd 0xABBAABBA ; puntero al inicio del codigo de modulo estilo sueco
-;mini gdt para mp
+
+;ver gdt.c 
 gdt: dq 0x0
 
 code_s32: dd 0x0000FFFF
@@ -57,35 +57,10 @@ BITS 32
 f_mp_ap_start:
     mov ax, 3<<3
     mov ds, ax
-    mov es, ax
-    mov fs, ax
-    mov gs, ax
-    mov ss, ax
 
     ;apuntar cr3 al PML4
     mov eax, [krnPML4T]
     mov cr3, eax
-
-    ;prender el bit 5(6th bit) para activar PAE
-    mov eax, cr4
-    or eax, 1 << 5
-    mov cr4, eax
-
-    mov ecx, 0xC0000080          ; Seleccionamos EFER MSR poniendo 0xC0000080 en ECX
-    rdmsr                        ; Leemos el registro en EDX:EAX.
-    or eax, 1 << 8               ; Seteamos el bit de modo largo que es el noveno bit (contando desde 0) osea el bit 8.
-    wrmsr                        ; Escribimos nuevamente al registro.
-
-    mov eax, cr0                 ; Obtenemos el registro de control 0 actual.
-    or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
-    mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
-
-    breakpoint
-    jmp 2<<3:local_long
-
- BITS 64
-local_long:
-    breakpoint
     jmp [ap_full_code]
 
     ;falta para el modulo posta el codigo para medir tiempo

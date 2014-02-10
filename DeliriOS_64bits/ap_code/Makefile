@@ -15,7 +15,7 @@ OBJ=$(KERNEL_OBJ) ../common_code/mmu.o ../common_code/ports.o \
 	../common_code/i386.o ../common_code/timer.o
 
 LD=ld
-LDFLAGS_full=-static -m elf_x86_64 -T $(LINKSCRIPT)
+LDFLAGS=-static -m elf_x86_64 -T $(LINKSCRIPT)
 
 CC=gcc
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
