@@ -80,6 +80,12 @@ f_mp_ap_start:
     or eax, 1 << 31              ; Habilitamos el bit de Paginacion que es el 32vo bit (contando desde 0) osea el bit 31
     mov cr0, eax                 ; escribimos el nuevo valor sobre el registro de control
 
+    breakpoint
+    jmp 2<<3:local_long
+
+ BITS 64
+local_long:
+    breakpoint
     jmp [ap_full_code]
 
     ;falta para el modulo posta el codigo para medir tiempo

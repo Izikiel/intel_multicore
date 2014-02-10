@@ -311,7 +311,6 @@ long_mode:
     mov esp, [core_stack_ptrs + eax * 4]
     ;MOV rsp, [kernelStackPtrBSP];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     MOV rbp, rsp;pongo base y tope juntos.
-
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 2, mensaje_inicio64real_len
 
     ;levanto la IDT de 64 bits
@@ -359,6 +358,7 @@ loop_64g_structure:
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 5, mensaje_timer_len
     ;inicializamos multicore
     imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
+
     call multiprocessor_init
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 

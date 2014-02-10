@@ -21,9 +21,9 @@ extern core_stack_ptrs
 
 %define breakpoint xchg bx, bx
 
-BITS 32
-_start:
-    jmp (2<<3):long_mode
+;BITS 32
+;_start:
+;    jmp (2<<3):long_mode
 
 
 ;------------------------------------------------------------------------------------------------------
@@ -32,7 +32,8 @@ _start:
 
 
 BITS 64
-long_mode:
+_start:
+    breakpoint
     ;limpio los registros
     xor rax, rax
     xor rbx, rbx
@@ -65,11 +66,11 @@ long_mode:
 
     mov esp, [core_stack_ptrs + eax * 4];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
     
+    breakpoint
 
     
     MOV rbp, rsp;pongo base y tope juntos.
 
-    xchg bx, bx
     ;levanto la IDT de 64 bits, es unica para todos los cores
     lidt [IDT_DESC]
     ;la IDT esta inicializada por el BSP

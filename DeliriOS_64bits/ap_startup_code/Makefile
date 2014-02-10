@@ -1,8 +1,9 @@
-LDFLAGS_start=-static -m elf_i386 --oformat binary -b elf32-i386
+LDFLAGS_start=-static -m elf_x86_64 --oformat binary 
+#-b elf_x86_64
 
 all: clean ap_startup_code
 ap_startup_code.o: ap_startup_code.asm
-	nasm -felf32 -o $@ $^
+	nasm -felf64 -o $@ $^
 
 ap_startup_code: ap_startup_code.o
 	ld $(LDFLAGS_start) -Ttext 0x2000 -o $@ $^
