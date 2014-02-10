@@ -13,18 +13,18 @@ def generate_test_data():
     with open("test_data.c", "w") as t_data_file:
         size = 2
         i = 0
-        while size < 4 * 1024 * 1024:
+        while size < 4 * 1024: # * 1024:
             data.append(generate_string_array(i, size))
             size *= 2
             i += 1
 
-        header = "#include <test_data.h>\n"
+        header = "#include \"test_data.h\"\n"
         str_data = header + "".join(data) + \
                    "".join(["test_data[%d] = test%d;\n"%(j,j) for j in xrange(len(data))])
         t_data_file.write(str_data)
 
     with open("test_data.h","w") as header_file:
-        header_file.write("#include <types.h>\n\n")
+        header_file.write("#include \"types.h\"\n\n")
         header_file.write("uint32_t test_data[%d][];"%len(data))
 
 

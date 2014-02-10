@@ -1,3 +1,3 @@
-#include <types.h>
+#include "types.h"
 
-uint32_t test_data[21][];
+extern uint32_t* test_data[11];

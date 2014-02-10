@@ -78,7 +78,6 @@ long_mode:
     ;setear la pila en para el kernel
     mov esp, [core_stack_ptrs + eax * 8];la pila va a partir de kernelStackPtrBSP(expand down, OJO)
 
-    
     MOV rbp, rsp;pongo base y tope juntos.
 
     ;levanto la IDT de 64 bits, es unica para todos los cores
