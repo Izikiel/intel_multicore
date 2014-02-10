@@ -60,7 +60,6 @@ long_mode:
     ;mov eax, [eax]
     ;shr eax, 24
     ;and eax, 0xFF
-    ;breakpoint
     ; deberia ser asi, pero ta reventando en 64 leyendo fruta :(
 
 
