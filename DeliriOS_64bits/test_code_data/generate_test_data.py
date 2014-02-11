@@ -19,13 +19,14 @@ def generate_test_data():
             i += 1
 
         header = "#include \"test_data.h\"\n"
-        str_data = header + "".join(data) + \
-                   "".join(["test_data[%d] = test%d;\n"%(j,j) for j in xrange(len(data))])
+        assign = "uint32_t* test_data[%d] = {"%len(data)
+        str_data = header + "".join(data) + assign + \
+                   "".join(["test%d,"%j for j in xrange(len(data))]) + "};"
         t_data_file.write(str_data)
 
     with open("test_data.h","w") as header_file:
         header_file.write("#include \"types.h\"\n\n")
-        header_file.write("uint32_t test_data[%d][];"%len(data))
+        header_file.write("extern uint32_t* test_data[];")
 
 
 def generate_string_array(i, size):
@@ -35,7 +36,7 @@ def generate_string_array(i, size):
     arr = arr.replace("]", "}")
     arr += ";\n"
 
-    header = "uint32_t test%d[%d] = " % (i, size)
+    header = "static uint32_t test%d[%d] = " % (i, size)
 
     arr = header + arr
 
