@@ -23,7 +23,19 @@
 #define KERNEL_PML4T_POINTER 	0x0000000000740000
 #define KERNEL_PDPT_POINTER		0x0000000000841000
 #define KERNEL_PDT_POINTER 		0x0000000000942000
-
 /* -------------------------------------------------------------------------- */
+
+
+// Variables de sincronizacion
+#define size_of_byte 1
+#define size_of_pointer64 8
+#define static_variable_area 0x200000
+#define start_merge_address static_variable_area
+#define start_address       start_merge_address + size_of_pointer64
+#define done_address 		start_address + size_of_pointer64
+#define array_start_address done_address + size_of_pointer64
+#define array_len_address   array_start_address + size_of_pointer64
+
+
 
 #endif  /* !__DEFINES_H__ */

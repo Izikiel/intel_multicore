@@ -2,6 +2,10 @@
 
 global go64
 
+;; GDT
+
+extern GDT_DESC
+
 ;; IDT
 extern IDT_DESC
 
@@ -24,7 +28,9 @@ extern core_stack_ptrs
 
 BITS 32
 go64:
+    lgdt [GDT_DESC]
     mov ax, 3<<3
+    mov ds, ax
     mov es, ax
     mov fs, ax
     mov gs, ax

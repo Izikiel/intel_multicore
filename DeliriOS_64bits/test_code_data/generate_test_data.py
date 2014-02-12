@@ -45,3 +45,5 @@ def generate_string_array(i, size):
 
 if __name__ == '__main__':
     generate_test_data()
+
+#gcc -std=c99 -m64 -g -ggdb -Wall -Werror -O0 -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include -c -o t test_data.c

@@ -7,8 +7,10 @@ DEPEND = Makefile\
 	../include/types.h ../include/utils.h ../include/kmain64.h ../include/console.h\
 	../include/irq.h ../include/i386.h ../include/timer.h ../include/multicore.h
 
-OBJ=$(KERNEL_OBJ) gdt.o ports.o mmu.o idt.o isr.o contextManager.o utils.o kmain64.o \
-	i386.o timer.o multicore.o cmos.o console.o
+OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o ../common_code/mmu.o \
+	../common_code/idt.o ../common_code/isr.o ../common_code/contextManager.o \
+	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore.o \
+	cmos.o console.o
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include
@@ -33,7 +35,7 @@ QUIET = @
 
 .PHONY=clean all image
 
-all: console_clear clean kernel.bin $(DEPEND)
+all: console_clear clean common_code kernel.bin $(DEPEND)
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -53,8 +55,12 @@ kernel.bin: $(OBJ)
 console_clear:
 	reset
 
+common_code:
+	cd ../common_code; make
+
 clean:
 	@echo 'Limpiando todo...'
 	rm -f *.o
 	rm -f *.bin
+	cd ../common_code; make clean
 	@echo ''

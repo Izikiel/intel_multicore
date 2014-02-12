@@ -16,14 +16,11 @@ _start:
 align 4
 ap_full_code: dd 0xABBAABBA ; puntero al inicio del codigo de modulo estilo sueco
 
-;ver gdt.c 
+;ver gdt.c
 gdt: dq 0x0
 
 code_s32: dd 0x0000FFFF
 	      dd 0x00CF9800
-
-code_s64: dd 0x0000FFFF
-          dd 0x00AF9800
 
 data_s: dd 0x0000FFFF
         dd 0x00CF9200
@@ -55,7 +52,7 @@ mr_ap_start:
 BITS 32
 
 f_mp_ap_start:
-    mov ax, 3<<3
+    mov ax, 2<<3
     mov ds, ax
 
     ;apuntar cr3 al PML4

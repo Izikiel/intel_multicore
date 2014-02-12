@@ -9,9 +9,8 @@ KERNEL_SRC=ap_full_code.asm
 KERNEL_OBJ=ap_full_code.o
 
 
-OBJ=$(KERNEL_OBJ) ../common_code/mmu.o ../common_code/ports.o \
-	 ../common_code/idt.o \
-	../common_code/isr.o ../common_code/contextManager.o \
+OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/mmu.o ../common_code/ports.o \
+	 ../common_code/idt.o ../common_code/isr.o ../common_code/contextManager.o \
 	../common_code/i386.o ../common_code/timer.o
 
 LD=ld
