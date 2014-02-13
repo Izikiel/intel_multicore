@@ -30,12 +30,15 @@
 #define size_of_byte 1
 #define size_of_pointer64 8
 #define static_variable_area 0x200000
-#define start_merge_address static_variable_area
-#define start_address       start_merge_address + size_of_pointer64
-#define done_address 		start_address + size_of_pointer64
-#define array_start_address done_address + size_of_pointer64
-#define array_len_address   array_start_address + size_of_pointer64
+#define start_merge_address 0x200000
+#define start_address       0x200001
+#define done_address 		0x200002
+#define array_len_address 	0x200003
+#define seed_address 		0x20000b
+#define finish_copy_address 0x20000c
 
-
+#define array_start_address 0x0a00000 // a partir de 10 megas
+#define bsp_temp_address	0x1400000
+#define ap_temp_address		0x1e00000
 
 #endif  /* !__DEFINES_H__ */

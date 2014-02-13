@@ -2,17 +2,38 @@
 #include "types.h"
 #include "sort_code.h"
 
-void clean_variables(){
-	char* start_memory_area = (char*) static_variable_area;
-	uint32_t len = 3 * sizeof(char) + sizeof(uint32_t*) + sizeof(uint32_t);
-	for (int i = 0; i < len; ++i)
-		start_memory_area[i] = 0;
+void clean_flags(){
+	*((char*) start_address) = 0;
+	*((char*) start_merge_address) = 0;
+	*((char*) done_address) = 0;
+	*((char*) finish_copy_address) = 0;
 }
 
 void sort_bsp(){
-	char start = *((char*) start_address);
-	char start_merge = *((char*) start_merge_address);
-	char done = *((char*) done_address);
+	clean_flags();
+	char* start = (char*) start_address;
+	char* start_merge = (char*) start_merge_address;
+	char* done = (char*) done_address;
+	char* finish_copy = (char*) finish_copy_address;
+
+	uint64_t len = *((uint64_t*) array_len_address);
 	uint32_t* array = (uint32_t*) array_start_address;
-	uint32_t len = *((uint32_t) array_len_address);
+
+	uint32_t* bsp_temp = (uint32_t*) bsp_temp_address;
+
+	//ready, set, go!
+	*start = 1;
+	heapsort(array, len);
+
+	for(;!(*done););
+	*done = 0;
+	*start_merge = 1;
+
+	limit_merge(array, bsp_temp, 0, (len/2)-1, len-1, len/2);
+
+	for(;!(*done););
+	copy(array, 0, bsp_temp, 0, len/2);
+	for(;!(*finish_copy););
+	clean_flags();
+
 }

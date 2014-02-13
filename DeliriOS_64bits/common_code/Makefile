@@ -15,9 +15,9 @@ NASMFLAGS=-felf64 -I../include/
 %.o: %.asm
 	$(NASM) $(NASMFLAGS) -o $@ $^
 
-OBJ= gdt.o mmu.o idt.o isr.o contextManager.o
+OBJ= gdt.o mmu.o idt.o isr.o contextManager.o sort_code.o
 
 all: $(OBJ)
 
-clean: 
-	rm -f *.o 
+clean:
+	rm -f *.o
