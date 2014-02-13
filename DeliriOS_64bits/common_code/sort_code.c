@@ -113,11 +113,11 @@ void heapbubble(uint32_t pos, uint32_t array[], uint32_t len) {
 }
 
 void heapsort(uint32_t array[], uint32_t len) {
- uint32_t i = 0;
+ int32_t i = 0;
  uint32_t tmp = 0;
-
- for(i = len / 2; i >= 0; --i)
+ for(i = len / 2; i >= 0; --i){
   heapbubble(i, array, len);
+ }
 
  for(i = len - 1; i > 0; i--) {
   tmp = array[0];
@@ -125,4 +125,5 @@ void heapsort(uint32_t array[], uint32_t len) {
   array[i] = tmp;
   heapbubble(0, array, i);
  }
+
 }

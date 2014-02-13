@@ -32,12 +32,9 @@ extern startKernel64_BSPMODE
 extern initialize_timer
 extern multiprocessor_init
 
-;;mergesort cosas
-extern mergesort
-extern array_global
-extern start_point
-extern done
-extern mergesort_pm
+;; tests
+extern test_1_core
+extern test_2_cores
 
 ;Ap stage2
 global apStartupPtr
@@ -65,6 +62,10 @@ global grubInfoStruct
     and eax, 0xFF
 %endmacro
 ;; Saltear seccion de datos(para que no se ejecute)
+
+%define breakpoint xchg bx, bx
+%define sleep 0x20000d ;; definido en defines.h tambien
+
 BITS 32
 JMP protected_mode
 
@@ -371,6 +372,8 @@ loop_64g_structure:
     ;inicializamos multicore
     imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
 
+    mov byte [sleep], 0
+
     call multiprocessor_init
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 
@@ -378,8 +381,17 @@ loop_64g_structure:
     call startKernel64_BSPMODE
 
     ;fin inicio kernel para BSP en 64 bits!
+    ;arrancan las pruebas!
+tests:
+    breakpoint
+    call test_1_core
+    breakpoint
+    call test_2_cores
+    mov byte [sleep], 1
 
-    haltBspCore:
-        jmp haltBspCore
+
+haltBspCore:
+    hlt
+    jmp haltBspCore
 
 ;; -------------------------------------------------------------------------- ;;

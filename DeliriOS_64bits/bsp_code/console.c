@@ -44,7 +44,7 @@ static uint64_t columnOverflowLineOffset=0;
 //	    console_get_last_line(buffer);
 //	    //parse command and get result
 //	    command_result commandResult = parseCommand(buffer);
-//	    
+//
 //	    switch(commandResult){
 //	        case NORMAL_EXIT:
 //	            break;
@@ -62,7 +62,7 @@ static uint64_t columnOverflowLineOffset=0;
 //	            break;
 //	    }
 //	    //print command symbol
-//	    console_initialize_console(); 
+//	    console_initialize_console();
 //    }//else{
 //        //console_printf("Hay un comando corriendo...por favor espere que finalice\n");
 //    //}
@@ -74,7 +74,7 @@ static uint64_t columnOverflowLineOffset=0;
 //		console_putc(' ', modoEscrituraTexto);
 //		console_putc(' ', modoEscrituraTexto);
 //		console_putc(' ', modoEscrituraTexto);
-//		console_putc(' ', modoEscrituraTexto);   
+//		console_putc(' ', modoEscrituraTexto);
 //    }//else{
 //    //    console_printf("Hay un comando corriendo...por favor espere que finalice\n");
 //    //}
@@ -148,9 +148,9 @@ void console_moveUp(){
     //copio el buffer de video al buffer temporal
     memcpy(tmpBuffer, _outputMemoryPtr, sizeof(tmpBuffer));
     //copio el buffer a pantalla a partir de la segunda linea
-    memcpy(_outputMemoryPtr, tmpBuffer[1], VIDEO_COLS*(VIDEO_FILS-1)*sizeof(uint16_t));        
+    memcpy(_outputMemoryPtr, tmpBuffer[1], VIDEO_COLS*(VIDEO_FILS-1)*sizeof(uint16_t));
     //limpio ultima linea
-    memset(_outputMemoryPtr + (VIDEO_FILS-1)*VIDEO_COLS, 0, VIDEO_COLS*sizeof(uint16_t));    
+    memset(_outputMemoryPtr + (VIDEO_FILS-1)*VIDEO_COLS, 0, VIDEO_COLS*sizeof(uint16_t));
 }
 
 void console_moveBack(bool fromSystem){
@@ -179,7 +179,7 @@ void console_moveBack(bool fromSystem){
 	//limpio cursor
 	console_pos_putc(' ', modoEscrituraTexto, ccol, cline);
 	//pongo cursor nuevo
-	console_pos_putc(' ', whiteOnGreen, currentCol, currentLine);	
+	console_pos_putc(' ', whiteOnGreen, currentCol, currentLine);
 }
 
 void console_clear(){
@@ -244,7 +244,7 @@ void console_vprintf(const char* msg, va_list l)
                                 console_puts(buffer, outputFormat);
                                 break;
                         case 'd':
-                                itoa(va_arg(l, uint64_t), buffer);                                
+                                itoa(va_arg(l, uint64_t), buffer);
                                 console_puts(buffer, outputFormat);
                                 break;
                         case 's':
@@ -300,7 +300,7 @@ void console_printlnNumber(uint32_t number, uint8_t format){
 void console_putc(char caracter, uint8_t format){
 	//process console movement
 	if(currentCol == VIDEO_COLS){
-		//Linea nueva		
+		//Linea nueva
         console_println("", format);
         currentCol=0;
         columnOverflowLineOffset++;
@@ -327,9 +327,9 @@ void console_putc(char caracter, uint8_t format){
             console_putc(' ', format);
             console_putc(' ', format);
             console_putc(' ', format);
-            console_putc(' ', format);  
+            console_putc(' ', format);
 			//quitar el cursor de la pantalla
-            console_hide_text_cursor();            
+            console_hide_text_cursor();
 			break;
 		default:
 			fail_unless(currentCol<80);
@@ -359,11 +359,11 @@ void console_puts(const char* string, uint8_t format)
 
 void console_pos_putc(char caracter, uint8_t format, uint8_t posX, uint8_t posY)
 {
-	uint16_t offset = posX + posY * VIDEO_COLS;	
+	uint16_t offset = posX + posY * VIDEO_COLS;
 	uint16_t pixel = (format << 8) | caracter;
 	if(offset<4000){
 		setRSP(offset);
-		breakpoint();			
+		breakpoint
 	}
 	fail_unless(offset<4000);
 	*(_outputMemoryPtr + offset) = pixel;
@@ -396,15 +396,15 @@ void console_pos_printInt(uint32_t number, uint8_t format, uint8_t posX, uint8_t
 
 void console_get_last_line(char* buffer)//Nota, el buffer devuelto es de tamanio VIDEO_COLS
 {
-	//voy a leer a partir de la ultima linea escrita la cantidad de caracteres indicada por currentCol, 
+	//voy a leer a partir de la ultima linea escrita la cantidad de caracteres indicada por currentCol,
 	//salteandome los caracteres de formato y salteandome los primeros 3 chars del simbolo del sistema
 
 	//Nota: usando columnOverflowLineOffset tengo la cantidad de lineas a leer(por si escribimos mas de una linea y se hace
 	//overflow y salto de linea.
-	
+
 	uint16_t offsetStart = (currentLine - columnOverflowLineOffset) * VIDEO_COLS  + 3/*padding symbol system*/;
 	uint16_t offsetEnd = currentLine*VIDEO_COLS + currentCol;
-	
+
 	uint64_t screenIdx = offsetStart;
 	uint64_t idxBuffer = 0;
 	while(screenIdx < offsetEnd){
@@ -426,7 +426,7 @@ void console_scanf(const char* format, ...){
 	memset(buffer, '\0', 256);
 	console_get_last_line(buffer);
 	va_list l;
-	va_start(l, format);	
+	va_start(l, format);
 	console_sscanf(buffer, format, l);
 	va_end(l);
 }
@@ -442,12 +442,12 @@ uint64_t parseNextString(const char* msg, char* buffer, char nextDelimiter, uint
 		buffer[j++]=msg[currentIdx++];
 		fail_if(j>=256);//buffer overflow(es de 256)
 	}
-	
+
 	if(msg[currentIdx] == nextDelimiter){
 		//ignoramos el delimitador
 		currentIdx++;
 	}
-	
+
 	return currentIdx;
 }
 
@@ -461,15 +461,15 @@ void console_sscanf(const char* inputStr, const char* format, va_list l)
 	bool continueParsing = format[formatIdx] != '\0';
 
 	while(continueParsing){
-		
+
 		if(format[formatIdx] == '%'){
-			
+
 			formatIdx++;
 
 			if(format[formatIdx] != '\0'){
 
 				switch(format[formatIdx]){
-					case 'd'://parse integer						
+					case 'd'://parse integer
 						inputStrIdx = parseNextString(inputStr, buffer, format[formatIdx+1], inputStrIdx);
                 		//ahora tengo en buffer capturado el "entero", lo guardo como numero en el ptr indicado
                 		uint64_t* ptrInt = va_arg(l, uint64_t*);

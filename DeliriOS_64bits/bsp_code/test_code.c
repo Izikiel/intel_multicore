@@ -1,7 +1,8 @@
 #include "types.h"
 #include "tiempo.h"
 #include "defines.h"
-
+#include "sort_code.h"
+#include "bsp_execute_code.h"
 
 uint64_t start, stop;
 
@@ -12,13 +13,13 @@ void clean_variables(){
 }
 
 uint32_t rand(){
-	uint32_t* seed = (uint32_t*) seed_addres;
+	uint32_t* seed = (uint32_t*) seed_address;
 	*seed = (*seed) * 1103515245 +12345;
 	return (*seed / 65536) % 32768;
 }
 
 void generate_global_array(uint32_t seed, uint32_t len){
-	*((uint32_t*) seed_addres) = seed;
+	*((uint32_t*) seed_address) = seed;
 	uint32_t* array = (uint32_t*) array_start_address;
 	for (int i = 0; i < len; ++i)
 	{
@@ -26,15 +27,10 @@ void generate_global_array(uint32_t seed, uint32_t len){
 	}
 }
 
-void clean_flags(){
-	*((char*) start_address) = 0;
-	*((char*) start_merge_address) = 0;
-	*((char*) done_address) = 0;
-}
-
 bool verfiy_sort(){
 	uint32_t* array = (uint32_t*) array_start_address;
-	for (int i = 1; i < *((uint64_t*) array_len_address); ++i)
+	uint64_t len = *((uint64_t*) array_len_address);
+	for (int i = 1; i < len; ++i)
 	{
 		if (array[i] < array[i-1])
 			return false;
@@ -43,6 +39,7 @@ bool verfiy_sort(){
 }
 
 void test_1_core(){
+	clean_variables();
 	uint64_t max_len = 10 * 1024 * 1024;
 	uint64_t* len = (uint64_t*) array_len_address;
 	uint32_t* array = (uint32_t*) array_start_address;
@@ -54,20 +51,21 @@ void test_1_core(){
 		heapsort(array, *len);
 		MEDIR_TIEMPO_STOP(stop);
 		if(verfiy_sort()){
-			// print ok!
 		}
 		else{
-			// print bad :(
+			breakpoint
+			__asm __volatile("nop": :);
 		}
 	}
 		// ver q tiene silvio para hacer esto print(stop-start);
 }
 
 void test_2_cores(){
+	clean_variables();
 	uint64_t max_len = 10 * 1024 * 1024;
 	uint64_t* len = (uint64_t*) array_len_address;
-	uint32_t* array = (uint32_t*) array_start_address;
-	clean_variables();
+	breakpoint
+	breakpoint
 
 	for (*len = 2; *len < max_len; *len *= 2)
 	{
@@ -77,13 +75,15 @@ void test_2_cores(){
 		sort_bsp();
 		MEDIR_TIEMPO_STOP(stop);
 		if(verfiy_sort()){
-			// print ok!
+			breakpoint
+			breakpoint
 		}
 		else{
-			// print bad :(
+			breakpoint
+			__asm __volatile("nop": :);
 		}
 
 	}
 
-	finish = 1;
+	//sfinish = 1;
 }

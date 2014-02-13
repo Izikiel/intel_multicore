@@ -13,7 +13,7 @@
 		: "=r" (start_high), "=r" (start_low)               \
 		: /* no input */                                    \
 		: "%eax"                                            \
-	);                                                      \														\
+	);                                                      \
 															\
 	start = (((unsigned long long int) start_high) << 32) | \
 		(unsigned long long int) (start_low);				\

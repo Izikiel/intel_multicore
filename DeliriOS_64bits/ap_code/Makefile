@@ -1,6 +1,6 @@
 DEPEND = Makefile\
 	ap_full_code.asm ../common_code/mmu.c ../common_code/isr.asm \
-	 ../common_code/contextManager.c \
+	 ../common_code/contextManager.c ../include/sort_code.h\
 	../include/contextManager.h ../include/defines.h ../include/gdt.h ../include/idt.h \
 	../include/mmu.h ../include/isr.h  ../include/ports.h  ../include/types.h \
 	../include/irq.h ../include/i386.h ../include/timer.h
@@ -11,7 +11,7 @@ KERNEL_OBJ=ap_full_code.o
 
 OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/mmu.o ../common_code/ports.o \
 	 ../common_code/idt.o ../common_code/isr.o ../common_code/contextManager.o \
-	../common_code/i386.o ../common_code/timer.o
+	../common_code/i386.o ../common_code/timer.o ap_execute_code.o ../common_code/sort_code.o
 
 LD=ld
 LDFLAGS=-static -m elf_x86_64 -T $(LINKSCRIPT)

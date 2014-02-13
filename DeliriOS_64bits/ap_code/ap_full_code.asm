@@ -12,6 +12,9 @@ extern IDT_DESC
 ;; STACK
 extern core_stack_ptrs
 
+;; Sorting
+extern sort_ap
+
 %macro get_lapic_id 0  ; para distinguir los procesadores entre si
     ;xor rax, rax ; por si las moscas
     ;mov eax, 0xb ; Manual de intel capitulo 8.4.5 Read 32-bit APIC ID from CPUID leaf 0BH
@@ -25,6 +28,7 @@ extern core_stack_ptrs
 %endmacro
 
 %define breakpoint xchg bx, bx
+%define sleep 0x20000d ;; definido en defines.h tambien
 
 BITS 32
 go64:
@@ -98,34 +102,13 @@ long_mode:
 
     ;llamo al entrypoint en kmain64
     ;call startKernel64_APMODE
+    do_sort:
+        call sort_ap
+        cmp byte [sleep], 0
+        jnz do_sort
 
-    jmp $
-
-    ;fin inicio kernel para AP en 64 bits!
-
-;    start_sort:
-;        cmp byte [start], 0
-;        je start_sort
-;        xor rsi, rsi
-;        xor rdi, rdi
-;        xor rdx, rdx
-;
-;        mov esi, [start_point]
-;        mov rdi, array_global
-;        mov rdx, 1
-;
-;        add rdi, rsi
-;
-;        call mergesort
-;        mov byte [done], 1
-;        imprimir_texto_ml array_global, 52, 0x02, 11, 0
-;
-;    start_merge_:
-;        call do_reverse_merge
-;
-;
-;    haltApCore:
-;        imprimir_texto_ml array_global, 52, 0x02, 11, 0
-;        jmp haltApCore
+    sleep_ap:
+        hlt
+        jmp sleep_ap
 
 ; -------------------------------------------------------------------------- ;;

@@ -1,4 +1,5 @@
 #include "types.h"
+#include "defines.h"
 
 /* preform the heapsort */
 void heapsort(uint32_t ar[], uint32_t len);

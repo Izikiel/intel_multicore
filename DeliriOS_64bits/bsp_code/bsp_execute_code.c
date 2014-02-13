@@ -1,8 +1,6 @@
-#include "defines.h"
-#include "types.h"
-#include "sort_code.h"
+#include "bsp_execute_code.h"
 
-void clean_flags(){
+static void clean_flags(){
 	*((char*) start_address) = 0;
 	*((char*) start_merge_address) = 0;
 	*((char*) done_address) = 0;
@@ -11,6 +9,7 @@ void clean_flags(){
 
 void sort_bsp(){
 	clean_flags();
+	//synchronization flags
 	char* start = (char*) start_address;
 	char* start_merge = (char*) start_merge_address;
 	char* done = (char*) done_address;

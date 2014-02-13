@@ -35,7 +35,11 @@
 #define done_address 		0x200002
 #define array_len_address 	0x200003
 #define seed_address 		0x20000b
-#define finish_copy_address 0x20000c
+#define finish_copy_address 0x20000f
+
+#define sleep_address		0x20000d
+
+#define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
 #define array_start_address 0x0a00000 // a partir de 10 megas
 #define bsp_temp_address	0x1400000

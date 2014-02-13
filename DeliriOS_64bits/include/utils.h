@@ -7,7 +7,7 @@
 #define max(a,b) (((a)>(b))?(a):(b))
 
 //impl en i386.asm
-extern void breakpoint();
+//extern void breakpoint();
 
 void memcpy(const void* dst, const void *src, uint32_t byteCount);
 void memset(void* dst, uint8_t value, uint32_t length);
