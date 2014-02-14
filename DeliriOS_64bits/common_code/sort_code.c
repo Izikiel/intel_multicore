@@ -113,7 +113,7 @@ void heapbubble(uint32_t pos, uint32_t array[], uint32_t len) {
 }
 
 void heapsort(uint32_t array[], uint32_t len) {
- int32_t i = 0;
+ int64_t i = 0;
  uint32_t tmp = 0;
  for(i = len / 2; i >= 0; --i){
   heapbubble(i, array, len);

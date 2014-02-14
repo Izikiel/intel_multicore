@@ -33,11 +33,11 @@
 #define start_merge_address 0x200000
 #define start_address       0x200001
 #define done_address 		0x200002
-#define array_len_address 	0x200003
-#define seed_address 		0x20000b
-#define finish_copy_address 0x20000f
-
+#define finish_copy_address 0x200003
+#define seed_address 		0x200004
 #define sleep_address		0x20000d
+#define array_len_address 	0x200010
+
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 

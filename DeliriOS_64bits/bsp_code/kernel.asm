@@ -386,8 +386,8 @@ tests:
     breakpoint
     call test_1_core
     breakpoint
-    call test_2_cores
-    mov byte [sleep], 1
+    ;call test_2_cores
+    ;mov byte [sleep], 1
 
 
 haltBspCore:

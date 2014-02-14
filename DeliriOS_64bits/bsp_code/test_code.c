@@ -4,6 +4,8 @@
 #include "sort_code.h"
 #include "bsp_execute_code.h"
 
+#define max_len (10*1024*1024)
+
 uint64_t start, stop;
 
 void clean_variables(){
@@ -13,57 +15,75 @@ void clean_variables(){
 }
 
 uint32_t rand(){
-	uint32_t* seed = (uint32_t*) seed_address;
-	*seed = (*seed) * 1103515245 +12345;
-	return (*seed / 65536) % 32768;
+	uint64_t seed = *((uint64_t*) seed_address);
+	seed = seed * 1103515245 + 12345;
+	*((uint64_t*) seed_address) = seed;
+	
+	return (uint32_t) (seed / 65536) % 32768;
 }
 
-void generate_global_array(uint32_t seed, uint32_t len){
-	*((uint32_t*) seed_address) = seed;
+void generate_global_array(uint64_t seed, uint32_t len){
+	*((uint64_t*) seed_address) = seed;
 	uint32_t* array = (uint32_t*) array_start_address;
-	for (int i = 0; i < len; ++i)
+	for (uint32_t i = 0; i < len; ++i)
 	{
 		array[i] = rand();
 	}
 }
 
 bool verfiy_sort(){
+	//breakpoint
 	uint32_t* array = (uint32_t*) array_start_address;
-	uint64_t len = *((uint64_t*) array_len_address);
+	uint32_t len = *((uint32_t*) array_len_address);
 	for (int i = 1; i < len; ++i)
 	{
-		if (array[i] < array[i-1])
+		if (array[i-1] > array[i]){
+			breakpoint
+			__asm __volatile("mov %0, %%eax": :"r" (i));
 			return false;
+		}
 	}
 	return true;
 }
 
+void clean_array(uint32_t len){
+	char* array = (char*) array_start_address;
+	for (uint32_t i = 0; i < len; ++i)
+		array[i] = 0;
+}
+
 void test_1_core(){
 	clean_variables();
-	uint64_t max_len = 10 * 1024 * 1024;
-	uint64_t* len = (uint64_t*) array_len_address;
+	clean_array(max_len);
+	uint32_t* len = (uint32_t*) array_len_address;
 	uint32_t* array = (uint32_t*) array_start_address;
 	for (*len = 2; *len < max_len; *len *= 2)
 	{
 		uint32_t seed = 13214;
 		generate_global_array(seed, *len);
-		MEDIR_TIEMPO_START(start);
+		//MEDIR_TIEMPO_START(start);
+		//breakpoint
 		heapsort(array, *len);
-		MEDIR_TIEMPO_STOP(stop);
-		if(verfiy_sort()){
-		}
-		else{
-			breakpoint
-			__asm __volatile("nop": :);
-		}
+		//breakpoint
+		//MEDIR_TIEMPO_STOP(stop);
+		// if(verfiy_sort()){
+		// }
+		// else{
+		// 	breakpoint
+		// 	breakpoint
+		// }
+		// clean_array(max_len);
 	}
+	breakpoint
 		// ver q tiene silvio para hacer esto print(stop-start);
 }
 
 void test_2_cores(){
+	breakpoint
+	breakpoint
 	clean_variables();
-	uint64_t max_len = 10 * 1024 * 1024;
-	uint64_t* len = (uint64_t*) array_len_address;
+	//uint64_t max_len = 10 * 1024 * 1024;
+	uint32_t* len = (uint32_t*) array_len_address;
 	breakpoint
 	breakpoint
 
@@ -75,12 +95,12 @@ void test_2_cores(){
 		sort_bsp();
 		MEDIR_TIEMPO_STOP(stop);
 		if(verfiy_sort()){
-			breakpoint
-			breakpoint
+			//breakpoint
+			//breakpoint
 		}
 		else{
-			breakpoint
-			__asm __volatile("nop": :);
+			//breakpoint
+			//__asm __volatile("nop": :);
 		}
 
 	}
