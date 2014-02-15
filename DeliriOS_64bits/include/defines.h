@@ -14,10 +14,10 @@
 
 /*OJO QUE PARA CADA CORE TIENE QUE HABER PILAS DIFERENTES!*/
 /*LAS MAPEO ARRIBA DEL PRIMER MEGA*/
-#define KERNEL_STACK_PTR_BSP 0x0000000000310000//OJO QUE SON EXPAND DOWN!!
-#define KERNEL_STACK_PTR_AP1 0x0000000000420000//OJO QUE SON EXPAND DOWN!!
-#define KERNEL_STACK_PTR_AP2 0x0000000000530000//OJO QUE SON EXPAND DOWN!!
-#define KERNEL_STACK_PTR_AP3 0x0000000000640000//OJO QUE SON EXPAND DOWN!!
+#define KERNEL_STACK_PTR_BSP 0x0000000000400000//OJO QUE SON EXPAND DOWN!!
+#define KERNEL_STACK_PTR_AP1 0x0000000000500000//OJO QUE SON EXPAND DOWN!!
+#define KERNEL_STACK_PTR_AP2 0x0000000000600000//OJO QUE SON EXPAND DOWN!!
+#define KERNEL_STACK_PTR_AP3 0x0000000000700000//OJO QUE SON EXPAND DOWN!!
 
 /*Paginacion IA32e -> estructuras arriba del primer mega*/
 #define KERNEL_PML4T_POINTER 	0x0000000000740000
@@ -41,8 +41,8 @@
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
-#define array_start_address 0x0a00000 // a partir de 10 megas
-#define bsp_temp_address	0x1400000
-#define ap_temp_address		0x1e00000
+#define array_start_address 0x3200000 // a partir de 10 megas
+#define bsp_temp_address	0x1e00000
+#define ap_temp_address		0x2800000
 
 #endif  /* !__DEFINES_H__ */

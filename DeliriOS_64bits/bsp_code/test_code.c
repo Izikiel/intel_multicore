@@ -4,12 +4,12 @@
 #include "sort_code.h"
 #include "bsp_execute_code.h"
 
-#define max_len (10*1024*1024)
+#define max_len (1024*1024)
 
 uint64_t start, stop;
 
 void clean_variables(){
-	char* start_memory_area = (char*) static_variable_area;
+	uint32_t* start_memory_area = (uint32_t*) static_variable_area;
 	for (int i = 0; i < 1024; ++i)
 		start_memory_area[i] = 0;
 }
@@ -38,7 +38,7 @@ bool verfiy_sort(){
 	for (int i = 1; i < len; ++i)
 	{
 		if (array[i-1] > array[i]){
-			breakpoint
+			//breakpoint
 			__asm __volatile("mov %0, %%eax": :"r" (i));
 			return false;
 		}
@@ -66,13 +66,13 @@ void test_1_core(){
 		heapsort(array, *len);
 		//breakpoint
 		//MEDIR_TIEMPO_STOP(stop);
-		// if(verfiy_sort()){
-		// }
+		if(verfiy_sort()){
+		}
 		// else{
 		// 	breakpoint
 		// 	breakpoint
 		// }
-		// clean_array(max_len);
+		clean_array(*len);
 	}
 	breakpoint
 		// ver q tiene silvio para hacer esto print(stop-start);
