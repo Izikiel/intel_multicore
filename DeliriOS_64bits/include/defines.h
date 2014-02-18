@@ -30,19 +30,26 @@
 #define size_of_byte 1
 #define size_of_pointer64 8
 #define static_variable_area 0x200000
+//flags
 #define start_merge_address 0x200000
 #define start_address       0x200001
 #define done_address 		0x200002
 #define finish_copy_address 0x200003
-#define seed_address 		0x200004
-#define sleep_address		0x20000d
+#define sleep_address		0x200004
+#define start_copy_address  0x200005
+
+#define seed_address 		0x200006
 #define array_len_address 	0x200010
 
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
-#define array_start_address 0x3200000 // a partir de 10 megas
+#define array_start_address 0x3200000
 #define bsp_temp_address	0x1e00000
 #define ap_temp_address		0x2800000
+
+#ifndef active_wait
+#define active_wait(switch) for(;!(switch);)
+#endif
 
 #endif  /* !__DEFINES_H__ */

@@ -390,8 +390,8 @@ loop_64g_structure:
     ;arrancan las pruebas!
 tests:
     cli ;sino revienta todo
-    breakpoint
-    call test_1_core
+    ;breakpoint
+    ;call test_1_core
     breakpoint
     call test_2_cores
     mov byte [sleep], 1

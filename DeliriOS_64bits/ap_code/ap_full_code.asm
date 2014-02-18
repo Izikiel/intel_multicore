@@ -29,7 +29,6 @@ extern sort_ap
 
 %define breakpoint xchg bx, bx
 %define sleep 0x20000d ;; definido en defines.h tambien
-%define static_variable_area 0x200000
 
 BITS 32
 go64:
@@ -105,10 +104,10 @@ long_mode:
 
     ;llamo al entrypoint en kmain64
     ;call startKernel64_APMODE
-    ;do_sort:
-        ;call sort_ap
-        ;cmp byte [sleep], 1
-        ;jne do_sort
+    do_sort:
+        call sort_ap
+        cmp byte [sleep], 1
+        jne do_sort
 
     sleep_ap:
         hlt
