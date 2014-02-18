@@ -1,5 +1,5 @@
 *.bin
-*.img
+floppy.img
 *.o
 *.elf32
 *.bin64
