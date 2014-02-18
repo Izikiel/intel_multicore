@@ -12,12 +12,12 @@ typedef struct {
 } mem_zone;
 
 static mem_zone
-get_ebda_zone(void) 
+get_ebda_zone(void)
 {
 	//De acuerdo a OSDEV, y en GRUB parece asumir lo mismo
-	//	http://linux4u.jinr.ru/pub/misc/sys/grub/SVN/grub/grub2/commands/i386/pc/acpi.c	
+	//	http://linux4u.jinr.ru/pub/misc/sys/grub/SVN/grub/grub2/commands/i386/pc/acpi.c
 	//El start de la EDBA puede en la mayoria de los casos tomarse de la
-	//posicion 0x40E, o usando BIOS INT 12. Como estamos en Modo Protegido, 
+	//posicion 0x40E, o usando BIOS INT 12. Como estamos en Modo Protegido,
 	//usamos la memoria. TODO: Averiguar si GRUB ya te da este valor.
 
 	//Como aparentemente la ebda mide al menos un kilobyte segun
@@ -29,7 +29,7 @@ get_ebda_zone(void)
 	return res;
 }
 
-//Hace el checksum signado de los bytes. La suma tiene que dar 0, 
+//Hace el checksum signado de los bytes. La suma tiene que dar 0,
 //considerando suma signada de byte con overflow.
 static bool
 do_checksum(const void * p, unsigned int len)
@@ -38,7 +38,7 @@ do_checksum(const void * p, unsigned int len)
 	char sum = 0;
 
 	for(uint64_t i = 0; i < len; i++){
-		sum += bytes[i];	
+		sum += bytes[i];
 	}
 
 	return sum == 0;
@@ -57,7 +57,7 @@ static mp_float_struct *
 find_floating_pointer_struct(void)
 {
 	//HARDCODE!
-	return (mp_float_struct*)0xfba20;
+	//return (mp_float_struct*)0xfba20;
 
 	//Header y zonas a revisar
 	static const char MPSIG[]	= "_MP_";
@@ -82,12 +82,15 @@ find_floating_pointer_struct(void)
 		uint8_t * st = (uint8_t *) zones[i].start;
 		uint8_t * en = (uint8_t *) zones[i].end;
 		//console_printf("\t* Zone %d [%u..%u]", i, st, en);
-		for(uint8_t * p = st; p <= en; p++){			
+		for(uint8_t * p = st; p <= en; p++){
 			if(memcmp(p, MPSIG, MPLEN) == 0){
 				mpfs = (mp_float_struct *) p;
 				//console_printf_change_format(greenOnBlack);
 				//console_printf("\n\t\t-> Found in zone (%d) at%u\n", i, mpfs);
-				goto found;
+				//goto found;
+				if (check_valid_mpfs(mpfs))
+					return mpfs;
+				mpfs = NULL;
 			}
 		}
 		//console_printf_change_format(redOnBlack);
@@ -95,22 +98,22 @@ find_floating_pointer_struct(void)
 		//console_printf_change_format(modoEscrituraTexto);
 	}
 
-found:
+// found:
 	if(mpfs == NULL){
 		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Estructura MPFS no encontrada");
 		return NULL;
 	}
-	
-	if(!check_valid_mpfs(mpfs)){
-		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Estructura MPFS con checksum invalido");
-		return NULL;
-	}
+
+	// if(!check_valid_mpfs(mpfs)){
+	// 	kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Estructura MPFS con checksum invalido");
+	// 	return NULL;
+	// }
 
 	return mpfs;
 }
 
 //Chequea que el checksum de la tabla de configuracion de Multi Processor sea
-//correcta. 
+//correcta.
 static bool
 check_valid_mpct(const mp_config_table * mpct)
 {
@@ -174,7 +177,7 @@ start_icmr_apic_mode(void)
 	fail_unless(false);
 }
 
-//Prende un APIC escribiendo el bit 8 contando desde 0 del Spurious Vector 
+//Prende un APIC escribiendo el bit 8 contando desde 0 del Spurious Vector
 //Register en el  offset F0 en bytes.
 //Nos puede servir para prender las otras.
 static void
@@ -218,7 +221,7 @@ initialize_ipi_options(	intr_command_register * options,
 	}else{
 		options->destination_shorthand = 0;
 	}
-		
+
 	//Para distinguir INIT y INIT DeAssert se usan flags distintos en otros
 	//lados. Para eso utilizamos un modo separado de envio.
 	if(delivery_mode == INIT_DASSERT){
@@ -264,7 +267,7 @@ turn_on_local_apic(const mp_config_table * mpct)
 	fail_if(mpct->local_apic_addr != DEFAULT_APIC_ADDR);
 	volatile uint32_t * local_apic = (volatile uint32_t *) DEFAULT_APIC_ADDR;
 
-	//Poner el valor de la entrada de la IDT para el 
+	//Poner el valor de la entrada de la IDT para el
 	//Spurious Vector Interrupt y prendemos el local APIC.
 	local_apic[LAPIC_SPVEC_REG] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
 	turn_on_apic(local_apic);
@@ -295,7 +298,7 @@ clear_apic_errors(void)
 	local_apic[LAPIC_ERR_REG] = 0x0;
 }
 
-//Levanta la posicion de memoria a la que vamos a saltar por el codigo de 
+//Levanta la posicion de memoria a la que vamos a saltar por el codigo de
 //reset
 static void
 set_warm_reset_vector(uint32_t address)
@@ -309,7 +312,7 @@ set_warm_reset_vector(uint32_t address)
 static bool is_82489(void)
 {
 	volatile uint32_t * local_apic = (volatile uint32_t *) DEFAULT_APIC_ADDR;
-	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar 
+	//De acuerdo al manual Intel 3A, si es un 82489DX se puede determinar
 	//usando el bit 4 del byte del registro de version;
 	return !(local_apic[LAPIC_VER_REG] & (1 << 4));
 }
@@ -328,7 +331,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 
 	//Hay que enviar las STARTUP Ipis solamente si el local APIC no es un
 	//82489DX.
-	bool send_startup_ipis = !is_82489(); 
+	bool send_startup_ipis = !is_82489();
 	for(uint64_t proci = 0; proci < processor_count; proci++){
 		processor_entry * p = &processors[proci];
 
@@ -343,7 +346,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 		//Crear mensaje de STARTUP IPI
 		intr_command_register startup_ipi;
 
-		//En vector para startup ipi hay que enviar la pagina fisica donde 
+		//En vector para startup ipi hay que enviar la pagina fisica donde
 		//va a empezar a ejecutar. Para eso hay que shiftear 12 bits porque
 		//el valor del startup IPI ya se considera alineado a pagina.
 		initialize_ipi_options(&startup_ipi,STARTUP,
@@ -355,7 +358,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 		wait_for_ipi_reception();
 		send_ipi(&init_ipi_doff);
 		wait_for_ipi_reception();
-		//core_sleep(1000); //Dormir 10 millisegundos = 10000 microseg 
+		//core_sleep(1000); //Dormir 10 millisegundos = 10000 microseg
 						  //(1000 10 microseg con la unidad considerada).
 		sleep(1); //Dormir un poco mas de 10 milisegundos (0.055 segundos)
 
@@ -364,7 +367,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 			clear_apic_errors();
 			//console_printf("\tEnviando IPIs de startup\n");
 			//Enviar las STARTUP ipis, dormir y esperar.
-			send_ipi(&startup_ipi);	
+			send_ipi(&startup_ipi);
 			//core_sleep(20); //Dormir 200 microsegundos
 			sleep(1); //Dormir un poco mas de 20 milisegundos (0.055 segundos)
 			wait_for_ipi_reception();
@@ -382,7 +385,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 
 //Determina la configuracion del procesador si hay una tabla de configuracion
 //es decir si no hay una configuracion default en uso.
-static void 
+static void
 determine_cpu_configuration(const mp_float_struct * mpfs)
 {
 	intptr_t ptr = mpfs->config;
@@ -410,7 +413,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 
 	if(mpfs->mp_features2 & IMCRP_BIT){
 		//ICMR presente, hay que levantarlo a modo APIC
-		start_icmr_apic_mode();	
+		start_icmr_apic_mode();
 	}
 
 	turn_on_local_apic(mpct);
@@ -421,7 +424,7 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 	//Se require que la pagina donde se inicia a ejecutar el codigo 16 bits
 	//de modo real del AP este alineada a pagina.
 	//__asm __volatile("xchg %%bx, %%bx" : :);
-	//__asm __volatile("xchg %%bx, %%bx" : :);	
+	//__asm __volatile("xchg %%bx, %%bx" : :);
 	fail_unless((ap_symb & 0xFFF) == 0);
 	turn_on_aps(ap_symb);
 }
@@ -464,15 +467,15 @@ void multiprocessor_init()
 	//console_printf("\n\tEstructura MPFS encontrada: %u\n", mpfs);
 
 	//Recorrer estructura y determinar los cores
-	if(mpfs->config != 0){		
+	if(mpfs->config != 0){
 		//Configuracion hay que determinarla
 		//console_printf("\tConfiguracion a determinar\n");
 		determine_cpu_configuration(mpfs);
 	}else if(mpfs->mp_features1 != 0){
 		//La configuracion ya esta definida y es una estandar
 		//console_printf("\tConfiguracion default numero: %d",mpfs->mp_features1);
-		determine_default_configuration(mpfs);	
+		determine_default_configuration(mpfs);
 	}else{
-		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Configuracion MPFS invalida");	
+		kernel_panic(__FUNCTION__, __LINE__, __FILE__, "Configuracion MPFS invalida");
 	}
 }

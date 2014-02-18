@@ -3,6 +3,7 @@
 #include "defines.h"
 #include "sort_code.h"
 #include "bsp_execute_code.h"
+#include "screen_utils.h"
 
 #define max_len (1024*1024)
 
@@ -18,7 +19,7 @@ uint32_t rand(){
 	uint64_t seed = *((uint64_t*) seed_address);
 	seed = seed * 1103515245 + 12345;
 	*((uint64_t*) seed_address) = seed;
-	
+
 	return (uint32_t) (seed / 65536) % 32768;
 }
 
@@ -35,11 +36,8 @@ bool verfiy_sort(){
 	//breakpoint
 	uint32_t* array = (uint32_t*) array_start_address;
 	uint32_t len = *((uint32_t*) array_len_address);
-	for (int i = 1; i < len; ++i)
-	{
+	for (int i = 1; i < len; ++i){
 		if (array[i-1] > array[i]){
-			//breakpoint
-			__asm __volatile("mov %0, %%eax": :"r" (i));
 			return false;
 		}
 	}
@@ -47,46 +45,63 @@ bool verfiy_sort(){
 }
 
 void clean_array(uint32_t len){
-	char* array = (char*) array_start_address;
+	uint32_t* array = (uint32_t*) array_start_address;
 	for (uint32_t i = 0; i < len; ++i)
 		array[i] = 0;
 }
 
+bool verfiy_zero(uint32_t len){
+	uint32_t* array = (uint32_t*) array_start_address;
+	for (uint32_t i = 0; i < len; ++i)
+		if (array[i] != 0){
+			return false;
+		}
+	return true;
+}
+
 void test_1_core(){
 	clean_variables();
+	clear_screen();
 	clean_array(max_len);
 	uint32_t* len = (uint32_t*) array_len_address;
 	uint32_t* array = (uint32_t*) array_start_address;
-	for (*len = 2; *len < max_len; *len *= 2)
-	{
+	uint8_t line = 1;
+	if (verfiy_zero(max_len)){
+		print_string("Todo en cero! :D",0);
+	}
+	else{
+		print_string("algo no esta en cero :(", 0);
+	}
+	for (*len = 2; *len < max_len; *len *= 2){
 		uint32_t seed = 13214;
 		generate_global_array(seed, *len);
-		//MEDIR_TIEMPO_START(start);
+		MEDIR_TIEMPO_START(start);
 		//breakpoint
 		heapsort(array, *len);
 		//breakpoint
-		//MEDIR_TIEMPO_STOP(stop);
+		MEDIR_TIEMPO_STOP(stop);
 		if(verfiy_sort()){
+			print_number_u64(stop-start, line);
 		}
-		// else{
-		// 	breakpoint
-		// 	breakpoint
-		// }
-		clean_array(*len);
+		else{
+			print_string("bad_sort :(", line);
+		}
+		line++;
 	}
+	print_string("Listo el sorteo :O", line);
 	breakpoint
 		// ver q tiene silvio para hacer esto print(stop-start);
 }
 
 void test_2_cores(){
-	breakpoint
-	breakpoint
+	clear_screen();
 	clean_variables();
-	//uint64_t max_len = 10 * 1024 * 1024;
 	uint32_t* len = (uint32_t*) array_len_address;
-	breakpoint
-	breakpoint
+	char* sleep = (char*) sleep_address;
 
+	print_string("Sorteando con 2 cores! :D", 0);
+
+	uint8_t line = 1;
 	for (*len = 2; *len < max_len; *len *= 2)
 	{
 		uint32_t seed = 13214;
@@ -95,15 +110,16 @@ void test_2_cores(){
 		sort_bsp();
 		MEDIR_TIEMPO_STOP(stop);
 		if(verfiy_sort()){
-			//breakpoint
-			//breakpoint
+			print_number_u64(stop-start, line);
 		}
 		else{
-			//breakpoint
-			//__asm __volatile("nop": :);
+			print_string("bad_sort :(", line);
 		}
+		line++;
 
 	}
+	print_string("Listo el sorteo :O", line);
+	*sleep = 1;
 
-	//sfinish = 1;
+
 }

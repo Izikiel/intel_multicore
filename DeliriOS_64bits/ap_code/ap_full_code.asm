@@ -29,6 +29,7 @@ extern sort_ap
 
 %define breakpoint xchg bx, bx
 %define sleep 0x20000d ;; definido en defines.h tambien
+%define static_variable_area 0x200000
 
 BITS 32
 go64:
@@ -100,12 +101,14 @@ long_mode:
     ;imprimir mensaje en pantalla
     imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, 10, 0
 
+    cli
+
     ;llamo al entrypoint en kmain64
     ;call startKernel64_APMODE
-    do_sort:
-        call sort_ap
-        cmp byte [sleep], 0
-        jnz do_sort
+    ;do_sort:
+        ;call sort_ap
+        ;cmp byte [sleep], 1
+        ;jne do_sort
 
     sleep_ap:
         hlt

@@ -1,19 +1,12 @@
-DEPEND = Makefile\
-	kernel.asm isr.asm cmos.asm i386.asm\
-	contextManager.c gdt.c idt.c mmu.c ports.c utils.c kmain64.c console.c\
-	timer.c multicore.c \
-	../include/contextManager.h ../include/defines.h ../include/gdt.h ../include/idt.h\
-	../include/isr.h ../include/mmu.h ../include/ports.h ../include/vargs.h\
-	../include/types.h ../include/utils.h ../include/kmain64.h ../include/console.h\
-	../include/irq.h ../include/i386.h ../include/timer.h ../include/multicore.h
-
 OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o ../common_code/mmu.o \
 	../common_code/idt.o ../common_code/isr.o ../common_code/contextManager.o \
 	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore.o \
-	cmos.o console.o ../common_code/sort_code.o bsp_execute_code.o test_code.o
+	cmos.o console.o ../common_code/sort_code.o bsp_execute_code.o test_code.o \
+	../common_code/screen_utils.o
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
-  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include
+  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include \
+  -mno-sse -mno-sse2 -mno-sse3 -mno-sse4.1 -mno-sse4.2
 
 #variables
 KERNEL_SRC=kernel.asm
@@ -35,7 +28,7 @@ QUIET = @
 
 .PHONY=clean all image
 
-all: console_clear clean common_code kernel.bin #$(DEPEND)
+all: console_clear clean common_code kernel.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^

@@ -31,8 +31,8 @@ void sort_bsp(){
 	limit_merge(array, bsp_temp, 0, (len/2)-1, len-1, len/2);
 
 	for(;!(*done););
+	*done = 0;
 	copy(array, 0, bsp_temp, 0, len/2);
 	for(;!(*finish_copy););
-	clean_flags();
 
 }

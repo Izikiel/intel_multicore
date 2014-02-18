@@ -65,6 +65,7 @@ global grubInfoStruct
 
 %define breakpoint xchg bx, bx
 %define sleep 0x20000d ;; definido en defines.h tambien
+%define static_variable_area 0x200000
 
 BITS 32
 JMP protected_mode
@@ -372,7 +373,12 @@ loop_64g_structure:
     ;inicializamos multicore
     imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
 
-    mov byte [sleep], 0
+    mov rcx, 0x400>>3 ; divido por 8
+    mov rax, static_variable_area
+    xor rdx, rdx
+    clean_variables:
+        mov [rax], rdx
+        loop clean_variables
 
     call multiprocessor_init
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
@@ -383,11 +389,12 @@ loop_64g_structure:
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
+    cli ;sino revienta todo
     breakpoint
     call test_1_core
     breakpoint
-    ;call test_2_cores
-    ;mov byte [sleep], 1
+    call test_2_cores
+    mov byte [sleep], 1
 
 
 haltBspCore:

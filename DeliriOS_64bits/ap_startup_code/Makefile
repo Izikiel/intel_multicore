@@ -1,4 +1,4 @@
-LDFLAGS_start=-static -m elf_x86_64 --oformat binary 
+LDFLAGS_start=-static -m elf_x86_64 --oformat binary
 
 all: clean ap_startup_code
 ap_startup_code.o: ap_startup_code.asm

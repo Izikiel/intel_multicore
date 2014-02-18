@@ -7,6 +7,7 @@ void sort_ap(){
   char* start_merge = (char*) start_merge_address;
   char* done = (char*) done_address;
   char* finish_copy = (char*) finish_copy_address;
+  char* sleep = (char*) sleep_address;
 
   uint64_t len = *((uint64_t*) array_len_address);
   uint32_t* array = (uint32_t*) array_start_address;
@@ -15,7 +16,10 @@ void sort_ap(){
 
   //waiting for go!
 
-  for(;!(*start););
+  for(;!(*start) && !(*sleep););
+  if (*sleep){
+    return;
+  }
   *start = 0;
   heapsort(array + len/2,len/2);
 
