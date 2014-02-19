@@ -19,7 +19,7 @@ void clear_screen(){
 	return;
 }
 
-void print_number_u64(uint64_t number, uint8_t line){
+void print_number_u64(uint64_t number, uint8_t line, uint8_t col){
 	volatile char* screen = (volatile char*) VIDEO_MEMORY;
 
 	char number_string[line_length] = {0};
@@ -31,21 +31,21 @@ void print_number_u64(uint64_t number, uint8_t line){
 	}
 
 	for (int i = 0; index < line_length; i++, index++){
-		screen[line_length * line * 2 + i] = number_string[index];
+		screen[line_length * line * 2 + col + i] = number_string[index];
 		i++;
-		screen[line_length * line * 2 + i] = color;
+		screen[line_length * line * 2 + col + i] = color;
 
 	}
 
 	return;
 }
 
-void print_string(const char* string, uint8_t line){
+void print_string(const char* string, uint8_t line, uint8_t col){
 	volatile char* screen = (volatile char*) VIDEO_MEMORY;
 
 	for (int i = 0, j = 0; i < line_length && string[j] > 0; i++, j++){
-		screen[line_length * line * 2 + i] = string[j];
+		screen[line_length * line * 2 + col + i] = string[j];
 		i++;
-		screen[line_length * line * 2 + i] = color;
+		screen[line_length * line * 2 + col + i] = color;
 	}
 }

@@ -64,7 +64,7 @@ global grubInfoStruct
 ;; Saltear seccion de datos(para que no se ejecute)
 
 %define breakpoint xchg bx, bx
-%define sleep 0x20000d ;; definido en defines.h tambien
+%define sleep_ap 0x20000d ;; definido en defines.h tambien
 %define static_variable_area 0x200000
 
 BITS 32
@@ -390,15 +390,13 @@ loop_64g_structure:
     ;arrancan las pruebas!
 tests:
     cli ;sino revienta todo
-    ;breakpoint
-    ;call test_1_core
-    breakpoint
+    call test_1_core
+
     call test_2_cores
-    mov byte [sleep], 1
+    mov byte [sleep_ap], 1
 
-
-haltBspCore:
+sleep_bsp:
     hlt
-    jmp haltBspCore
+    jmp sleep_bsp
 
 ;; -------------------------------------------------------------------------- ;;

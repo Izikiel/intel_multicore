@@ -1,5 +1,5 @@
 default 0
-timeout 0
+timeout 5
 
 title DeliriOS
 root (hd0,0)

@@ -98,7 +98,14 @@ long_mode:
     ;el controlador de interrupciones ya esta inicializado por el BSP
 
     ;imprimir mensaje en pantalla
-    imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, 10, 0
+    get_lapic_id
+    add rax, 10
+    imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, rax, 0
+
+    get_lapic_id
+
+    cmp eax, 1
+    ja sleep_ap
 
     cli
 
