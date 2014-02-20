@@ -3,3 +3,6 @@ floppy.img
 *.o
 *.elf32
 *.bin64
+hdd.img
+ap_startup_code
+ordenar\ paralelo
