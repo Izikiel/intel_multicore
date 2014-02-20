@@ -24,7 +24,6 @@ void sort_ap()
         }
     }
 
-    *start = 0;
     heapsort(array + *len / 2, *len / 2);
     *done = 1;
 
