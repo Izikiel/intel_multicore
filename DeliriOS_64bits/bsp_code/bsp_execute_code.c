@@ -28,10 +28,13 @@ void sort_bsp()
     uint32_t *bsp_temp = (uint32_t *) temp_address;
 
     //ready, set, go!
+    clean_flags();
+    
     *start = 1;
     heapsort(array, *len/2);
 
     active_wait(*done);
+    *start = 0;
     *done = 0;
     *start_merge = 1;
 
