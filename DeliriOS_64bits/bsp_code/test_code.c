@@ -55,17 +55,17 @@ void clean_array(uint32_t len){
 }
 
 void test_1_core(){
-	clear_screen();
-	uint8_t n_cores = *((uint8_t*) number_of_cores_address);
+	// clear_screen();
+	// uint8_t n_cores = *((uint8_t*) number_of_cores_address);
 
-	print_string("Number of cores: ",0,0);
+	// print_string("Number of cores: ",0,0);
 
-	print_number_u64(n_cores, 0, 18);
+	// print_number_u64(n_cores, 0, 18);
 
-	wait();
-	wait();
-	wait();
-	wait();
+	// wait();
+	// wait();
+	// wait();
+	// wait();
 	clean_array(max_len);
 	clear_screen();
 	uint32_t* len = (uint32_t*) array_len_address;
