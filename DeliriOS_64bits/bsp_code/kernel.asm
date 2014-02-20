@@ -390,8 +390,6 @@ loop_64g_structure:
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 
     cli
-    ;llamo al entrypoint en kmain64
-    ;call startKernel64_BSPMODE
 
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
