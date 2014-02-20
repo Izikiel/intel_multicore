@@ -42,22 +42,24 @@
 #define size_of_pointer64 8
 #define static_variable_area 0x200000
 //flags
-#define start_merge_address 0x200000
-#define start_address       0x200001
-#define done_address 		0x200002
-#define finish_copy_address 0x200003
-#define sleep_address		0x200004
-#define start_copy_address  0x200005
+#define start_address       0x200000
+#define start_merge_address 0x200001
+#define sleep_address		0x200002
+#define start_copy_address  0x200003
+#define number_of_cores_address 0x200004
 
 #define seed_address 		0x200006
 #define array_len_address 	0x200010
 
+#define done_address 		0x200020
+#define finish_copy_address 0x200030
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
-#define array_start_address 0x3200000
-#define bsp_temp_address	0x1e00000
-#define ap_temp_address		0x2800000
+#define TEN_MEGA 0xa00000
+#define MAX_PROCESSOR   8
+#define temp_address	0x1e00000
+#define array_start_address temp_address + MAX_PROCESSOR * TEN_MEGA
 
 #ifndef active_wait
 #define active_wait(switch) for(;!(switch);)

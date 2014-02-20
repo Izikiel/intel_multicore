@@ -22,6 +22,8 @@ void clear_screen(){
 void print_number_u64(uint64_t number, uint8_t line, uint8_t col){
 	volatile char* screen = (volatile char*) VIDEO_MEMORY;
 
+	col += col%2;
+
 	char number_string[line_length] = {0};
 	int index = line_length-1;
 
@@ -42,6 +44,7 @@ void print_number_u64(uint64_t number, uint8_t line, uint8_t col){
 
 void print_string(const char* string, uint8_t line, uint8_t col){
 	volatile char* screen = (volatile char*) VIDEO_MEMORY;
+	col += col%2;
 
 	for (int i = 0, j = 0; i < line_length && string[j] > 0; i++, j++){
 		screen[line_length * line * 2 + col + i] = string[j];

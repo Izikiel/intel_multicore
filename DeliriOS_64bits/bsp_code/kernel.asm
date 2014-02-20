@@ -35,7 +35,8 @@ extern multiprocessor_init
 ;; tests
 extern test_1_core
 extern test_2_cores
-
+extern test_sum_vector1
+extern test_sum_vector2
 ;Ap stage2
 global apStartupPtr
 
@@ -66,6 +67,7 @@ global grubInfoStruct
 %define breakpoint xchg bx, bx
 %define sleep_ap 0x20000d ;; definido en defines.h tambien
 %define static_variable_area 0x200000
+%define number_of_cores     0x200004
 
 BITS 32
 JMP protected_mode
@@ -363,7 +365,6 @@ loop_64g_structure:
     CALL habilitar_pic
 
     ;habilito las interrupciones! necesario para timer y core_sleep
-    STI
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_interrupt_len
 
     ;initialize_timer -> para multicore init es necesario por los core_sleep
@@ -373,6 +374,7 @@ loop_64g_structure:
     ;inicializamos multicore
     imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
 
+    ; inicializamos a 0 variables de multicore
     mov rcx, 0x400>>3 ; divido por 8
     mov rax, static_variable_area
     xor rdx, rdx
@@ -380,20 +382,31 @@ loop_64g_structure:
         mov [rax], rdx
         loop clean_variables
 
+    inc byte [number_of_cores]
+
+    sti
+
     call multiprocessor_init
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 
+    cli
     ;llamo al entrypoint en kmain64
-    call startKernel64_BSPMODE
+    ;call startKernel64_BSPMODE
 
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
     cli ;sino revienta todo
     call test_1_core
-
     call test_2_cores
+
     mov byte [sleep_ap], 1
+
+    call test_sum_vector1
+    call test_sum_vector2
+
+    mov byte [sleep_ap], 1
+
 
 sleep_bsp:
     hlt

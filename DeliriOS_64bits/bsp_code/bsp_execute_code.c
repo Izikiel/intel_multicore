@@ -2,11 +2,11 @@
 
 static void clean_flags()
 {
-    *((char *) start_address) = 0;
-    *((char *) start_merge_address) = 0;
-    *((char *) done_address) = 0;
-    *((char *) finish_copy_address) = 0;
-    *((char *) start_copy_address) = 0;
+    *((uint8_t *) start_address) = 0;
+    *((uint8_t *) start_merge_address) = 0;
+    *((uint8_t *) done_address) = 0;
+    *((uint8_t *) finish_copy_address) = 0;
+    *((uint8_t *) start_copy_address) = 0;
 }
 
 void sort_bsp()
@@ -16,16 +16,16 @@ void sort_bsp()
     //cambio el lugar de origen por su tamaño
 
     //synchronization flags
-    char *start = (char *) start_address;
-    char *start_merge = (char *) start_merge_address;
-    char *done = (char *) done_address;
-    char *finish_copy = (char *) finish_copy_address;
-    char *start_copy = (char *) start_copy_address;
+    uint8_t *start = (uint8_t *) start_address;
+    uint8_t *start_merge = (uint8_t *) start_merge_address;
+    uint8_t *done = (uint8_t *) done_address;
+    uint8_t *finish_copy = (uint8_t *) finish_copy_address;
+    uint8_t *start_copy = (uint8_t *) start_copy_address;
 
     uint32_t *len = (uint32_t *) array_len_address;
     uint32_t *array = (uint32_t *) array_start_address;
 
-    uint32_t *bsp_temp = (uint32_t *) bsp_temp_address;
+    uint32_t *bsp_temp = (uint32_t *) temp_address;
 
     //ready, set, go!
     *start = 1;
@@ -46,4 +46,21 @@ void sort_bsp()
 
     clean_flags();
 
+}
+
+void sum_vector_bsp(){
+    uint8_t *start = (uint8_t *) start_address;
+    uint32_t *array = (uint32_t *) array_start_address;
+    uint32_t *len = (uint32_t *) array_len_address;
+    uint8_t *finish = (uint8_t *) finish_copy_address;
+
+    clean_flags();
+    *start = 1;
+
+    for (uint32_t i = 0; i < *len/2; ++i) {
+        array[i]++;
+    }
+
+    active_wait(*finish);
+    clean_flags();
 }

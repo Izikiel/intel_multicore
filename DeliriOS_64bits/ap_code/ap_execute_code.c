@@ -4,17 +4,17 @@
 
 void sort_ap()
 {
-    char *start = (char *) start_address;
-    char *start_merge = (char *) start_merge_address;
-    char *done = (char *) done_address;
-    char *finish_copy = (char *) finish_copy_address;
-    char *sleep = (char *) sleep_address;
-    char *start_copy = (char *) start_copy_address;
+    uint8_t *start = (uint8_t *) start_address;
+    uint8_t *start_merge = (uint8_t *) start_merge_address;
+    uint8_t *done = (uint8_t *) done_address;
+    uint8_t *finish_copy = (uint8_t *) finish_copy_address;
+    uint8_t *sleep = (uint8_t *) sleep_address;
+    uint8_t *start_copy = (uint8_t *) start_copy_address;
 
     uint32_t *len = (uint32_t *) array_len_address;
     uint32_t *array = (uint32_t *) array_start_address;
 
-    uint32_t *ap_temp = (uint32_t *) ap_temp_address;
+    uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
 
     //waiting for go!
 
@@ -38,4 +38,24 @@ void sort_ap()
     copy(array, *len / 2, ap_temp, 0, *len / 2);
     *finish_copy = 1;
 
+}
+
+void sum_vector_ap(){
+    uint8_t *start = (uint8_t *) start_address;
+    uint32_t *array = (uint32_t *) array_start_address;
+    uint32_t *len = (uint32_t *) array_len_address;
+    uint8_t *sleep = (uint8_t *) sleep_address;
+
+
+    active_wait(*start) {
+        if (*sleep) {
+            return;
+        }
+    }
+
+    for (uint32_t i = *len/2; i < *len; ++i) {
+        array[i]++;
+    }
+
+    *((uint8_t *) finish_copy_address) = 1;
 }

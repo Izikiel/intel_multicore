@@ -15,6 +15,8 @@ extern core_stack_ptrs
 ;; Sorting
 extern sort_ap
 
+extern sum_vector_ap
+
 %macro get_lapic_id 0  ; para distinguir los procesadores entre si
     ;xor rax, rax ; por si las moscas
     ;mov eax, 0xb ; Manual de intel capitulo 8.4.5 Read 32-bit APIC ID from CPUID leaf 0BH
@@ -29,6 +31,7 @@ extern sort_ap
 
 %define breakpoint xchg bx, bx
 %define sleep 0x20000d ;; definido en defines.h tambien
+%define number_of_cores     0x200004
 
 BITS 32
 go64:
@@ -97,6 +100,9 @@ long_mode:
 
     ;el controlador de interrupciones ya esta inicializado por el BSP
 
+    ;aumento la cantidad de cores en 1 lockeando
+    lock inc byte [number_of_cores]
+    breakpoint
     ;imprimir mensaje en pantalla
     get_lapic_id
     add rax, 10
@@ -115,6 +121,13 @@ long_mode:
         call sort_ap
         cmp byte [sleep], 1
         jne do_sort
+
+        mov byte [sleep], 0
+
+    do_sum:
+        call sum_vector_ap
+        cmp byte [sleep], 1
+        jne do_sum
 
     sleep_ap:
         hlt

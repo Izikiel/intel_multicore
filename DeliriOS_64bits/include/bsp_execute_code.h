@@ -4,3 +4,4 @@
 #include "screen_utils.h"
 
 void sort_bsp();
+void sum_vector_bsp();
