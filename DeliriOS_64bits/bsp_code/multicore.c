@@ -332,6 +332,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 	//Hay que enviar las STARTUP Ipis solamente si el local APIC no es un
 	//82489DX.
 	bool send_startup_ipis = !is_82489();
+
 	for(uint64_t proci = 0; proci < processor_count; proci++){
 		processor_entry * p = &processors[proci];
 
@@ -380,6 +381,7 @@ turn_on_aps(uint32_t ap_startup_code_page)
 		//console_printf("\t-> [Core %d AP]Enviada signal de inicio!\n", proci);
 		//console_printf_change_format(modoEscrituraTexto);
 		//TODO: Verificar que el core haya levantado programaticamente.
+		break; // TODO: hay q volarlo!
 	}
 }
 

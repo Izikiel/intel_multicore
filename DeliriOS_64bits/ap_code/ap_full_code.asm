@@ -110,8 +110,8 @@ long_mode:
 
     get_lapic_id
 
-    cmp eax, 1
-    ja sleep_ap
+    ;cmp eax, 1
+    ;ja sleep_ap
 
     cli
 
