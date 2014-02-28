@@ -47,7 +47,6 @@
 #define sleep_address		0x200002
 #define start_copy_address  0x200003
 #define number_of_cores_address 0x200004
-
 #define seed_address 		0x200006
 #define array_len_address 	0x200010
 

@@ -2,7 +2,7 @@ OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o ../common_code/mmu
 	../common_code/idt.o ../common_code/isr.o ../common_code/contextManager.o \
 	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore.o \
 	cmos.o console.o ../common_code/sort_code.o bsp_execute_code.o test_code.o \
-	../common_code/screen_utils.o
+	../common_code/screen_utils.o ../common_code/init_ioapic.o
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include \

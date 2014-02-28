@@ -27,6 +27,7 @@ extern kernel_panic
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
+            jmp $
             popaq
         iretq
 %endmacro
@@ -46,8 +47,16 @@ extern kernel_panic
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
+        jmp $
         popaq
         iretq
+%endmacro
+
+%macro user_interrupt 1
+global _isr%1
+    _isr%1:
+    xchg bx, bx
+    iretq
 %endmacro
 
 ;;
@@ -87,13 +96,12 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 ;; -------------------------------------------------------------------------- ;;
 global _isr32
 _isr32:
-        pushaq
+    pushaq
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción
 
         ;wrapper en contextManager
         ;void notificarRelojTick()
         call notificarRelojTick
-
     popaq
     iretq
 
@@ -103,7 +111,8 @@ _isr32:
 
 global _isr33
 _isr33:
-        pushaq
+    pushaq
+    xchg bx, bx
         call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción
         ;obtenemos el scan code
         in al, 0x60
@@ -111,7 +120,7 @@ _isr33:
         ;void notificarTecla(uint8_t keyCode);
         mov di, ax;no puedo acceder a al en x64 pero muevo 16 bits en modo x64,
         ;y tomo los 8 bits menos significativos en C
-        call notificarTecla
+        ;call notificarTecla
     popaq
     iretq
 
@@ -121,3 +130,21 @@ global _isr_spurious
 _isr_spurious:
     xchg bx, bx
     iretq
+
+ %assign j 21
+ %rep 32-21
+ user_interrupt j
+ %assign j j+1
+ %endrep
+
+%assign j 34
+%rep 143-34
+user_interrupt j
+%assign j j+1
+%endrep
+
+%assign j 144
+%rep 256-144
+user_interrupt j
+%assign j j+1
+%endrep

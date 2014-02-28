@@ -151,6 +151,13 @@ configure_processor(const processor_entry * entry)
 	processor_count++;
 }
 
+static void
+configure_ioapic(const ioapic_entry* ioapic){
+	if (ioapic->enabled){
+		init_ioapic(ioapic->base_address);
+	}
+}
+
 //Tamaño de las entradas de la tabla de configuracion de MP
 static uint64_t entry_sizes[] = {
 	[PROCESSOR]		= 20,
@@ -404,6 +411,9 @@ determine_cpu_configuration(const mp_float_struct * mpfs)
 		//console_printf("\tENTRY: %u\n",(uint64_t) entry);
 		if(entry->entry_type == PROCESSOR){
 			configure_processor(&entry->chunk.processor);
+		}
+		if (entry->entry_type == IOAPIC){
+			configure_ioapic(&entry->chunk.ioapic);
 		}
 		//Por ahora ignoramos todas las demas entradas.
 		entry = next_mp_entry(mpct,entry);

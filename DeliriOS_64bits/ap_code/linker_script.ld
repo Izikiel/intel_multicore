@@ -2,7 +2,7 @@ OUTPUT_FORMAT("binary")
 ENTRY(go64)
 SECTIONS
 {
-    . = 0x122000; /* hardcodeo a lo silvio, me fije donde grub lo pone */
+    . = 0x126000; /* hardcodeo a lo silvio, me fije donde grub lo pone */
 
     .text :
     {

@@ -360,9 +360,9 @@ loop_64g_structure:
     call console_setXCursor
 
     ;configurar controlador de interrupciones
-    CALL deshabilitar_pic
-    CALL resetear_pic
-    CALL habilitar_pic
+    call deshabilitar_pic
+    call resetear_pic
+    call habilitar_pic
 
     ;habilito las interrupciones! necesario para timer y core_sleep
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 4, mensaje_interrupt_len
@@ -389,12 +389,11 @@ loop_64g_structure:
     call multiprocessor_init
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 
-    cli
+    call deshabilitar_pic ;es esto o no tener interrupciones
 
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
-    cli ;sino revienta todo
     call test_1_core
     call test_2_cores
 
@@ -404,7 +403,6 @@ tests:
     call test_sum_vector2
 
     mov byte [sleep_ap], 1
-
 
 sleep_bsp:
     hlt

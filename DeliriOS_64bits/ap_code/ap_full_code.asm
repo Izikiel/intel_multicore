@@ -8,6 +8,7 @@ extern GDT_DESC
 
 ;; IDT
 extern IDT_DESC
+extern idt_inicializar
 
 ;; STACK
 extern core_stack_ptrs
@@ -95,25 +96,17 @@ long_mode:
 
     ;levanto la IDT de 64 bits, es unica para todos los cores
     lidt [IDT_DESC]
-
-    ;la IDT esta inicializada por el BSP
-
-    ;el controlador de interrupciones ya esta inicializado por el BSP
+    call idt_inicializar
 
     ;aumento la cantidad de cores en 1 lockeando
     lock inc byte [number_of_cores]
-    breakpoint
+
     ;imprimir mensaje en pantalla
     get_lapic_id
     add rax, 10
     imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, rax, 0
 
     get_lapic_id
-
-    ;cmp eax, 1
-    ;ja sleep_ap
-
-    cli
 
     ;llamo al entrypoint en kmain64
     ;call startKernel64_APMODE

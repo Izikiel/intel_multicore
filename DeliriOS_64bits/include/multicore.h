@@ -149,7 +149,7 @@ typedef struct mp_config_table{
 	uint16_t oem_table_length;
 	//Entries following this base header in memory.
 	uint16_t entry_count;
-	//Base address by which each processor acceses the local apic. 
+	//Base address by which each processor acceses the local apic.
 	uint32_t local_apic_addr;
 	//Length in bytes of the extended table entries. Zero if there are none.
 	uint16_t extended_table_length;
@@ -193,37 +193,37 @@ typedef struct {
 //Interrupt Command Register (ICR). See Section 10.6
 typedef struct {
 	//The vector number of the interrupt being sent.
-	uint8_t vector; 
+	uint8_t vector;
 	//Specifies the type of IPI to be sent.
-	uint8_t delivery_mode:3; 
-	//Selects either physical (0) or logical (1) destination mode 
+	uint8_t delivery_mode:3;
+	//Selects either physical (0) or logical (1) destination mode
 	//(see Section 10.6.2, “Determining IPI Destination”).
-	uint8_t destination_mode:1;		
-	// Indicates the IPI delivery status: 
+	uint8_t destination_mode:1;
+	// Indicates the IPI delivery status:
 	//
-	// 0(idle) indicates the local 
+	// 0(idle) indicates the local
 	// apic has completed sending any previous IPIs.
 	//
-	// 1 (send pending) Indicates that this local apic has not completed 
+	// 1 (send pending) Indicates that this local apic has not completed
 	// sending the last IPI.
-	uint8_t delivery_status:1; 
+	uint8_t delivery_status:1;
 	uint8_t __reserved1:1;
-	//For the INIT level de-assert delivery mode this flag must be set to 0; 
+	//For the INIT level de-assert delivery mode this flag must be set to 0;
 	//for all other delivery modes it must be set to 1.
-	uint8_t level:1; 
-	//Selects the trigger mode when using the INIT level de-assert delivery 
+	uint8_t level:1;
+	//Selects the trigger mode when using the INIT level de-assert delivery
 	//mode: edge (0) or level (1)
-	uint8_t trigger_mode:1; 
+	uint8_t trigger_mode:1;
 	uint8_t __reserved2:2;
-	// Shorthands are defined for the following cases: 
+	// Shorthands are defined for the following cases:
 	//	No shorthand(00) (Destination specified in destination field),
-	//	Software self interrupt (01), 
-	//	IPIs to all processors in the system including the sender (10), 
+	//	Software self interrupt (01),
+	//	IPIs to all processors in the system including the sender (10),
 	//	IPIs to all processors in the system excluding the sender (11).
-	uint8_t destination_shorthand:2; 
+	uint8_t destination_shorthand:2;
 	//Specifies the target processor or processors.
-	//This field is only used when the destination shorthand field is set 
-	//to 00B.	
+	//This field is only used when the destination shorthand field is set
+	//to 00B.
 	uint8_t __reserved3 :4;
 	uint8_t __reserved4[4];
 	// Destination field
@@ -232,14 +232,16 @@ typedef struct {
 	//
 	//	when the mode is logical, the interpretation of this field can be
 	//	found in Intel SDM Vol 3 Chapter 10
-	uint8_t destination_field; 
+	uint8_t destination_field;
 } __attribute__((__packed__)) intr_command_register;
 
-typedef enum { 
+typedef enum {
 	FIXED = 0, LOWEST, SMI, NMI, INIT, INIT_DASSERT, STARTUP
 } delivery_mode_type;
 
 //Kernel entry point for multiprocessor inicialization
 void multiprocessor_init(void);
+
+extern void init_ioapic(uint32_t ioapic);
 
 #endif
