@@ -55,17 +55,6 @@ void clean_array(uint32_t len){
 }
 
 void test_1_core(){
-	// clear_screen();
-	// uint8_t n_cores = *((uint8_t*) number_of_cores_address);
-
-	// print_string("Number of cores: ",0,0);
-
-	// print_number_u64(n_cores, 0, 18);
-
-	// wait();
-	// wait();
-	// wait();
-	// wait();
 	clean_array(max_len);
 	clear_screen();
 	uint32_t* len = (uint32_t*) array_len_address;
@@ -118,6 +107,31 @@ void test_2_cores(){
 	*sleep = 1;
 }
 
+void test_ipi_cores(){
+	uint32_t* len = (uint32_t*) array_len_address;
+	char* sleep = (char*) sleep_address;
+	uint8_t col = 68;
+	uint8_t line = 0;
+
+	print_string("sort 2 cores ipis", line++, col);
+
+	for (*len = 2; *len < max_len; *len *= 2){
+		uint32_t seed = 13214;
+		generate_global_array(seed, *len);
+		MEDIR_TIEMPO_START(start);
+		sort_bsp_ipi();
+		MEDIR_TIEMPO_STOP(stop);
+		if(verfiy_sort()){
+			print_number_u64(stop-start, line++, col);
+		}
+		else{
+			print_string("bad_sort :(", line++, col);
+		}
+
+	}
+	print_string("Done! :D", ++line, col);
+	*sleep = 1;
+}
 void sum_vector(uint32_t len){
 	uint32_t *array = (uint32_t *) array_start_address;
 	for (uint32_t i = 0; i < len; ++i)
@@ -152,33 +166,6 @@ void test_sum_vector2(){
 		sum_vector_bsp();
 		MEDIR_TIEMPO_STOP(stop);
 		print_number_u64(stop-start, line++, col);
-	}
-	print_string("Done! :D", ++line, col);
-	*sleep = 1;
-}
-
-void test_ipi_cores(){
-	clear_screen();
-	uint32_t* len = (uint32_t*) array_len_address;
-	char* sleep = (char*) sleep_address;
-	uint8_t col = 0;
-	uint8_t line = 0;
-
-	print_string("sort 2 cores ipis", line++, col);
-
-	for (*len = 2; *len < max_len; *len *= 2){
-		uint32_t seed = 13214;
-		generate_global_array(seed, *len);
-		MEDIR_TIEMPO_START(start);
-		sort_bsp_ipi();
-		MEDIR_TIEMPO_STOP(stop);
-		if(verfiy_sort()){
-			print_number_u64(stop-start, line++, col);
-		}
-		else{
-			print_string("bad_sort :(", line++, col);
-		}
-
 	}
 	print_string("Done! :D", ++line, col);
 	*sleep = 1;

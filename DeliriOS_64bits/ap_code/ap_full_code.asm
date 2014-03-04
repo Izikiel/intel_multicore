@@ -108,14 +108,10 @@ long_mode:
     add rax, 10
     imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, rax, 0
 
-    ;get_lapic_id
-
-    ;llamo al entrypoint en kmain64
-    ;call startKernel64_APMODE
-    ;do_sort:
-        ;call sort_ap
-        ;cmp byte [sleep], 1
-        ;jne do_sort
+    do_sort:
+        call sort_ap
+        cmp byte [sleep], 1
+        jne do_sort
 
         ;mov byte [sleep], 0
 

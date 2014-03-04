@@ -396,8 +396,8 @@ loop_64g_structure:
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
-    ;call test_1_core
-    ;call test_2_cores
+    call test_1_core
+    call test_2_cores
 ;
     ;mov byte [sleep_ap], 1
 ;
