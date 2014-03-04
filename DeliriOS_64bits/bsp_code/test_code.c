@@ -156,3 +156,30 @@ void test_sum_vector2(){
 	print_string("Done! :D", ++line, col);
 	*sleep = 1;
 }
+
+void test_ipi_cores(){
+	clear_screen();
+	uint32_t* len = (uint32_t*) array_len_address;
+	char* sleep = (char*) sleep_address;
+	uint8_t col = 0;
+	uint8_t line = 0;
+
+	print_string("sort 2 cores ipis", line++, col);
+
+	for (*len = 2; *len < max_len; *len *= 2){
+		uint32_t seed = 13214;
+		generate_global_array(seed, *len);
+		MEDIR_TIEMPO_START(start);
+		sort_bsp_ipi();
+		MEDIR_TIEMPO_STOP(stop);
+		if(verfiy_sort()){
+			print_number_u64(stop-start, line++, col);
+		}
+		else{
+			print_string("bad_sort :(", line++, col);
+		}
+
+	}
+	print_string("Done! :D", ++line, col);
+	*sleep = 1;
+}

@@ -40,6 +40,7 @@ void _isr31();
 //clock and keyboard interrupts:
 void _isr32();
 void _isr33();
+
 void _isr34();
 void _isr35();
 void _isr36();

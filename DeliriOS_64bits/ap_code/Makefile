@@ -3,7 +3,7 @@ KERNEL_OBJ=ap_full_code.o
 
 
 OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/mmu.o ../common_code/ports.o \
-	 ../common_code/idt.o ../common_code/isr.o ../common_code/contextManager.o \
+	 idt.o isr.o ../common_code/contextManager.o ../common_code/multicore_common.o \
 	../common_code/i386.o ../common_code/timer.o ap_execute_code.o ../common_code/sort_code.o \
 	../bsp_code/kmain64.o ../common_code/screen_utils.o
 

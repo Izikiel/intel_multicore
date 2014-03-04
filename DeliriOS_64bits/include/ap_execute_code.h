@@ -4,6 +4,6 @@
 #include "screen_utils.h"
 #include "multicore_common.h"
 
-void sort_bsp();
-void sum_vector_bsp();
-void sort_bsp_ipi();
+void sort_ap_int();
+void merge_ap_int();
+void copy_ap_int();

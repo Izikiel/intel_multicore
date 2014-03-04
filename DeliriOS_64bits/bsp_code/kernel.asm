@@ -35,8 +35,10 @@ extern multiprocessor_init
 ;; tests
 extern test_1_core
 extern test_2_cores
+extern test_ipi_cores
 extern test_sum_vector1
 extern test_sum_vector2
+
 ;Ap stage2
 global apStartupPtr
 
@@ -394,15 +396,16 @@ loop_64g_structure:
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
-    call test_1_core
-    call test_2_cores
-
-    mov byte [sleep_ap], 1
-
-    call test_sum_vector1
-    call test_sum_vector2
-
-    mov byte [sleep_ap], 1
+    ;call test_1_core
+    ;call test_2_cores
+;
+    ;mov byte [sleep_ap], 1
+;
+    ;call test_sum_vector1
+    ;call test_sum_vector2
+;
+    ;mov byte [sleep_ap], 1
+    call test_ipi_cores
 
 sleep_bsp:
     hlt

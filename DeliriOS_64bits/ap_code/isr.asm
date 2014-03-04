@@ -12,6 +12,26 @@ extern notificarTecla
 ;; kmain64
 extern kernel_panic
 
+;; sorting
+extern sort_ap_int
+extern merge_ap_int
+extern copy_ap_int
+
+%macro user_interrupt 1
+global _isr%1
+    _isr%1:
+    xchg bx, bx
+    iretq
+%endmacro
+
+%macro set_user_interrupts 2
+    %assign j %1
+    %rep %2-%1
+    user_interrupt j
+    %assign j j+1
+    %endrep
+%endmacro
+
 %macro ISR_GENERIC_HANDLER_ERR_CODE 2
         global _isr%1
 
@@ -27,7 +47,6 @@ extern kernel_panic
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
-            jmp $
             popaq
         iretq
 %endmacro
@@ -41,22 +60,14 @@ extern kernel_panic
         interrupt_base_len%1 equ $ - interrupt_base_msg%1
 
         _isr%1:
-        ;xchg bx, bx
+        xchg bx, bx
             pushaq
             imprimir_texto_ml interrupt_base_msg%1, interrupt_base_len%1, 0x4F, 0, 80-interrupt_base_len%1
 
             xchg bx, bx ;nota para mi yo del futuro: es una buena idea parar aca
             ;y debugear el iretq y revisar si es trap , fault o interrupt para que no lopee en la instr que explota
-        jmp $
         popaq
         iretq
-%endmacro
-
-%macro user_interrupt 1
-global _isr%1
-    _isr%1:
-    xchg bx, bx
-    iretq
 %endmacro
 
 ;;
@@ -91,36 +102,35 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 
 ;...user defined interrupts
 
-;;
-;; Rutina de atención del RELOJ
-;; -------------------------------------------------------------------------- ;;
-global _isr32
-_isr32:
-    pushaq
-        call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción
 
-        ;wrapper en contextManager
-        ;void notificarRelojTick()
-        call notificarRelojTick
+set_user_interrupts 21, 40
+set_user_interrupts 43,143
+set_user_interrupts 144,256
+
+global _isr40
+_isr40:
+    pushaq
+    xchg bx, bx
+    mov rax, 40
+    call sort_ap_int
     popaq
     iretq
 
-;;
-;; Rutina de atención del TECLADO
-;; -------------------------------------------------------------------------- ;;
-
-global _isr33
-_isr33:
+global _isr41
+_isr41:
     pushaq
     xchg bx, bx
-        call fin_intr_pic1;comunicarle al al pic que ya se atendio la interrupción
-        ;obtenemos el scan code
-        in al, 0x60
-        ;wrapper en contextManager
-        ;void notificarTecla(uint8_t keyCode);
-        mov di, ax;no puedo acceder a al en x64 pero muevo 16 bits en modo x64,
-        ;y tomo los 8 bits menos significativos en C
-        ;call notificarTecla
+    mov rax, 41
+    call merge_ap_int
+    popaq
+    iretq
+
+global _isr42
+_isr42:
+    pushaq
+    xchg bx, bx
+    mov rax, 42
+    call copy_ap_int
     popaq
     iretq
 
@@ -130,21 +140,3 @@ global _isr_spurious
 _isr_spurious:
     xchg bx, bx
     iretq
-
- %assign j 21
- %rep 32-21
- user_interrupt j
- %assign j j+1
- %endrep
-
-%assign j 34
-%rep 143-34
-user_interrupt j
-%assign j j+1
-%endrep
-
-%assign j 144
-%rep 256-144
-user_interrupt j
-%assign j j+1
-%endrep

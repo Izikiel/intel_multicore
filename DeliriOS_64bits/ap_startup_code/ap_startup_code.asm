@@ -32,7 +32,6 @@ krnPML4T: dd 0x740000 ; segun defines.h
 
 mr_ap_start:
 	cli
-    breakpoint
 
     ; A20 YA ESTA HABILITADO POR EL BSP
 

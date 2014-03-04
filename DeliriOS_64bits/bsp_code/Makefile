@@ -1,6 +1,7 @@
 OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o ../common_code/mmu.o \
-	../common_code/idt.o ../common_code/isr.o ../common_code/contextManager.o \
-	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore.o \
+	idt.o isr.o bsp.o ../common_code/contextManager.o \
+	../common_code/multicore_common.o \
+	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore_boot.o \
 	cmos.o console.o ../common_code/sort_code.o bsp_execute_code.o test_code.o \
 	../common_code/screen_utils.o ../common_code/init_ioapic.o
 

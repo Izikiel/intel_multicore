@@ -1,5 +1,13 @@
 #include "bsp_execute_code.h"
 
+extern void check_rax();
+void send_ipi_ap(uint32_t interrupt);
+
+#define sort_ap_ipi 40
+#define merge_ap_ipi 41
+#define copy_ap_ipi 42
+
+
 static void clean_flags()
 {
     *((uint8_t *) start_address) = 0;
@@ -67,3 +75,53 @@ void sum_vector_bsp(){
     active_wait(*finish);
     clean_flags();
 }
+
+
+// static void check_rax(){
+//     __asm __volatile(
+//         "xor %%rax, %%rax \n\t"
+//         ""
+//         : //no output
+//         : 
+//         : 
+//         );
+// }
+void sort_bsp_ipi(){
+
+    //si empieza a reventar con GP por el AP,
+    //hay que cambiar el origen de linkeo pq este modulo
+    //cambio el lugar de origen por su tamaño
+
+    //synchronization flags
+
+    uint32_t *len = (uint32_t *) array_len_address;
+    uint32_t *array = (uint32_t *) array_start_address;
+
+    uint32_t *bsp_temp = (uint32_t *) temp_address;
+
+    //ready, set, go!
+    // breakpoint
+    send_ipi_ap(sort_ap_ipi); 
+    heapsort(array, *len/2);
+    check_rax();
+
+    // breakpoint
+    send_ipi_ap(merge_ap_ipi);
+    limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+    check_rax();
+
+    // breakpoint
+    send_ipi_ap(copy_ap_ipi);
+    copy(array, 0, bsp_temp, 0, *len / 2);
+    check_rax();
+
+}
+
+
+void send_ipi_ap(uint32_t interrupt){
+    intr_command_register icr;
+    initialize_ipi_options(&icr, FIXED, interrupt, 1);
+    send_ipi(&icr);
+    wait_for_ipi_reception();
+}
+

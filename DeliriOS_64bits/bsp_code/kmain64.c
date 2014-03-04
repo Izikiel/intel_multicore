@@ -3,7 +3,7 @@
 #include <i386.h>
 #include <mmu.h>
 #include <timer.h>
-#include <multicore.h>
+#include <multicore_boot.h>
 #include <utils.h>
 #include <asserts.h>
 
