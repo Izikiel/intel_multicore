@@ -17,10 +17,21 @@ extern sort_ap_int
 extern merge_ap_int
 extern copy_ap_int
 
+%define eoi_register_apic 0xFEE000B0
+%macro interrupt_finished 0
+    push rax
+    push rbx
+    xor rbx, rbx
+    mov rax, eoi_register_apic
+    mov [rax], ebx
+    pop rbx
+    pop rax
+%endmacro
+
 %macro user_interrupt 1
 global _isr%1
     _isr%1:
-    xchg bx, bx
+    interrupt_finished
     iretq
 %endmacro
 
@@ -110,28 +121,28 @@ set_user_interrupts 144,256
 global _isr40
 _isr40:
     pushaq
-    xchg bx, bx
     mov rax, 40
     call sort_ap_int
     popaq
+    interrupt_finished
     iretq
 
 global _isr41
 _isr41:
     pushaq
-    xchg bx, bx
     mov rax, 41
     call merge_ap_int
     popaq
+    interrupt_finished
     iretq
 
 global _isr42
 _isr42:
     pushaq
-    xchg bx, bx
     mov rax, 42
     call copy_ap_int
     popaq
+    interrupt_finished
     iretq
 
 ;Ignorar la interrupcion
@@ -139,4 +150,5 @@ _isr42:
 global _isr_spurious
 _isr_spurious:
     xchg bx, bx
+    interrupt_finished
     iretq

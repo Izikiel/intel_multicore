@@ -12,6 +12,17 @@ extern notificarTecla
 ;; kmain64
 extern kernel_panic
 
+%define eoi_register_apic 0xFEE000B0
+%macro interrupt_finished 0
+    push rax
+    push rbx
+    xor rbx, rbx
+    mov rax, eoi_register_apic
+    mov [rax], ebx
+    pop rbx
+    pop rax
+%endmacro
+
 %macro ISR_GENERIC_HANDLER_ERR_CODE 2
         global _isr%1
 
@@ -54,6 +65,7 @@ extern kernel_panic
 global _isr%1
     _isr%1:
     xchg bx, bx
+    interrupt_finished
     iretq
 %endmacro
 
@@ -135,12 +147,14 @@ _isr33:
 global _isr_spurious
 _isr_spurious:
     xchg bx, bx
+    interrupt_finished
     iretq
 
 
 global _isr34
 _isr34:
     mov rax, 1
+    interrupt_finished
     iretq
 
 set_user_interrupts 21, 32
