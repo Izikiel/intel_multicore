@@ -1,0 +1,24 @@
+    \subsection{Estructura de carpetas: Compilación, Linkeo y Scripts}
+    \begin{itemize}
+	    \item \textbf{ap code: } Contiene el código de los Application processors, tanto de inicialización desde modo protegido como de los algoritmos implementados.
+		\item \textbf{ap startup code: } Contiene el código de inicializacion en modo real de los Application processors
+		\item \textbf{bsp code: } Contiene el código de inicializacion del kernel, los algoritmos implementados, y el encendido de los Application Processors.
+		\item \textbf{common code: } Contiene el código comun al Bootstrap Processor y los Application Processors.
+		\item \textbf{grub init: } Contiene scripts y archivos de configuracion de grub, en la subcarpeta src se encuentra el loader que realiza el pasaje entre la máquina en especificación multiboot a modo largo de 64 bits.
+		\item \textbf{run.sh: } Script para compilación y distribución del tp.
+		\item \textbf{macros: } Esta carpeta contiene macros utilizadas en el código.
+		\item \textbf{informe: } Contiene el informe del trabajo práctico en formato Latex y PDF.
+		\item \textbf{include: } Contiene las cabeceras de las librerias.
+    \end{itemize}
+
+    El tp está compilado en varios archivos, de esta forma cargamos algunas partes como módulos de grub.
+    Hay scripts encargados de compilar todo lo necesario, cada módulo tiene su Makefile y el comando make es llamado
+    oportunamente por los scripts en caso de ser necesario.
+    \\
+    \\
+    El linkeo está realizado con linking scripts en las carpetas donde sea necesario,
+    cada seccion esta alineada a 4k por temas de compatibilidad, asimismo hay símbolos que pueden ser leidos desde el codigo si es necesario saber la ubicación de estas secciones en memoria.
+    Los módulos de 32 bits estan compilados en elf32 y los de 64 bits en binario plano de 64 bits, esto es por temas de compatibilidad de grub al cargar modulos.
+    \\
+    \\
+    Para correr el trabajo practico unicamente hace falta tipear $./run.sh -r$ en consola y se abrira en bochs el trabajo practico.

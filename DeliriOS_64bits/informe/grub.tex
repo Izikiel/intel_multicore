@@ -1,0 +1,20 @@
+ \subsection{Integración con grub y división en módulos}
+	Utilizamos grub para la parte del booteo para lograr un contexto inicial estable y que posibilitara la ejecución del trabajo practico desde un pendrive usb.
+	Grub permite iniciar un kernel por medio de una especificación publicada en la web, en la que se detalla un contrato que debe cumplir tanto el kernel a iniciar como grub, entre ellas, un header que debe contener el kernel para ser identificado por grub como un kernel, y grub debe otorgarle control a dicho kernel en un estado determinado, es decir, una gdt, los registros con valores predeterminados, etc.
+
+	Esta revisión de grub no permite cargar kernels compilados en 64 bits de manera sencilla, es por esto que recurrimos a una herramienta que provee grub, que son los módulos, de esta forma podemos cargar por encima del mega distintas partes del sistema y tener claro en que parte de memoria estan cargadas.
+
+	Para solucionar el inconveniente de iniciar un kernel compilado en 64 bits, realizamos un booteo en etapas, cargando módulos y recurriendo a ellos cuando es necesario. En las próximas secciones se explicará esto con más detalle.
+
+	\subsubsection{Booteo e integración con grub: Especificación multiboot, carga de modulos elf32 y binarios x64}
+		El kernel que inicia grub debe ser un ejecutable elf32, que además cuente con un header especificado por la convencion de grub. Esto nos provee un punto de inicio del kernel en donde se sabe exactamente el estado de la máquina (\url{http://www.gnu.org/software/grub/manual/multiboot/multiboot.html#Machine-state}).
+		En este primer nivel de booteo, se realizan varias comprobaciones de la especificacion multiboot, luego son inicializadas variables globales para comunicacion entre módulos y se copia el codigo inicial de los Application Processors a una posicion de memoria alineada a página de 4K por debajo del primer mega, Además son pasadas como parámetros unas estructuras de datos que contienen informacion del sistema, lo que nos interesa a nosotros en particular es una lista en donde se encuentran los módulos que fueron cargados y las posiciones de memoria en donde se encuentran copiados. Una vez obtenidas las posiciones de memoria de los módulos, realizamos un salto en la ejecución al módulo de inicializacion del Bootstrap Processor, compilado como binario plano de 64 bits.
+
+	\subsubsection{Booteo e integración con grub: Mapa de memoria: Memoria baja y modulos en memoria alta}
+
+		TODO: LISTA DE MODULOS Y QUE PARTE DEL TP ES CADA UNO
+
+		TODO: INSERTAR GRAFICO DE MEMORIA A LO TP3 DE ORGA2.
+
+		TODO: INSERTAR GRAFICO DE TODOS LOS MODULOS, A LO UML, INDICANDO LAS VARIABLES GLOBALES QUE COMPARTEN,
+		IE. EL 0xABBAABBA PARA HACER EL JUMP DE LOS AP Y EL JMP AL BINARIO DE 64 BITS DESDE EL LOADER DE GRUB

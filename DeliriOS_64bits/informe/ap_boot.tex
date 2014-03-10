@@ -1,0 +1,5 @@
+\subsection{Multicore: inicialización de modo real a modo nativo x64 de los AP's}
+    Como vimos en la sección anterior, los Application Processors comienzan su ejecucion en una posicion por debajo del primer mega en modo real, nosotros necesitamos hacer saltar la ejecucion a una posicion conocida por encima del mega que no se solape con estructuras del kernel ni otros modulos, la solucion que proponemos es un booteo por etapas.
+    
+    \subsubsection{Booteo por niveles: Modo real a modo protegido y modo protegido en memoria alta}
+    En este primer nivel el núcleo se encuentra en modo real, se inicializa una GDT básica y se salta a modo protegido, esto es necesario para poder direccionar posiciones de memoria por encima del primer mega. Recordando secciones anteriores, cuando el BSP booteaba desde el loader de grub, inicializaba variables globales para compartir datos entre módulos, una de ellas contiene la posicion del módulo de código del Application Processor por encima del mega, es decir, que ahora solo resta que hagamos un salto a dicho módulo para continuar la ejecucion de este núcleo en memoria alta.
