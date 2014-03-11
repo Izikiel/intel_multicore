@@ -1,0 +1,290 @@
+\documentclass[a4paper,10pt,twoside]{article}
+
+\usepackage[top=1in, bottom=1in, left=1in, right=1in]{geometry}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish,es-ucroman,es-noquoting]{babel}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{lastpage}
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{verbatim}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{algorithmic}
+\usepackage{color}
+\usepackage{hyperref}
+\usepackage[usenames,dvipsnames]{xcolor}
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.97,0.97,0.97}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usetikzlibrary{decorations.pathreplacing}
+\usepackage{ragged2e}
+
+\lstset{
+    backgroundcolor=\color{lbcolor},
+    tabsize=4,
+    rulecolor=,
+    language=matlab,
+        basicstyle=\scriptsize,
+        upquote=true,
+        aboveskip={1.5\baselineskip},
+        columns=fixed,
+        showstringspaces=false,
+        extendedchars=true,
+        breaklines=true,
+        prebreak = \raisebox{0ex}[0ex][0ex]{\ensuremath{\hookleftarrow}},
+        frame=single,
+        showtabs=false,
+        showspaces=false,
+        showstringspaces=false,
+        identifierstyle=\ttfamily,
+        keywordstyle=\color[rgb]{0,0,1},
+        commentstyle=\color[rgb]{0.133,0.545,0.133},
+        stringstyle=\color[rgb]{0.627,0.126,0.941},
+}
+
+% Evita que el documento se estire verticalmente para ocupar
+% el espacio vacío en cada página.
+\raggedbottom
+
+
+%%%%%%%%%% Configuración de Fancyhdr - Inicio %%%%%%%%%%
+\pagestyle{fancy}
+\thispagestyle{fancy}
+\lhead{Trabajo Práctico Final, Organización del Computador II}
+\rhead{DeliriOS}
+\renewcommand{\footrulewidth}{0.4pt}
+\cfoot{\thepage /\pageref{LastPage}}
+
+\fancypagestyle{caratula} {
+   \fancyhf{}
+   \cfoot{\thepage /\pageref{LastPage}}
+   \renewcommand{\headrulewidth}{0pt}
+   \renewcommand{\footrulewidth}{0pt}
+}
+%%%%%%%%%% Configuración de Fancyhdr - Fin %%%%%%%%%%
+
+
+%%%%%%%%%% Configuración de Algorithmic - Inicio %%%%%%%%%%
+% Entorno propio para customizar la presentación del pseudocódigo
+\newenvironment{pseudocodigo}
+    {\vspace{0.5em} \begin{algorithmic}}
+    {\end{algorithmic} \vspace{0.5em}}
+
+% Alinear comentarios a la derecha
+\renewcommand{\algorithmiccomment}[1]{\hfill \{#1\}}
+%%%%%%%%%% Configuración de Algorithmic - Fin %%%%%%%%%%
+
+
+%%%%%%%%%% Macros de tikz - Inicio %%%%%%%%%%
+% Uso: \registroCuatro{etiqueta}{x}{y}{a4}{a3}{a2}{a1}
+\newcommand{\registroCuatro}[7]{
+    \ifthenelse{\equal{#1}{}}{}{
+        \draw (#2, {#3 + 0.5}) node[anchor=east]{#1};
+    }
+
+    \draw   (#2, #3) rectangle +(4, 1) +(2, 0.5) node{#4}
+          ++(4, 0)   rectangle +(4, 1) +(2, 0.5) node{#5}
+          ++(4, 0)   rectangle +(4, 1) +(2, 0.5) node{#6}
+          ++(4, 0)   rectangle +(4, 1) +(2, 0.5) node{#7};          
+}
+
+% Uso: \registroOcho{etiqueta}{x}{y}{a8}{a7}{a6}...{a1}
+\newcommand{\registroOcho}[9]{
+    \def\etiqueta{#1}
+    \def\x{#2}
+    \def\y{#3}
+    \def\aviii{#4}
+    \def\avii{#5}
+    \def\avi{#6}
+    \def\av{#7}
+    \def\aiv{#8}
+    \def\aiii{#9}
+    \registroOchoX    
+}
+\newcommand{\registroOchoX}[2]{ % Auxiliar - no usar directamente
+    \def\aii{#1}
+    \def\ai{#2}
+    \ifthenelse{\equal{\etiqueta}{}}{}{
+        \draw (\x, {\y + 0.5}) node[anchor=east]{\etiqueta};
+    }
+    \filldraw[fill=white]
+        (\x, \y) rectangle +(2, 1) +(1, 0.5) node{\aviii}
+        ++(2, 0) rectangle +(2, 1) +(1, 0.5) node{\avii}
+        ++(2, 0) rectangle +(2, 1) +(1, 0.5) node{\avi}
+        ++(2, 0) rectangle +(2, 1) +(1, 0.5) node{\av}
+        ++(2, 0) rectangle +(2, 1) +(1, 0.5) node{\aiv}
+        ++(2, 0) rectangle +(2, 1) +(1, 0.5) node{\aiii}
+        ++(2, 0) rectangle +(2, 1) +(1, 0.5) node{\aii}
+        ++(2, 0) rectangle +(2, 1) +(1, 0.5) node{\ai};
+}
+
+
+% Uso: \registroDieciseis{etiqueta}{x}{y}{a16}{a15}{a14}...{a1}
+\newcommand{\registroDieciseis}[9]{
+    \def\etiqueta{#1}
+    \def\x{#2}
+    \def\y{#3}
+    \def\axvi{#4}
+    \def\axv{#5}
+    \def\axiv{#6}
+    \def\axiii{#7}
+    \def\axii{#8}
+    \def\axi{#9}
+    \registroDieciseisX
+}
+\newcommand{\registroDieciseisX}[9]{ % Auxiliar - no usar directamente
+    \def\ax{#1}
+    \def\aix{#2}
+    \def\aviii{#3}
+    \def\avii{#4}
+    \def\avi{#5}
+    \def\av{#6}
+    \def\aiv{#7}
+    \def\aiii{#8}
+    \def\aii{#9}
+    \registroDieciseisXX
+}
+\newcommand{\registroDieciseisXX}[1]{ % Auxiliar - no usar directamente
+    \def\ai{#1}
+    \ifthenelse{\equal{\etiqueta}{}}{}{
+        \draw (\x, {\y + 0.5}) node[anchor=east]{\etiqueta};
+    }
+    \filldraw[fill=white]
+        (\x, \y) rectangle +(1, 1) +(0.5, 0.5) node{\axvi}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\axv}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\axiv}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\axiii}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\axii}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\axi}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\ax}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\aix}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\aviii}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\avii}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\avi}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\av}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\aiv}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\aiii}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\aii}
+        ++(1, 0) rectangle +(1, 1) +(0.5, 0.5) node{\ai};
+}
+%%%%%%%%%% Macros de tikz - Fin %%%%%%%%%%
+
+
+%%%%%%%%%% Macros misceláneos - Inicio %%%%%%%%%%
+\newcommand{\xmm}[1]{\texttt{XMM#1}}
+\newcommand{\rax}{\texttt{RAX}}
+\newcommand{\rbx}{\texttt{RBX}}
+\newcommand{\rcx}{\texttt{RCX}}
+\newcommand{\rdx}{\texttt{RDX}}
+\newcommand{\rbp}{\texttt{RBP}}
+\newcommand{\rsp}{\texttt{RSP}}
+\newcommand{\reg}[1]{\texttt{R#1}}
+\newcommand{\asm}[1]{\texttt{\uppercase{#1}}}
+%%%%%%%%%% Macros misceláneos - Fin %%%%%%%%%%
+
+
+\begin{document}
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Carátula                                                                  %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\thispagestyle{caratula}
+
+\begin{center}
+
+\includegraphics[height=2cm]{DC.png} 
+\hfill
+\includegraphics[height=2cm]{UBA.jpg} 
+
+\vspace{2cm}
+
+Departamento de Computación,\\
+Facultad de Ciencias Exactas y Naturales,\\
+Universidad de Buenos Aires
+
+\vspace{4cm}
+
+\begin{Huge}
+Trabajo Práctico Final: DeliriOS
+\end{Huge}
+
+\vspace{0.5cm}
+
+\begin{Large}
+Organización del Computador II
+\end{Large}
+
+\vspace{1cm}
+
+Marzo 2014
+
+\vspace{4cm}
+
+\begin{tabular}{|c|c|c|}
+    \hline
+    Apellido y Nombre & LU & E-mail\\
+    \hline
+    Silvio Vileriño             & 106/12 & svilerino@gmail.com\\
+    Ezequiel Gambaccini 		& xxx/xx & xxx@xxx.com\\
+    \hline
+\end{tabular}
+
+\vspace{1cm}
+
+
+\end{center}
+\newpage
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% Índice                                                                    %%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\tableofcontents
+
+\newpage
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Introduccion                                                              %%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \input{introduccion.tex}
+    \newpage
+
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Desarrollo                                                                %%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Desarrollo: Inicialización y contexto del sistema}
+        \input{boot.tex}    
+        \newpage
+        \input{grub.tex}    
+        \newpage
+        \input{bsp.tex}    
+        \newpage
+        \input{multiboot.tex}    
+        \newpage
+        \input{ap_boot.tex}   
+        \newpage
+    \section{Desarrollo: Algoritmos implementados}
+        \input{sorting.tex}
+        \newpage
+        \input{vectorsum.tex}
+        \newpage
+        \input{fft.tex}
+        \newpage
+        \input{resultados.tex}
+        \newpage
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    %% Conclusion                                                                %%
+    %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+    \section{Conclusión Final}
+        \input{conclusion.tex}
+
+\end{document}
