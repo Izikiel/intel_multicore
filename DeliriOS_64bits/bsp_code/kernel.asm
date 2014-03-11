@@ -39,6 +39,9 @@ extern test_ipi_cores
 extern test_sum_vector1
 extern test_sum_vector2
 
+extern make_ap_jump
+extern clear_screen
+
 ;Ap stage2
 global apStartupPtr
 
@@ -387,7 +390,7 @@ loop_64g_structure:
     inc byte [number_of_cores]
 
     sti
-
+    call clear_screen
     call multiprocessor_init
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 
@@ -396,15 +399,19 @@ loop_64g_structure:
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
-    call test_1_core
+    ;call test_1_core
+
+    call clear_screen
     call test_2_cores
-;
+
     ;mov byte [sleep_ap], 1
-;
+
     ;call test_sum_vector1
     ;call test_sum_vector2
 ;
     ;mov byte [sleep_ap], 1
+    ;call make_ap_jump
+
     call test_ipi_cores
 
 sleep_bsp:

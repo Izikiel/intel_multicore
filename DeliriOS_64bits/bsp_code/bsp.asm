@@ -6,7 +6,7 @@ check_rax:
 	xor rax, rax
 	mov byte [done_address], 1
 	.loop:
-		hlt
+		;hlt
 		cmp rax, 1
 		jne .loop
 	ret

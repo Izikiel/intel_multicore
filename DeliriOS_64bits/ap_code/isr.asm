@@ -17,14 +17,13 @@ extern sort_ap_int
 extern merge_ap_int
 extern copy_ap_int
 
+extern ap_jump
+
 %define eoi_register_apic 0xFEE000B0
 %macro interrupt_finished 0
     push rax
-    push rbx
-    xor rbx, rbx
     mov rax, eoi_register_apic
-    mov [rax], ebx
-    pop rbx
+    mov [rax], eax
     pop rax
 %endmacro
 
@@ -114,9 +113,18 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 ;...user defined interrupts
 
 
-set_user_interrupts 21, 40
+set_user_interrupts 21, 39
 set_user_interrupts 43,143
 set_user_interrupts 144,256
+
+global _isr39
+_isr39:
+    pushaq
+    call ap_jump
+    popaq
+    interrupt_finished
+    iretq
+
 
 global _isr40
 _isr40:

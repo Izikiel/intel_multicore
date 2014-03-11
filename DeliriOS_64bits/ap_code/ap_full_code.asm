@@ -18,6 +18,8 @@ extern sort_ap
 
 extern sum_vector_ap
 
+extern turn_on_apic_ap
+
 %macro get_lapic_id 0  ; para distinguir los procesadores entre si
     ;xor rax, rax ; por si las moscas
     ;mov eax, 0xb ; Manual de intel capitulo 8.4.5 Read 32-bit APIC ID from CPUID leaf 0BH
@@ -97,7 +99,7 @@ long_mode:
     ;levanto la IDT de 64 bits, es unica para todos los cores
     lidt [IDT_DESC]
     call idt_inicializar
-
+    call turn_on_apic_ap
     sti
 
     ;aumento la cantidad de cores en 1 lockeando
@@ -110,8 +112,6 @@ long_mode:
 
     do_sort:
         call sort_ap
-        cmp byte [sleep], 1
-        jne do_sort
 
         ;mov byte [sleep], 0
 
@@ -120,7 +120,7 @@ long_mode:
         ;cmp byte [sleep], 1
         ;jne do_sum
     sleep_ap:
-        hlt
+        ;hlt
         jmp sleep_ap
 
 ; -------------------------------------------------------------------------- ;;

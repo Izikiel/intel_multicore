@@ -1,4 +1,5 @@
 #include <types.h>
+#include "idt.h"
 //Direccion donde encontrar el local APIC de mi procesador
 #define DEFAULT_APIC_ADDR 0xFEE00000
 
@@ -71,3 +72,4 @@ void initialize_ipi_options(intr_command_register * options,
 void send_ipi(const intr_command_register * options);
 
 void wait_for_ipi_reception(void);
+void turn_on_apic_ap();

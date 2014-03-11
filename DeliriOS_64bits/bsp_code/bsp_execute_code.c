@@ -37,22 +37,23 @@ void sort_bsp()
 
     //ready, set, go!
     clean_flags();
-    
+
     *start = 1;
+    heapsort(array, *len/2);
     heapsort(array, *len/2);
 
     active_wait(*done);
-    *start = 0;
     *done = 0;
+    *start = 0;
     *start_merge = 1;
-
     limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
 
     active_wait(*done);
     *done = 0;
-    *start_copy = 1;
 
+    *start_copy = 1;
     copy(array, 0, bsp_temp, 0, *len / 2);
+
     active_wait(*finish_copy);
 
     clean_flags();
@@ -76,16 +77,6 @@ void sum_vector_bsp(){
     clean_flags();
 }
 
-
-// static void check_rax(){
-//     __asm __volatile(
-//         "xor %%rax, %%rax \n\t"
-//         ""
-//         : //no output
-//         : 
-//         : 
-//         );
-// }
 void sort_bsp_ipi(){
 
     //si empieza a reventar con GP por el AP,
@@ -101,7 +92,7 @@ void sort_bsp_ipi(){
 
     //ready, set, go!
     // breakpoint
-    send_ipi_ap(sort_ap_ipi); 
+    send_ipi_ap(sort_ap_ipi);
     heapsort(array, *len/2);
     check_rax();
 
@@ -117,6 +108,14 @@ void sort_bsp_ipi(){
 
 }
 
+void make_ap_jump(){
+    intr_command_register icr;
+    initialize_ipi_options(&icr, FIXED, 39, 1);
+    icr.destination_shorthand = 3;
+    send_ipi(&icr);
+    wait_for_ipi_reception();
+    print_string("Jumpeo?",1,0);
+}
 
 void send_ipi_ap(uint32_t interrupt){
     intr_command_register icr;

@@ -15,11 +15,8 @@ extern kernel_panic
 %define eoi_register_apic 0xFEE000B0
 %macro interrupt_finished 0
     push rax
-    push rbx
-    xor rbx, rbx
     mov rax, eoi_register_apic
-    mov [rax], ebx
-    pop rbx
+    mov [rax], eax
     pop rax
 %endmacro
 

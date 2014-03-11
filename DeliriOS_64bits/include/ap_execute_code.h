@@ -7,3 +7,4 @@
 void sort_ap_int();
 void merge_ap_int();
 void copy_ap_int();
+void ap_jump();

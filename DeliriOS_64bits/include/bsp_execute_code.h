@@ -7,3 +7,4 @@
 void sort_bsp();
 void sum_vector_bsp();
 void sort_bsp_ipi();
+void make_ap_jump();

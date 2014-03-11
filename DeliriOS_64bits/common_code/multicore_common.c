@@ -73,3 +73,9 @@ void wait_for_ipi_reception(void)
 	//El bit 12 es el bit de command completed. Cuando termine, nos vamos
 	for(;local_apic[LAPIC_ICR_DWORD0] & (1 << 12););
 }
+
+void turn_on_apic_ap(){
+	volatile uint32_t * local_apic = (volatile uint32_t *) DEFAULT_APIC_ADDR;
+	local_apic[LAPIC_SPVEC_REG] |= (SPURIOUS_VEC_NUM << 4) & 0xF0;
+    local_apic[LAPIC_SPVEC_REG] |= (1 << 8);
+}
