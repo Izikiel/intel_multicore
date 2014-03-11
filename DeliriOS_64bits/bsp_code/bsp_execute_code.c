@@ -40,7 +40,6 @@ void sort_bsp()
 
     *start = 1;
     heapsort(array, *len/2);
-    heapsort(array, *len/2);
 
     active_wait(*done);
     *done = 0;

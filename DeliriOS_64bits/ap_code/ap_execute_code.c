@@ -29,7 +29,6 @@ void sort_ap()
         active_wait(*start_merge);
 
         limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
-        limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
         *done = 1;
 
         active_wait(*start_copy);
