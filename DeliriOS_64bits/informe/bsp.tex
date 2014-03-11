@@ -1,27 +1,36 @@
-\subsection{Inicialización del Bootstrap processor: De estado de especificación multiboot a modo legacy x64}
+\subsection{Inicialización del Bootstrap processor: Pasaje entre modo protegido a modo legacy x64}
     \subsubsection{Modo Legacy x64: GDT, Paginación de los primeros 4gb}
-    En este punto del booteo estamos en modo protegido, pero según la especificación multiboot debemos utilizar nuestra propia GDT, y lo hacemos, asignamos una GDT con 
-    3 entradas todas de nivel 0, una comun a 32 y 64 bits de datos y 2 de código, esto es necesario para hacer los saltos entre modo real y modo protegido y modo protegido-compatibilidad x64 a modo largo x64.
+    La especificación multiboot nos asegura que estamos en modo protegido, pero no tenemos la certeza de tener una GDT válida, es por esto que asignamos una GDT con 
+    3 entradas todas de nivel 0, una comun a 32 y 64 bits de datos y 2 de código, esta diferenciación de descriptores de código es necesaria para realizar los jump far para pasar de modo real hacia modo protegido y de modo protegido-compatibilidad x64 hacia modo largo x64.
 
     TODO: IMAGEN DE LA GDT
 
-    Se utilizó un modelo de paginación en identity mapping para los primeros 64 GB de memoria. El modo de paginación elegido fue IA32e en 3 niveles con páginas de 2 megas, notar que el mapeo tuvo que sea realizado en 2 etapas, en la primera se mapearon los primeros 4gb pues desde modo protegido puedo direccionar limitado hasta 4gb y es necesario activar paginación para pasar a modo largo x64, luego ya en modo largo, completamos el esquema de paginacion a 64gb
+    Se utilizó un modelo de paginación en identity mapping donde se cubren los primeros 64 GB de memoria. El modo de paginación elegido fue IA32e en 3 niveles con páginas de 2 megas, es importante remarcar que como para pasar a modo largo de 64 bits es obligatorio tener paginación activa, el mapeo de la memoria virtual fue realizado en 2 etapas, en la primera se mapearon unicamente los primeros 4gb pues desde modo protegido puedo direccionar como máximo hasta 4gb y luego desde modo largo, se completa el esquema de paginacion a 64gb agregando las entradas necesarias a las estructuras.
+    \\
+
+    Esquema de paginación IA32-e:
+
+    \begin{itemize}
+
+        \item \textbf{PML4: } 512 entries disponibles de 8 bytes de ancho cada una. Solo fue necesario instanciar la primera entrada de la tabla.
+
+        \item \textbf{PDPT: } 512 entries disponibles de 8 bytes de ancho cada una. 
+        Solo fue necesario instanciar las primeras 64 entradas de esta tabla.
+
+        \item \textbf{PDT: } 32768 entries disponibles de 8 bytes de ancho cada una.
+        Se instancian en modo protegido 2048 entradas para cubrir los primeros 4gb y luego desde modo largo se completan las 30720 entradas restantes completando 64 gb.
+    \end{itemize}
 
     TODO: IMAGEN DE LOS NIVELES DE PAGINACION CON SUS FLECHITAS MOSTRANDO EN ROJO QUE POR ENCIMA DE 4GB NO SE PUEDE MAPEAR
 
-    TODO: TABLAS CON DIRECCIONES DE LAS ESTRUCTURAS Y CANTIDAD DE ENTRADAS DE CADA UNA. DATOS ACA ABAJO
-
-    *Paginacion IA32e PML4 -> 0x140000..0x140ffff => 512 entries * 8 bytes(64bits) cada una solo se instancio la primera entrada de PML4
-
-	PDPT -> 0x141000..0x141ffff => 512 entries * 8 bytes(64bits) cada una se instanciaron las primeras 64 entradas nomas, para mapear 64gb
-
-	PDT -> 0x142000..0x181FFF => 32768 entries * 8 bytes(64bits) cada una se instanciaron las 32768 entries para mapear 64 gb con 32768 paginas de 2 megas
+    TODO: TABLAS CON DIRECCIONES DE LAS ESTRUCTURAS Y CANTIDAD DE ENTRADAS DE CADA UNA.
 
 	Luego de establecer estas estructuras, realizamos una comprobación de disponibilidad de modo x64, y encendemos los bits del procesador para habilitar dicho modo.
 
     \subsection{Inicialización del Bootstrap processor: Pasaje a modo largo x64 nativo}
 
-    Para pasar de modo compatibilidad a modo nativo de 64 bits, es necesario realizar un salto largo en la ejecucion a un selector de la GDT de código de 64 bits.\\
+    Para pasar de modo compatibilidad a modo nativo de 64 bits, es necesario realizar un salto largo en la ejecucion a un descriptor de la GDT de código de 64 bits.\\
+    \\
     Luego de realizar el salto al segmento de código de x64 de la GDT establecemos un contexto seguro con los registros en cero, seteamos los selectores correspondientes de la GDT y establecemos los punteros a una pila asignada al BSP.
 
     \subsubsection{Modo Largo x64: Extensión de paginación a 64 gb}

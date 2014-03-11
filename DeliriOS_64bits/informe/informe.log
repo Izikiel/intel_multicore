@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.6.5)  10 MAR 2014 19:58
+This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.6.5)  11 MAR 2014 15:49
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -977,13 +977,13 @@ LaTeX Info: Redefining \nameref on input line 191.
 ABD: EverySelectfont initializing macros
 LaTeX Info: Redefining \selectfont on input line 191.
 
-<DC.png, id=127, 802.9197pt x 287.6346pt>
+<DC.png, id=131, 802.9197pt x 287.6346pt>
 File: DC.png Graphic file (type png)
  <use DC.png>
 Package pdftex.def Info: DC.png used on input line 203.
 (pdftex.def)             Requested size: 158.84137pt x 56.9055pt.
 
-<UBA.jpg, id=129, 233.4321pt x 233.9139pt>
+<UBA.jpg, id=133, 233.4321pt x 233.9139pt>
 File: UBA.jpg Graphic file (type jpg)
  <use UBA.jpg>
 Package pdftex.def Info: UBA.jpg used on input line 205.
@@ -1008,7 +1008,12 @@ LaTeX Info: Redefining \% on input line 1.
 \openout5 = `informe.toc'.
 
 
-[2] (./introduccion.tex) [3] (./boot.tex)
+[2] (./introduccion.tex
+Underfull \hbox (badness 10000) in paragraph at lines 2--4
+
+ []
+
+) [3] (./boot.tex)
 Underfull \hbox (badness 10000) in paragraph at lines 14--266
 
  []
@@ -1018,37 +1023,75 @@ Underfull \hbox (badness 10000) in paragraph at lines 14--266
 
  []
 
-[4] (./grub.tex) [5] (./bsp.tex
-Overfull \hbox (0.10611pt too wide) in paragraph at lines 1--1
-[]\OT1/cmr/bx/n/12 Inicializaci^^Son del Boot-strap pro-ces-sor: De es-ta-do de
- es-peci-fi-caci^^Son multi-
+[4] (./grub.tex
+Underfull \hbox (badness 10000) in paragraph at lines 3--4
+
  []
 
-) [6] (./multiboot.tex) [7] (./ap_boot.tex) [8] (./sorting.tex) [9] (./fft.tex)
-[10] (./resultados.tex) [11] (./conclusion.tex)
 
+Underfull \hbox (badness 10000) in paragraph at lines 5--7
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 8--9
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 10--11
+
+ []
+
+) [5] (./bsp.tex
+Underfull \hbox (badness 10000) in paragraph at lines 8--10
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 32--35
+
+ []
+
+) [6] [7] (./multiboot.tex) [8] (./ap_boot.tex
+Underfull \hbox (badness 10000) in paragraph at lines 5--6
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 7--8
+
+ []
+
+
+Underfull \hbox (badness 10000) in paragraph at lines 9--13
+
+ []
+
+) [9] (./sorting.tex) [10] (./vectorsum.tex) [11] (./fft.tex) [12]
+(./resultados.tex) [13] (./conclusion.tex) 
 AED: lastpage setting LastPage
-[12]
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 288.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 288.
+[14]
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 290.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 290.
  (./informe.aux
 LaTeX Info: Redefining \. on input line 18.
 LaTeX Info: Redefining \% on input line 18.
 )
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 288.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 288.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 290.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 290.
 Package rerunfilecheck Info: File `informe.out' has not changed.
-(rerunfilecheck)             Checksum: 2E99B534436683848EF9E13EF85D1711;3167.
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 288.
+(rerunfilecheck)             Checksum: 8078573DDC3DE95ACB615DFAE179A589;3180.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 290.
  ) 
 Here is how much of TeX's memory you used:
- 17577 strings out of 495059
- 304323 string characters out of 3182031
- 424092 words of memory out of 3000000
- 20342 multiletter control sequences out of 15000+200000
- 7324 words of font info for 29 fonts, out of 3000000 for 9000
+ 17597 strings out of 495059
+ 304504 string characters out of 3182031
+ 425092 words of memory out of 3000000
+ 20345 multiletter control sequences out of 15000+200000
+ 7670 words of font info for 30 fonts, out of 3000000 for 9000
  14 hyphenation exceptions out of 8191
- 56i,12n,57p,831b,343s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 56i,12n,57p,834b,343s stack positions out of 5000i,500n,10000p,200000b,50000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></us
 r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/shar
 e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texl
@@ -1056,11 +1099,12 @@ ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texlive/tex
 mf-dist/fonts/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist
 /fonts/type1/public/amsfonts/cm/cmr17.pfb></usr/share/texlive/texmf-dist/fonts/
 type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/
-public/amsfonts/cm/cmtt10.pfb>
-Output written on informe.pdf (12 pages, 900678 bytes).
+public/amsfonts/cm/cmti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public
+/amsfonts/cm/cmtt10.pfb>
+Output written on informe.pdf (14 pages, 913185 bytes).
 PDF statistics:
- 279 PDF objects out of 1000 (max. 8388607)
- 251 compressed objects within 3 object streams
- 44 named destinations out of 1000 (max. 500000)
- 263 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 308 PDF objects out of 1000 (max. 8388607)
+ 277 compressed objects within 3 object streams
+ 57 named destinations out of 1000 (max. 500000)
+ 271 words of extra memory for PDF output out of 10000 (max. 10000000)
 

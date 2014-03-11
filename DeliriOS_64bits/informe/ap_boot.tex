@@ -2,4 +2,13 @@
     Como vimos en la sección anterior, los Application Processors comienzan su ejecucion en una posicion por debajo del primer mega en modo real, nosotros necesitamos hacer saltar la ejecucion a una posicion conocida por encima del mega que no se solape con estructuras del kernel ni otros modulos, la solucion que proponemos es un booteo por etapas.
     
     \subsubsection{Booteo por niveles: Modo real a modo protegido y modo protegido en memoria alta}
-    En este primer nivel el núcleo se encuentra en modo real, se inicializa una GDT básica y se salta a modo protegido, esto es necesario para poder direccionar posiciones de memoria por encima del primer mega. Recordando secciones anteriores, cuando el BSP booteaba desde el loader de grub, inicializaba variables globales para compartir datos entre módulos, una de ellas contiene la posicion del módulo de código del Application Processor por encima del mega, es decir, que ahora solo resta que hagamos un salto a dicho módulo para continuar la ejecucion de este núcleo en memoria alta.
+    En este primer nivel el núcleo se encuentra en modo real, se inicializa una GDT básica en el mismo código y se salta a modo protegido, esto es necesario para poder direccionar posiciones de memoria por encima del primer mega.\\
+
+    Recordando secciones anteriores, cuando el BSP iniciaba el primer nivel de booteo preparaba el contexto de los APS para inicializar en niveles, en este proceso se inyecta al primer nivel de booteo del AP la posicion de memoria donde esta el segundo nivel de booteo por encima del mega.\\
+
+    Luego resta unicamente realizar el salto al segundo bootloader con un jump para continuar el booteo del AP, de manera similar al BSP pasamos luego a modo nativo de 64 bits.\\
+    Notemos que por ejemplo la línea A20 ya esta habilitada, y algunas estructuras del kernel que fueron inicializadas por el BSP son comúnes a todos los núcleos, como por ejemplo la GDT, IDT, la estructura jerárquica de paginación, etc.\\
+    Entonces directamente inicializamos los registros del núcleo correspondiente con punteros a dichas estructuras.
+    \\
+
+    Como el número de application processors puede ser variable a priori, cuando un núcleo comienza su ejecucion, es obtenido su código de identificacion dentro del procesador y luego se obtiene una posicion de memoria única para cada núcleo con el fin de poder ubicar los punteros de la pila $RSP$ y $RBP$, de ser necesaria la reserva de memoria para alguna estructura única por núcleo se puede utilizar este recurso.

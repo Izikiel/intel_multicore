@@ -2,29 +2,30 @@
 \BOOKMARK [1][-]{section.2}{Desarrollo: Inicializaci\363n y contexto del sistema}{}% 2
 \BOOKMARK [2][-]{subsection.2.1}{Estructura de carpetas: Compilaci\363n, Linkeo y Scripts}{section.2}% 3
 \BOOKMARK [2][-]{subsection.2.2}{Integraci\363n con grub y divisi\363n en m\363dulos}{section.2}% 4
-\BOOKMARK [3][-]{subsubsection.2.2.1}{Booteo e integraci\363n con grub: Especificaci\363n multiboot, carga de modulos elf32 y binarios x64}{subsection.2.2}% 5
-\BOOKMARK [3][-]{subsubsection.2.2.2}{Booteo e integraci\363n con grub: Mapa de memoria: Memoria baja y modulos en memoria alta}{subsection.2.2}% 6
-\BOOKMARK [2][-]{subsection.2.3}{Inicializaci\363n del Bootstrap processor: De estado de especificaci\363n multiboot a modo legacy x64}{section.2}% 7
-\BOOKMARK [3][-]{subsubsection.2.3.1}{Modo Legacy x64: GDT, Paginaci\363n de los primeros 4gb}{subsection.2.3}% 8
-\BOOKMARK [2][-]{subsection.2.4}{Inicializaci\363n del Bootstrap processor: Pasaje a modo largo x64 nativo}{section.2}% 9
-\BOOKMARK [3][-]{subsubsection.2.4.1}{Modo Largo x64: Extensi\363n de paginaci\363n a 64 gb}{subsection.2.4}% 10
-\BOOKMARK [3][-]{subsubsection.2.4.2}{Modo Largo x64: Inicializaci\363n del PIC - Captura de excepciones e interrupciones}{subsection.2.4}% 11
-\BOOKMARK [3][-]{subsubsection.2.4.3}{Modo Largo x64: Mapa de memoria del kernel}{subsection.2.4}% 12
-\BOOKMARK [2][-]{subsection.2.5}{Multicore: encendido de los AP's}{section.2}% 13
-\BOOKMARK [3][-]{subsubsection.2.5.1}{TODO: Ingrese cosas de inicializacion multicore aqui.}{subsection.2.5}% 14
-\BOOKMARK [2][-]{subsection.2.6}{Multicore: inicializaci\363n de modo real a modo nativo x64 de los AP's}{section.2}% 15
-\BOOKMARK [3][-]{subsubsection.2.6.1}{Booteo por niveles: Modo real a modo protegido y modo protegido en memoria alta}{subsection.2.6}% 16
-\BOOKMARK [1][-]{section.3}{Desarrollo: Algoritmos implementados}{}% 17
-\BOOKMARK [2][-]{subsection.3.1}{Sorting de arreglos}{section.3}% 18
-\BOOKMARK [3][-]{subsubsection.3.1.1}{Conjuntos de numeros pseudoaleatorios utilizados para los experimentos}{subsection.3.1}% 19
-\BOOKMARK [3][-]{subsubsection.3.1.2}{Implementaci\363n con un unico core}{subsection.3.1}% 20
-\BOOKMARK [3][-]{subsubsection.3.1.3}{Implementaci\363n con dos cores: Paralelizaci\363n del algoritmo}{subsection.3.1}% 21
-\BOOKMARK [3][-]{subsubsection.3.1.4}{Implementaci\363n con dos cores: Sincronizaci\363n con espera activa}{subsection.3.1}% 22
-\BOOKMARK [3][-]{subsubsection.3.1.5}{Implementaci\363n con dos cores: Sincronizaci\363n con inter processor interrupts}{subsection.3.1}% 23
-\BOOKMARK [2][-]{subsection.3.2}{Fast Fourier Transform}{section.3}% 24
-\BOOKMARK [1][-]{section.4}{Resultados}{}% 25
-\BOOKMARK [2][-]{subsection.4.1}{Lectura e interpretaci\363n de resultados por pantalla}{section.4}% 26
-\BOOKMARK [2][-]{subsection.4.2}{Resultados: Forma de medici\363n}{section.4}% 27
-\BOOKMARK [2][-]{subsection.4.3}{Resultados: Plataformas de testing, incluir fsb, ram,cache, etc }{section.4}% 28
-\BOOKMARK [2][-]{subsection.4.4}{Resultados: Comparaci\363n de resultados}{section.4}% 29
-\BOOKMARK [1][-]{section.5}{Conclusi\363n Final}{}% 30
+\BOOKMARK [3][-]{subsubsection.2.2.1}{Booteo e integraci\363n con grub: Mapa de memoria: Memoria baja y modulos en memoria alta}{subsection.2.2}% 5
+\BOOKMARK [2][-]{subsection.2.3}{Inicializaci\363n del Bootstrap processor: Pasaje entre modo protegido a modo legacy x64}{section.2}% 6
+\BOOKMARK [3][-]{subsubsection.2.3.1}{Modo Legacy x64: GDT, Paginaci\363n de los primeros 4gb}{subsection.2.3}% 7
+\BOOKMARK [2][-]{subsection.2.4}{Inicializaci\363n del Bootstrap processor: Pasaje a modo largo x64 nativo}{section.2}% 8
+\BOOKMARK [3][-]{subsubsection.2.4.1}{Modo Largo x64: Extensi\363n de paginaci\363n a 64 gb}{subsection.2.4}% 9
+\BOOKMARK [3][-]{subsubsection.2.4.2}{Modo Largo x64: Inicializaci\363n del PIC - Captura de excepciones e interrupciones}{subsection.2.4}% 10
+\BOOKMARK [3][-]{subsubsection.2.4.3}{Modo Largo x64: Mapa de memoria del kernel}{subsection.2.4}% 11
+\BOOKMARK [2][-]{subsection.2.5}{Multicore: encendido de los AP's}{section.2}% 12
+\BOOKMARK [3][-]{subsubsection.2.5.1}{TODO: Ingrese cosas de inicializacion multicore aqui.}{subsection.2.5}% 13
+\BOOKMARK [2][-]{subsection.2.6}{Multicore: inicializaci\363n de modo real a modo nativo x64 de los AP's}{section.2}% 14
+\BOOKMARK [3][-]{subsubsection.2.6.1}{Booteo por niveles: Modo real a modo protegido y modo protegido en memoria alta}{subsection.2.6}% 15
+\BOOKMARK [1][-]{section.3}{Desarrollo: Algoritmos implementados}{}% 16
+\BOOKMARK [2][-]{subsection.3.1}{Sorting de arreglos}{section.3}% 17
+\BOOKMARK [3][-]{subsubsection.3.1.1}{Conjuntos de numeros pseudoaleatorios utilizados para los experimentos}{subsection.3.1}% 18
+\BOOKMARK [3][-]{subsubsection.3.1.2}{Implementaci\363n con un unico core}{subsection.3.1}% 19
+\BOOKMARK [3][-]{subsubsection.3.1.3}{Implementaci\363n con dos cores: Paralelizaci\363n del algoritmo}{subsection.3.1}% 20
+\BOOKMARK [3][-]{subsubsection.3.1.4}{Implementaci\363n con dos cores: Sincronizaci\363n con espera activa}{subsection.3.1}% 21
+\BOOKMARK [3][-]{subsubsection.3.1.5}{Implementaci\363n con dos cores: Sincronizaci\363n con inter processor interrupts}{subsection.3.1}% 22
+\BOOKMARK [2][-]{subsection.3.2}{Modificaci\363n de elementos de un arreglo}{section.3}% 23
+\BOOKMARK [3][-]{subsubsection.3.2.1}{Saturaci\363n del canal de memoria}{subsection.3.2}% 24
+\BOOKMARK [2][-]{subsection.3.3}{Fast Fourier Transform}{section.3}% 25
+\BOOKMARK [1][-]{section.4}{Resultados}{}% 26
+\BOOKMARK [2][-]{subsection.4.1}{Lectura e interpretaci\363n de resultados por pantalla}{section.4}% 27
+\BOOKMARK [2][-]{subsection.4.2}{Resultados: Forma de medici\363n}{section.4}% 28
+\BOOKMARK [2][-]{subsection.4.3}{Resultados: Plataformas de testing, incluir fsb, ram,cache, etc }{section.4}% 29
+\BOOKMARK [2][-]{subsection.4.4}{Resultados: Comparaci\363n de resultados}{section.4}% 30
+\BOOKMARK [1][-]{section.5}{Conclusi\363n Final}{}% 31
