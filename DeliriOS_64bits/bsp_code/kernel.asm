@@ -70,7 +70,7 @@ global grubInfoStruct
 ;; Saltear seccion de datos(para que no se ejecute)
 
 %define breakpoint xchg bx, bx
-%define sleep_ap 0x20000d ;; definido en defines.h tambien
+%define sleep_ap 0x200080 ;; definido en defines.h tambien
 %define static_variable_area 0x200000
 %define number_of_cores     0x200004
 
@@ -380,7 +380,7 @@ loop_64g_structure:
     imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
 
     ; inicializamos a 0 variables de multicore
-    mov rcx, 0x400>>3 ; divido por 8
+    mov rcx, 0x800>>3 ; divido por 8
     mov rax, static_variable_area
     xor rdx, rdx
     clean_variables:
@@ -412,7 +412,7 @@ tests:
     ;mov byte [sleep_ap], 1
     ;call make_ap_jump
 
-    call test_ipi_cores
+    ;call test_ipi_cores
 
 sleep_bsp:
     hlt

@@ -41,17 +41,20 @@
 #define size_of_byte 1
 #define size_of_pointer64 8
 #define static_variable_area 0x200000
-//flags
+//flags alineadas a cache 64 bytes
 #define start_address       0x200000
-#define start_merge_address 0x200001
-#define sleep_address		0x200002
-#define start_copy_address  0x200003
-#define number_of_cores_address 0x200004
-#define seed_address 		0x200006
-#define array_len_address 	0x200010
+#define start_merge_address 0x200040
+#define sleep_address		0x200080
+#define start_copy_address  0x2000c0
+#define number_of_cores_address 0x200100
+#define seed_address 		0x200140
+#define array_len_address 	0x200180
 
-#define done_address 		0x200020
-#define finish_copy_address 0x200030
+#define done_address 		0x2001c0
+#define finish_copy_address 0x200200
+
+
+#define time_measures_address 0x200240
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 

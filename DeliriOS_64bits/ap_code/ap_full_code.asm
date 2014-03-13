@@ -33,7 +33,7 @@ extern turn_on_apic_ap
 %endmacro
 
 %define breakpoint xchg bx, bx
-%define sleep 0x20000d ;; definido en defines.h tambien
+%define sleep 0x200080 ;; definido en defines.h tambien
 %define number_of_cores     0x200004
 
 BITS 32
@@ -120,7 +120,7 @@ long_mode:
         ;cmp byte [sleep], 1
         ;jne do_sum
     sleep_ap:
-        ;hlt
+        hlt
         jmp sleep_ap
 
 ; -------------------------------------------------------------------------- ;;

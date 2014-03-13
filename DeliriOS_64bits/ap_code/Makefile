@@ -5,7 +5,8 @@ KERNEL_OBJ=ap_full_code.o
 OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/mmu.o ../common_code/ports.o \
 	 idt.o isr.o ../common_code/contextManager.o ../common_code/multicore_common.o \
 	../common_code/i386.o ../common_code/timer.o ap_execute_code.o ../common_code/sort_code.o \
-	../bsp_code/kmain64.o ../common_code/screen_utils.o
+	../bsp_code/kmain64.o ../common_code/screen_utils.o \
+	../fft/fft.o ../fft/sin.o ../fft/complex.o
 
 LD=ld
 LDFLAGS=-static -m elf_x86_64 -T $(LINKSCRIPT)
@@ -26,13 +27,16 @@ QUIET = @
 .PHONY=clean all image
 
 
-all: clean common_code ap_full_code.bin
+all: clean common_code fft_code ap_full_code.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
 
 common_code:
 	cd ../common_code; make
+
+fft_code:
+	cd ../fft; make
 
 %.o: %.asm
 	$(NASM) $(NASMFLAGS) -o $@ $^
@@ -45,5 +49,6 @@ clean:
 	rm -rf *.o
 	rm -rf *.bin
 	cd ../common_code; make clean
+	cd ../fft; make clean
 
 

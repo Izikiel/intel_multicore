@@ -3,7 +3,8 @@ OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o ../common_code/mmu
 	../common_code/multicore_common.o \
 	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore_boot.o \
 	cmos.o console.o ../common_code/sort_code.o bsp_execute_code.o test_code.o \
-	../common_code/screen_utils.o ../common_code/init_ioapic.o
+	../common_code/screen_utils.o ../common_code/init_ioapic.o \
+	../fft/fft.o ../fft/sin.o ../fft/complex.o
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include \
@@ -14,9 +15,6 @@ KERNEL_SRC=kernel.asm
 KERNEL_OBJ=kernel.o
 KERNEL_BIN=kernel.bin
 LINKSCRIPT=linker_script.ld
-
-CODESIZE=262144
-KERNELSIZE=262144
 
 #flags ans binaries
 CC=gcc
@@ -29,7 +27,7 @@ QUIET = @
 
 .PHONY=clean all image
 
-all: console_clear clean common_code kernel.bin
+all: console_clear clean common_code fft_code kernel.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -52,9 +50,13 @@ console_clear:
 common_code:
 	cd ../common_code; make
 
+fft_code:
+	cd ../fft; make
+
 clean:
 	@echo 'Limpiando todo...'
 	rm -f *.o
 	rm -f *.bin
 	cd ../common_code; make clean
+	cd ../fft; make clean
 	@echo ''
