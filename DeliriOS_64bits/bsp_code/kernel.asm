@@ -38,8 +38,17 @@ extern test_2_cores
 extern test_ipi_cores
 extern test_sum_vector1
 extern test_sum_vector2
-
+extern test_fft_dual_mem
+;test basico para ver q andan las ipis
 extern make_ap_jump
+
+
+extern sin
+
+;test fft
+extern test_fft_mono
+
+;Screen
 extern clear_screen
 
 ;Ap stage2
@@ -77,6 +86,7 @@ global grubInfoStruct
 BITS 32
 JMP protected_mode
 
+local: dq 0x0
 ;;
 ;; Seccion de datos
 ;; -------------------------------------------------------------------------- ;;
@@ -377,7 +387,6 @@ loop_64g_structure:
     call initialize_timer
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 5, mensaje_timer_len
     ;inicializamos multicore
-    imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
 
     ; inicializamos a 0 variables de multicore
     mov rcx, 0x800>>3 ; divido por 8
@@ -389,8 +398,18 @@ loop_64g_structure:
 
     inc byte [number_of_cores]
 
+enable_sse: ;Taken from osdev
+    mov rax, cr0
+    and ax, 0xFFFB      ;clear coprocessor emulation CR0.EM
+    or ax, 0x2          ;set coprocessor monitoring  CR0.MP
+    mov cr0, rax
+    mov rax, cr4
+    or ax, 3 << 9       ;set CR4.OSFXSR and CR4.OSXMMEXCPT at the same time
+    mov cr4, rax
+
     sti
-    call clear_screen
+
+    imprimir_texto_ml mensaje_multicore_msg, mensaje_multicore_len, 0x0F, 6, 0
     call multiprocessor_init
     imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 6, mensaje_multicore_len
 
@@ -400,11 +419,12 @@ loop_64g_structure:
     ;arrancan las pruebas!
 tests:
     ;call test_1_core
+    ;call test_2_cores
 
-    call clear_screen
-    call test_2_cores
+    call test_fft_mono
+    call test_fft_dual_mem
 
-    ;mov byte [sleep_ap], 1
+    mov byte [sleep_ap], 1
 
     ;call test_sum_vector1
     ;call test_sum_vector2
@@ -417,5 +437,7 @@ tests:
 sleep_bsp:
     hlt
     jmp sleep_bsp
+
+
 
 ;; -------------------------------------------------------------------------- ;;

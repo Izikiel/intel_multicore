@@ -4,11 +4,10 @@ OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o ../common_code/mmu
 	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore_boot.o \
 	cmos.o console.o ../common_code/sort_code.o bsp_execute_code.o test_code.o \
 	../common_code/screen_utils.o ../common_code/init_ioapic.o \
-	../fft/fft.o ../fft/sin.o ../fft/complex.o
+	../fft/complex.o ../fft/sin.o ../fft/fft.o
 
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
-  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include \
-  -mno-sse -mno-sse2 -mno-sse3 -mno-sse4.1 -mno-sse4.2
+  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include
 
 #variables
 KERNEL_SRC=kernel.asm

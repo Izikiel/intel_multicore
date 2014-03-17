@@ -1,9 +1,9 @@
-
 #ifndef _FFT_H_
 #define _FFT_H_
 
  #include "complex.h"
-
+ #include "defines.h"
+ #include "types.h"
 // ================== FFT ==================
 
     //   FORWARD FOURIER TRANSFORM
@@ -24,6 +24,9 @@
     //     Scale  - if to scale result
         char Inverse_IO(Complex *Input, Complex *Output, unsigned int N, char Scale ); /*true*/
 
+    //  Dual core version
+        char Inverse_IO_Dual(Complex *Input, Complex *Output, unsigned int N, char Scale ); /*true*/
+
     //   INVERSE FOURIER TRANSFORM, INPLACE VERSION
     //     Data  - both input data and output
     //     N     - length of both input data and result
@@ -39,9 +42,11 @@
     //   FFT implementation
         void Perform(Complex *Data, unsigned int N, char Inverse ); /*false*/
 
+        void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse ); /*false*/
+
     //   Scaling of inverse FFT result
         void Scale(Complex *Data, unsigned int N);
-    
+
 // =========================================
 
 #endif
