@@ -399,12 +399,10 @@ loop_64g_structure:
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
-    ;call test_1_core
+    call test_1_core
 
-    call clear_screen
+    ;call clear_screen
     call test_2_cores
-
-    ;mov byte [sleep_ap], 1
 
     ;call test_sum_vector1
     ;call test_sum_vector2
@@ -412,7 +410,7 @@ tests:
     ;mov byte [sleep_ap], 1
     ;call make_ap_jump
 
-    ;call test_ipi_cores
+    call test_ipi_cores
 
 sleep_bsp:
     hlt
