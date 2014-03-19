@@ -16,7 +16,7 @@ void sort_ap()
     uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
 
     //waiting for go!
-    active_wait(*sleep){
+    active_wait(*sleep) {
         active_wait(*start) {
             if (*sleep) {
                 return;
@@ -39,7 +39,8 @@ void sort_ap()
 
 }
 
-void sum_vector_ap(){
+void sum_vector_ap()
+{
     uint8_t *start = (uint8_t *) start_address;
     uint32_t *array = (uint32_t *) array_start_address;
     uint32_t *len = (uint32_t *) array_len_address;
@@ -52,7 +53,7 @@ void sum_vector_ap(){
         }
     }
 
-    for (uint32_t i = *len/2; i < *len; ++i) {
+    for (uint32_t i = *len / 2; i < *len; ++i) {
         array[i]++;
     }
 
@@ -60,9 +61,10 @@ void sum_vector_ap(){
 }
 
 
-void signal_finished(){
+void signal_finished()
+{
     uint8_t *done = (uint8_t *) done_address;
-    while(!(*done));
+    while (!(*done));
     *done = 0;
 
     intr_command_register icr;
@@ -71,7 +73,8 @@ void signal_finished(){
     wait_for_ipi_reception();
 }
 
-void sort_ap_int(){
+void sort_ap_int()
+{
     uint32_t *len = (uint32_t *) array_len_address;
     uint32_t *array = (uint32_t *) array_start_address;
 
@@ -80,7 +83,8 @@ void sort_ap_int(){
 }
 
 
-void merge_ap_int(){
+void merge_ap_int()
+{
     uint32_t *len = (uint32_t *) array_len_address;
     uint32_t *array = (uint32_t *) array_start_address;
     uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
@@ -89,7 +93,8 @@ void merge_ap_int(){
     signal_finished();
 }
 
-void copy_ap_int(){
+void copy_ap_int()
+{
     uint32_t *len = (uint32_t *) array_len_address;
     uint32_t *array = (uint32_t *) array_start_address;
     uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
@@ -98,7 +103,50 @@ void copy_ap_int(){
     signal_finished();
 }
 
-void ap_jump(){ //prueba para ipis
+void ap_jump()  //prueba para ipis
+{
     clear_screen();
-    print_string("Soy un ap que salta",0,0);
+    print_string("Soy un ap que salta", 0, 0);
+}
+
+
+void inner_fft_loop()
+{
+
+    uint8_t *start = (uint8_t *) start_address;
+    uint8_t *done = (uint8_t *) done_address;
+    uint8_t *sleep = (uint8_t *) sleep_address;
+    Complex *Data = (Complex *) array_start_address;
+    *start = 0;
+    *done = 0;
+
+    active_wait(*sleep) {
+        active_wait(*start) {
+            if (*sleep) {
+                return;
+            }
+        }
+        *start = 0;
+        unsigned int Match;
+        unsigned int Pair;
+
+        unsigned int Step = *((unsigned int *) step_address);
+        unsigned int Jump = *((unsigned int *) jump_address);
+        unsigned int Group = *((unsigned int *) group_address);
+        Complex Factor = *((Complex *) factor_address);
+        uint32_t N = *((uint32_t *) array_len_address);
+
+        for (Pair = Group + N/2; Pair < N; Pair += Jump) {
+                //   Match position
+                Match = Pair + Step;
+                //   Second term of two-point transform
+                Complex Product = operatorMUL(&Factor, &(Data[Match]));
+                //   Transform for fi + pi
+                Data[Match] = operatorSUB(&(Data[Pair]), &Product);
+                //   Transform for fi
+                Data[Pair] = operatorADD(&Product, &(Data[Pair]));
+        }
+        *done = 1;
+    }
+
 }

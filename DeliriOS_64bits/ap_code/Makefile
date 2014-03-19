@@ -13,8 +13,7 @@ LDFLAGS=-static -m elf_x86_64 -T $(LINKSCRIPT)
 
 CC=gcc
 CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
-  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include \
-  -mno-sse -mno-sse2 -mno-sse3 -mno-sse4.1 -mno-sse4.2
+  -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include
 
 NASM=nasm
 NASMFLAGS=-felf64 -I../include/
