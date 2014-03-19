@@ -395,6 +395,7 @@ loop_64g_structure:
     xor rdx, rdx
     clean_variables:
         mov [rax], rdx
+        lea rax, [rax + 8]
         loop clean_variables
 
     inc byte [number_of_cores]
