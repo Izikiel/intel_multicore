@@ -418,13 +418,10 @@ enable_sse: ;Taken from osdev
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
+
     call test_1_core
-
-    ;call clear_screen
     call test_2_cores
-
-    ;call test_1_core
-    ;call test_2_cores
+    call test_ipi_cores
 
  ;   call test_fft_mono
 ;    call test_fft_dual_mem
@@ -435,7 +432,6 @@ tests:
     ;mov byte [sleep_ap], 1
     ;call make_ap_jump
 
-    call test_ipi_cores
 
 sleep_bsp:
     hlt
