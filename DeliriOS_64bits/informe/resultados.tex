@@ -1,5 +1,783 @@
 \section{Resultados}
+En esta sección se plasmarán los resultados obtenidos en las pruebas de las secciones anteriores, asimismo se darán detalles tecnicos de los equipos donde fueron realizados los experimentos.
 \subsection{Lectura e interpretación de resultados por pantalla}
+El sistema luego de realizar la inicialización, comienza a arrojar por pantalla, los resultados(medidos en ticks) de los distintos algoritmos (separados por columna) aplicados sobre distintos tamaños de datos(separados por filas). Sobre estos datos obtenidos en una variedad de máquinas reales, se realizaron documentos, análisis y gráficos y serán plasmados debajo.
 \subsection{Resultados: Forma de medición}
-\subsection{Resultados: Plataformas de testing, incluir fsb, ram,cache, etc }
-\subsection{Resultados: Comparación de resultados}
+Las mediciones se realizaron utilizando los registros del procesador que contienen la cantidad de ticks transcurridos. Los puntos del código elegidos para comenzar y finalizar la medición son antes y despues de llamar a los métodos de test, por ejemplo:
+\begin{itemize}
+	\item Comenzar medicion
+	\item Ejecutar sort\_single\_core\(\)
+	\item Finalizar medicion
+\end{itemize}
+
+Notemos que estas formas de medición no solo analizan el rendimiento del algoritmo propiamente dicho, sino además los tiempos de sincronización requeridos para cada implementación. (ver gráficos de los protocolos de sincronización), esto nos permitirá ver como en algunos casos, donde el tamaño de la entrada de datos es relativamente pequeña, la mejora obtenida en el multiprocesamiento es licuada por los tiempos extras requeridos para la sincronización, dándonos además un cross-over, el cual nos indica a partir de que tamaño de entrada comienza a ser mas ventajoso utilizar multiprocesamiento, permitiendonos si lo desearamos, realizar algoritmos mas inteligentes que dependiendo de los datos de entrada utilicen la implementación que tenga el mejor rendimiento.
+
+
+\subsection{Resultados: Arquitectura de las máquinas utilizadas}
+Se realizaron pruebas sobre los siguientes equipos:
+\begin{enumerate}
+	\item Intel® Pentium® Processor T4200
+			\begin{itemize}
+				\item CPU Clock: 2000Mhz
+				\item Front Side Bus: 800Mhz
+				\item Cores Number: 2
+				\item L1 Caché: 2 x 32KB instruction, 2 x 32KB data
+				\item L2 Caché: Shared 1MB
+				\item Litografía: 45nm
+			\end{itemize}
+	\item Intel® Xeon® Processor E5345 
+			\begin{itemize}
+				\item CPU Clock: 2333Mhz
+				\item Front Side Bus: 1333Mhz
+				\item Cores Number: 4
+				\item L1 Caché: 4 x 32KB instruction, 4 x 32KB data
+				\item L2 Caché: 2 x 4MB shared
+				\item Litografía: 65nm
+			\end{itemize}
+	\item Intel® Pentium® Processor G2030
+			\begin{itemize}
+				\item CPU Clock: 3000Mhz
+				\item Direct Media Interface: 5 GT/s
+				\item Cores Number: 2
+				\item L1 Caché: 2 x 32KB instruction, 2 x 32KB data
+				\item L2 Caché: 2 x 256K
+				\item L3 Caché: 3 MB (Intel Smart Cache)
+				\item Litografía: 22nm
+			\end{itemize}
+	\item Intel® Core™ i7-920 Processor 
+			\begin{itemize}
+				\item CPU Clock: 2666Mhz
+				\item Bus Speed: 4.8 GT/s QPI (2400 MHz)
+				\item Cores Number: 4
+				\item L1 Caché: 4 x 32KB instruction, 4 x 32KB data
+				\item L2 Caché: 4 x 256K
+				\item L3 Caché: 8 MB (Intel Smart Cache) Shared
+				\item Litografía: 45nm
+			\end{itemize}
+	\item Intel® Core™ i5-2500K Processor
+			\begin{itemize}
+				\item CPU Clock: 3300Mhz ~ 3700Mhz turbo
+				\item Direct Media Interface: 5 GT/s
+				\item Cores Number: 4
+				\item L1 Caché: 4 x 32KB instruction, 4 x 32KB data
+				\item L2 Caché: 4 x 256K
+				\item L3 Caché: 6 MB (Intel Smart Cache) Shared
+				\item Cache latency:
+					\begin{itemize}	
+						\item 4 (L1 cache)
+						\item 11 (L2 cache)
+						\item 25 (L3 cache)
+					\end{itemize}
+				\item Litografía: 32nm
+			\end{itemize}
+		\item Intel® Core™2 Quad Processor Q6600
+			\begin{itemize}
+				\item CPU Clock: 2400Mhz
+				\item FSB: 1066Mhz
+				\item Cores Number: 4
+				\item L1 Caché: 4 x 32 KB 8-vias asociativa por conjuntos instrucciones, 4 x 32 KB 8-vias asociativa por conjuntos datos
+				\item L2 Caché: 2 x 4 MB 16-vias asociativas (cada L2 cache es compartida por los 2 cores)				
+				\item Litografía: 65nm
+			\end{itemize}
+\end{enumerate}
+\textbf{Nota:} Todos los equipos tienen al menos 2 núcleos y su set de instrucciones es de 64 bits.
+\subsection{Análisis de resultados}
+
+\subsubsection{Intel® Pentium® Processor T4200 - Sorting}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+	\hline
+		Elements & MonoCore Ticks & DualCore Ticks & MonoCore/DualCore Ratio\\
+	\hline
+		2 & 13880 & 48100 & 0.288\\
+	\hline
+		4 & 24270 & 49570 & 0.489\\
+	\hline
+		8 & 55400 & 91690 & 0.604\\
+	\hline
+		16 & 141500 & 168570 & 0.839\\
+	\hline
+		32 & 327920 & 353760 & 0.926\\
+	\hline
+		64 & 796010 & 742520 & 1.072\\
+	\hline
+		128 & 1849630 & 1679460 & 1.101\\
+	\hline
+		256 & 4320740 & 3646330 & 1.184\\
+	\hline
+		512 & 9934510 & 7628720 & 1.302\\
+	\hline
+		1024 & 22071820 & 16545320 & 1.334\\
+	\hline
+		2048 & 48763360 & 35257470 & 1.383\\
+	\hline
+		4096 & 106738920 & 76572280 & 1.393\\
+	\hline
+		8192 & 231258040 & 163781130 & 1.411\\
+	\hline
+		16384 & 498651230 & 347409350 & 1.435\\
+	\hline
+		32768 & 1068017890 & 735754710 & 1.451\\
+	\hline
+		65536 & 2273209280 & 1551108110 & 1.465\\
+	\hline
+		131072 & 4829745290 & 3277073490 & 1.473\\
+	\hline
+		262144 & 10221826090 & 6889769040 & 1.483\\
+	\hline
+		524288 & 21634980190 & 14443509820 & 1.497\\
+	\hline
+		1048576 & 45669905810 & 30263300000 & 1.509\\
+	\hline
+		2097152 & 96048564890 & 63479415710 & 1.513\\
+	\hline
+\end{tabular}
+\end{center}
+\begin{center}
+    \includegraphics[height=6cm]{images/pentium_d_sorting.png}
+\end{center}
+En esta configuración podemos observar un cross-over en 64 elementos a partir de donde comienza a mejorar la performance utilizando dos cores. Para la mayor cantidad de elementos obtenemos una mejora aproximada del 50\%.
+\subsubsection{Intel® Pentium® Processor T4200 - Vector modification}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+	\hline	
+		Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+	\hline	
+		2 & 6528 & 103472 & 0.063\\
+	\hline	
+		4 & 8128 & 94672 & 0.085\\
+	\hline	
+		8 & 10656 & 106480 & 0.100\\
+	\hline	
+		16 & 14032 & 113328 & 0.123\\
+	\hline	
+		32 & 32688 & 77680 & 0.420\\
+	\hline	
+		64 & 60736 & 119088 & 0.510\\
+	\hline	
+		128 & 118432 & 187120 & 0.632\\
+	\hline	
+		256 & 237984 & 241904 & 0.983\\
+	\hline	
+		512 & 471664 & 382400 & 1.233\\
+	\hline	
+		1024 & 958848 & 801840 & 1.195\\
+	\hline	
+		2048 & 1862816 & 1618736 & 1.150\\
+	\hline	
+		4096 & 3616320 & 3241024 & 1.115\\
+	\hline	
+		8192 & 6855104 & 6129552 & 1.118\\
+	\hline	
+		16384 & 13412768 & 11785552 & 1.138\\
+	\hline	
+		32768 & 26840704 & 23272048 & 1.153\\
+	\hline	
+		65536 & 53739680 & 47434224 & 1.132\\
+	\hline	
+		131072 & 107571760 & 93427920 & 1.151\\
+	\hline	
+		262144 & 216317472 & 182467152 & 1.185\\
+	\hline	
+		524288 & 430617120 & 364908528 & 1.180\\
+	\hline	
+		1048576 & 860450928 & 745400768 & 1.154\\
+	\hline	
+		2097152 & 1730369088 & 1491881600 & 1.159\\
+	\hline	
+		4194304 & 3462956448 & 3000064512 & 1.154\\
+	\hline
+\end{tabular}
+\end{center}
+\begin{center}
+    \includegraphics[height=6cm]{images/pentium_d_vectorsum.png}
+\end{center}
+Podemos observar como, incluso utilizando dos núcleos, la saturación del canal de memoria licua la performance mejorada del multiprocesamiento.
+
+\subsubsection{Intel® Xeon® Processor E5345 - Sorting}
+\begin{tabular}{|c|c|c|c|}
+	\hline
+		Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+	\hline
+		2 & 20657 & 34692 & 0.595\\
+	\hline
+		4 & 40565 & 47131 & 0.860\\
+	\hline
+		8 & 90559 & 73661 & 1.229\\
+	\hline
+		16 & 208635 & 137970 & 1.512\\
+	\hline
+		32 & 485933 & 287224 & 1.691\\
+	\hline
+		64 & 1096592 & 628369 & 1.745\\
+	\hline
+		128 & 2490712 & 1407854 & 1.769\\
+	\hline
+		256 & 5545589 & 3095624 & 1.791\\
+	\hline
+		512 & 12350142 & 6709311 & 1.840\\
+	\hline
+		1024 & 26958904 & 14815346 & 1.819\\
+	\hline
+		2048 & 58405928 & 32200161 & 1.813\\
+	\hline
+		4096 & 126362572 & 69358674 & 1.821\\
+	\hline
+		8192 & 271480069 & 149265949 & 1.818\\
+	\hline
+		16384 & 580168379 & 320822040 & 1.808\\
+	\hline
+		32768 & 1265098373 & 677863235 & 1.866\\
+	\hline
+		65536 & 2663953124 & 1447008150 & 1.841\\
+	\hline
+		131072 & 5597340728 & 3054159843 & 1.832\\
+	\hline
+		262144 & 11904206349 & 6435623397 & 1.849\\
+	\hline
+		524288 & 24800933899 & 13558975689 & 1.829\\
+	\hline
+		1048576 & 52289342196 & 28461202042 & 1.837\\
+	\hline
+		2097152 & 109516365196 & 59447473463 & 1.842\\
+	\hline
+\end{tabular}
+
+	\begin{center}
+	    \includegraphics[height=6cm]{images/XEON_Sorting.png}
+	\end{center}
+
+	Dadas las mejores prestaciónes de caché y arquitectura de esta configuración, vemos que se obtiene un 84\% de mejora al realizar el multiprocesamiento al ordenar muestras de 2097152 elementos. El cross-over donde conviene utilizar multicore es muy bajo, desde 8 elementos ya es mas rápido el ordenamiento dual core. 
+
+\subsubsection{Intel® Xeon® Processor E5345 - Vector modification}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+	\hline
+		Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+	\hline
+		2 & 4900 & 16800 & 0.291\\
+	\hline
+		4 & 5831 & 17388 & 0.335\\
+	\hline
+		8 & 8211 & 17976 & 0.456\\
+	\hline
+		16 & 12985 & 19537 & 0.664\\
+	\hline
+		32 & 23198 & 26880 & 0.863\\
+	\hline
+		64 & 42511 & 35168 & 1.208\\
+	\hline
+		128 & 81543 & 55769 & 1.462\\
+	\hline
+		256 & 159663 & 94430 & 1.690\\
+	\hline
+		512 & 316463 & 210994 & 1.499\\
+	\hline
+		1024 & 630154 & 441224 & 1.428\\
+	\hline
+		2048 & 1256241 & 908292 & 1.383\\
+	\hline
+		4096 & 2509745 & 1836184 & 1.366\\
+	\hline
+		8192 & 5014814 & 3696385 & 1.356\\
+	\hline
+		16384 & 10030118 & 7422128 & 1.351\\
+	\hline
+		32768 & 20053355 & 14880299 & 1.347\\
+	\hline
+		65536 & 40102146 & 29786883 & 1.346\\
+	\hline
+		131072 & 80194310 & 59598644 & 1.345\\
+	\hline
+		262144 & 161790321 & 119193046 & 1.357\\
+	\hline
+		524288 & 327379871 & 238416367 & 1.373\\
+	\hline
+		1048576 & 656828004 & 478496431 & 1.372\\
+	\hline
+		2097152 & 1309034153 & 953788577 & 1.372\\
+	\hline
+		4194304 & 2619897161 & 1891070293 & 1.385\\
+	\hline
+\end{tabular}
+\end{center}
+
+	\begin{center}
+	    \includegraphics[height=6cm]{images/xeon_vector_sum.png}
+	\end{center}
+
+	Nuevamente los accesos a memoria afectan la performance del multiprocesamiento.
+
+\subsubsection{Intel® Pentium® Processor G2030 - Sorting}
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline	
+			Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+		\hline
+			2 & 15180 & 22996 & 0.660\\
+		\hline
+			4 & 30704 & 33812 & 0.908\\
+		\hline
+			8 & 70096 & 54804 & 1.279\\
+		\hline
+			16 & 186620 & 104288 & 1.789\\
+		\hline
+			32 & 436216 & 215084 & 2.028\\
+		\hline
+			64 & 1011620 & 473460 & 2.136\\
+		\hline
+			128 & 2311748 & 1074916 & 2.150\\
+		\hline
+			256 & 5156888 & 2393136 & 2.154\\
+		\hline
+			512 & 11414660 & 5290992 & 2.157\\
+		\hline
+			1024 & 25167592 & 11469944 & 2.194\\
+		\hline
+			2048 & 54610712 & 25100072 & 2.175\\
+		\hline
+			4096 & 118042804 & 57037548 & 2.069\\
+		\hline
+			8192 & 252518012 & 123304440 & 2.047\\
+		\hline
+			16384 & 536777312 & 264044108 & 2.032\\
+		\hline
+			32768 & 1097052680 & 555262936 & 1.975\\
+		\hline
+			65536 & 2322030308 & 1185902828 & 1.958\\
+		\hline
+			131072 & 4932183084 & 2539728536 & 1.942\\
+		\hline
+			262144 & 10447157964 & 5135427448 & 2.034\\
+		\hline
+			524288 & 21599239404 & 10835600988 & 1.993\\
+		\hline
+			1048576 & 45271465128 & 22793636612 & 1.986\\
+		\hline
+			2097152 & 94724393340 & 47526712420 & 1.993\\
+		\hline
+			4194304 & 197880816576 & 99686391488 & 1.985\\
+		\hline
+	\end{tabular}
+\end{center}
+	\begin{center}
+	    \includegraphics[height=6cm]{images/g2030_sorting.png}
+	\end{center}
+
+	Esta arquitectura nueva, nos sorprendió con un crossover de 8 elementos en el cual mejora la performance y a partir de 32 elementos aproximadamente se duplica el rendimiento utilizando multicore!
+\subsubsection{Intel® Pentium® Processor G2030 - Vector modification}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline	
+			Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+		\hline
+			2 & 3844 & 7552 & 0.509\\
+		\hline
+			4 & 5260 & 7780 & 0.676\\
+		\hline
+			8 & 7996 & 10356 & 0.772\\
+		\hline
+			16 & 15036 & 12592 & 1.194\\
+		\hline
+			32 & 24732 & 18220 & 1.357\\
+		\hline
+			64 & 46612 & 32060 & 1.453\\
+		\hline
+			128 & 87408 & 55104 & 1.586\\
+		\hline
+			256 & 173268 & 128556 & 1.347\\
+		\hline
+			512 & 336340 & 198352 & 1.695\\
+		\hline
+			1024 & 682580 & 561132 & 1.216\\
+		\hline
+			2048 & 1356376 & 745136 & 1.820\\
+		\hline
+			4096 & 2959568 & 2184308 & 1.354\\
+		\hline
+			8192 & 6134040 & 4536436 & 1.352\\
+		\hline
+			16384 & 12473160 & 6453392 & 1.932\\
+		\hline
+			32768 & 24960936 & 18386228 & 1.357\\
+		\hline
+			65536 & 49965760 & 25624672 & 1.949\\
+		\hline
+			131072 & 99945548 & 74779612 & 1.336\\
+		\hline
+			262144 & 199857864 & 90879264 & 2.199\\
+		\hline
+			524288 & 399539592 & 285954068 & 1.397\\
+		\hline
+			1048576 & 799210112 & 381478298 & 2.095\\
+		\hline
+			2097152 & 1598536888 & 1196662984 & 1.335\\
+		\hline
+			4194304 & 3196868172 & 1601236716 & 1.996\\
+		\hline
+	\end{tabular}
+\end{center}
+	\begin{center}
+	    \includegraphics[height=6cm]{images/g2030_vectorsum.png}
+	\end{center}
+
+	A pesar de como afectan los accesos a memoria, en algunos casos vemos que se rompen los esquemas y se obtienen performances del doble versus procesamiento mono-núcleo.
+
+\subsubsection{Intel® Core™ i7-920 Processor - Sorting - Vector modification }
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline	
+			Elements & Sort Mono & Sort Dual & Vector Mono & Vector Dual & Sort Ratio & Vector Mod Ratio\\
+		\hline
+			2 & 17668 & 26204 & 4912 & 9332 & 0.674 & 0.526\\
+		\hline
+			4 & 36888 & 38648 & 5692 & 10680 & 0.954 & 0.532\\
+		\hline
+			8 & 84260 & 62436 & 8524 & 11696 & 1.349 & 0.728\\
+		\hline
+			16 & 192596 & 116900 & 15160 & 16356 & 1.647 & 0.926\\
+		\hline
+			32 & 463176 & 250716 & 26856 & 20256 & 1.847 & 1.325\\
+		\hline
+			64 & 1062000 & 549240 & 50600 & 32240 & 1.933 & 1.569\\
+		\hline
+			128 & 2427412 & 1236440 & 97260 & 55740 & 1.963 & 1.744\\
+		\hline
+			256 & 5389400 & 2719116 & 192860 & 122600 & 1.982 & 1.573\\
+		\hline
+			512 & 11997744 & 5903640 & 381276 & 260856 & 2.032 & 1.461\\
+		\hline
+			1024 & 25525608 & 13065240 & 761760 & 545620 & 1.953 & 1.396\\
+		\hline
+			2048 & 55905976 & 28463616 & 1519960 & 1110780 & 1.964 & 1.368\\
+		\hline
+			4096 & 120254264 & 69237000 & 3031636 & 2260796 & 1.736 & 1.340\\
+		\hline
+			8192 & 259149012 & 132442380 & 6051280 & 4509000 & 1.956 & 1.342\\
+		\hline
+			16384 & 554582312 & 284005796 & 12106900 & 9029180 & 1.952 & 1.340\\
+		\hline
+			32768 & 1199133428 & 612601980 & 24212436 & 12154760 & 1.957 & 1.992\\
+		\hline
+			65536 & 2547819264 & 1297609520 & 48417380 & 24300516 & 1.963 & 1.992\\
+		\hline
+			131072 & 5385534272 & 2769704056 & 96870560 & 48611840 & 1.944 & 1.992\\
+		\hline
+			262144 & 11395843660 & 5840527220 & 193900280 & 97191900 & 1.951 & 1.995\\
+		\hline
+			524288 & 23990990684 & 12323090580 & 398251576 & 299541500 & 1.946 & 1.329\\
+		\hline
+			1048576 & 50408173440 & 26217339456 & 792920300 & 395143060 & 1.922 & 2.006\\
+		\hline
+			2097152 & 105680965696 & 54178541700 & 1578620280 & 793110860 & 1.950 & 1.990\\
+		\hline
+			4194304 & 221064067796 & 113389632780 & 3176314036 & 2371198400 & 1.949 & 1.339\\
+		\hline
+	\end{tabular}
+\end{center}
+
+	\begin{center}
+	    \includegraphics[height=8cm]{images/i7-vectorsum-sorting.png}
+	\end{center}
+
+	Podemos observar aqui que en arquitecturas mas nuevas de intel, se va mejorando la performance promedio obtenida, cada vez mas cercana a duplicar la performance single core, a pesar de esto, los accesos a memoria siguien siendo un problema en algunos casos.
+
+\subsubsection{Intel® Core™ i5-2500K Processor - Sorting}
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline	
+			Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+		\hline
+			2 & 15384 & 24580 & 0.625\\
+		\hline
+			4 & 31660 & 33112 & 0.956\\
+		\hline
+			8 & 74324 & 53544 & 1.388\\
+		\hline
+			16 & 171640 & 100236 & 1.712\\
+		\hline
+			32 & 406144 & 216452 & 1.876\\
+		\hline
+			64 & 932468 & 458840 & 2.032\\
+		\hline
+			128 & 2110364 & 1100608 & 1.917\\
+		\hline
+			256 & 4475012 & 2502924 & 1.787\\
+		\hline
+			512 & 9904452 & 5447160 & 1.818\\
+		\hline
+			1024 & 21732200 & 12102956 & 1.795\\
+		\hline
+			2048 & 47346996 & 26551652 & 1.783\\
+		\hline
+			4096 & 102885844 & 58287424 & 1.765\\
+		\hline
+			8192 & 222250916 & 120969120 & 1.837\\
+		\hline
+			16384 & 476876272 & 258581740 & 1.844\\
+		\hline
+			32768 & 1019406688 & 548013260 & 1.860\\
+		\hline
+			65536 & 2173616224 & 1186136300 & 1.832\\
+		\hline
+			131072 & 4633428528 & 2471420552 & 1.874\\
+		\hline
+			262144 & 9056811460 & 5190092924 & 1.745\\
+		\hline
+			524288 & 20854472344 & 10876582315 & 1.917\\
+		\hline
+			1048576 & 43923320368 & 23475758752 & 1.871\\
+		\hline
+			2097152 & 94551848940 & 49553049284 & 1.908\\
+		\hline
+			4194304 & 198157210936 & 103593610452 & 1.912\\
+		\hline
+	\end{tabular}
+\end{center}
+	\begin{center}
+	    \includegraphics[height=6cm]{images/i5_sorting.png}
+	\end{center}
+
+	Dado que este procesador es cercano al i7, podemos observar una performance similar respecto a los ratios de mejora en multiprocesamiento, tanto en los ordenamientos, como en la modicación de vectores en al siguiente sección.
+
+\subsubsection{Intel® Core™ i5-2500K Processor - Vector modification}
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline	
+			Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+		\hline
+			2 & 3544 & 6900 & 0.513\\
+		\hline
+			4 & 5288 & 7280 & 0.726\\
+		\hline
+			8 & 7808 & 9868 & 0.791\\
+		\hline
+			16 & 13296 & 12132 & 1.095\\
+		\hline
+			32 & 23920 & 16980 & 1.408\\
+		\hline
+			64 & 47044 & 32276 & 1.457\\
+		\hline
+			128 & 92228 & 52192 & 1.767\\
+		\hline
+			256 & 182716 & 105168 & 1.737\\
+		\hline
+			512 & 363804 & 205808 & 1.767\\
+		\hline
+			1024 & 716228 & 394484 & 1.815\\
+		\hline
+			2048 & 1433180 & 786560 & 1.822\\
+		\hline
+			4096 & 2870572 & 1513800 & 1.896\\
+		\hline
+			8192 & 5694568 & 2914168 & 1.954\\
+		\hline
+			16384 & 11378960 & 5836656 & 1.949\\
+		\hline
+			32768 & 22432852 & 16351152 & 1.371\\
+		\hline
+			65536 & 45314096 & 22864312 & 1.981\\
+		\hline
+			131072 & 90536832 & 65673712 & 1.378\\
+		\hline
+			262144 & 181141232 & 91528392 & 1.979\\
+		\hline
+			524288 & 362184776 & 262148544 & 1.381\\
+		\hline
+			1048576 & 724287244 & 530532932 & 1.365\\
+		\hline
+			2097152 & 1448749484 & 1061714556 & 1.364\\
+		\hline
+			4194304 & 2897714296 & 1462866292 & 1.980\\
+		\hline
+	\end{tabular}
+\end{center}
+	\begin{center}
+	    \includegraphics[height=6cm]{images/i5_vector_sum.png}
+	\end{center}
+
+\subsubsection{Intel® Core™2 Quad Processor Q6600 Sorting}
+\begin{center}
+\begin{tabular}{|c|c|c|c|}
+	\hline	
+		Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+	\hline
+		2 & 6885 & 16218 & 0.424\\
+	\hline
+		4 & 13277 & 18530 & 0.716\\
+	\hline
+		8 & 32011 & 30183 & 1.060\\
+	\hline
+		16 & 76364 & 56958 & 1.340\\
+	\hline
+		32 & 181024 & 120487 & 1.502\\
+	\hline
+		64 & 415990 & 252671 & 1.646\\
+	\hline
+		128 & 949399 & 560303 & 1.694\\
+	\hline
+		256 & 2121048 & 1218075 & 1.741\\
+	\hline
+		512 & 4742838 & 2604884 & 1.820\\
+	\hline
+		1024 & 10433809 & 5599078 & 1.863\\
+	\hline
+		2048 & 22765235 & 12013475 & 1.894\\
+	\hline
+		4096 & 49466056 & 25624066 & 1.930\\
+	\hline
+		8192 & 107050318 & 54191427 & 1.975\\
+	\hline
+		16384 & 230695245 & 119820352 & 1.925\\
+	\hline
+		32768 & 492634993 & 242634115 & 2.030\\
+	\hline
+		65536 & 1054223219 & 535990263 & 1.966\\
+	\hline
+		131072 & 2249860461 & 1087838729 & 2.068\\
+	\hline
+		262144 & 4773926137 & 2274182829 & 2.099\\
+	\hline
+		524288 & 10087422167 & 4892424806 & 2.061\\
+	\hline
+		1048576 & 21270642148 & 10335385475 & 2.058\\
+	\hline
+		2097152 & 44667373988 & 21181628542 & 2.108\\
+	\hline
+		4194304 & 93526794057 & 44040620699 & 2.123\\
+	\hline
+\end{tabular}
+\end{center}
+
+	\begin{center}
+	    \includegraphics[height=6cm]{images/core2quad_sorting.png}
+	\end{center}
+
+	Esta arquitectura, a pesar de ser mas antigua de los ix, nos muestra una buena performance utilizando multicore, de aproximadamente el doble, la mejora respecto de la cantidad de elementos en aumento es casi instantanea, a partir de 8 elementos.
+
+\subsubsection{Intel® Core™2 Quad Processor Q6600 Vector modification}
+\begin{center}
+	\begin{tabular}{|c|c|c|c|}
+		\hline	
+			Elements & MonoCore Ticks & DualCore Ticks & MonoCore Ticks/DualCore Ticks\\
+		\hline
+				2 & 1717 & 5695 & 0.301\\
+		\hline
+				4 & 1938 & 6945 & 0.279\\
+		\hline
+				8 & 2456 & 6945 & 0.353\\
+		\hline
+				16 & 5491 & 9826 & 0.558\\
+		\hline
+				32 & 13745 & 13515 & 1.017\\
+		\hline
+				64 & 28016 & 18309 & 1.530\\
+		\hline
+				128 & 56151 & 32266 & 1.740\\
+		\hline
+				256 & 115379 & 68434 & 1.685\\
+		\hline
+				512 & 231107 & 150314 & 1.537\\
+		\hline
+				1024 & 459255 & 307930 & 1.491\\
+		\hline
+				2048 & 918060 & 623645 & 1.472\\
+		\hline
+				4096 & 1835176 & 1292867 & 1.419\\
+		\hline
+				8192 & 3682583 & 2606517 & 1.412\\
+		\hline
+				16384 & 7390283 & 5332679 & 1.385\\
+		\hline
+				32768 & 14743522 & 10669702 & 1.381\\
+		\hline
+				65536 & 29898164 & 20515192 & 1.457\\
+		\hline
+				131072 & 59790649 & 40836465 & 1.464\\
+		\hline
+				262144 & 119581808 & 83774122 & 1.427\\
+		\hline
+				524288 & 239160938 & 167648356 & 1.426\\
+		\hline
+				1048576 & 478114256 & 332301831 & 1.438\\
+		\hline
+				2097152 & 957119720 & 661399399 & 1.447\\
+		\hline
+				4194304 & 1913099785 & 1352226444 & 1.414\\
+		\hline
+	\end{tabular}
+\end{center}
+	\begin{center}
+	    \includegraphics[height=6cm]{images/core2quad_sum.png}
+	\end{center}
+
+	Los accesos a memoria, a los cuales compiten los 2 cores, afectan el rendimiento, aunque utilizar dos cores sigue dando aproximadamente un 40\% de mejoría.
+	
+\subsubsection{Intel® Pentium® Processor T4200 - Sorting usando Inter-processor interrupts}
+
+Para intentar reducir los accesos a memoria, implementamos la sincronización entre núcleos mediante interrupciones entre procesadores en lugar de realizar espera activa a memoria. Los resultados fueron curiosos, dado que dió peor la performance respecto a la sincronización con variables en memoria RAM. Creemos que esto se debe a las velocidades del bus de memoria y el bus de sistema y la memoria caché.
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline	
+			Elements & Sort Single & Sort Dual Mem & Sort Dual Ipi & Ratio M/I & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 26336 & 55088 & 123712 & 0.445  & 0.478  & 0.212 \\
+		\hline
+			4 & 51136 & 70896 & 164496 & 0.430  & 0.721  & 0.310 \\
+		\hline
+			8 & 114832 & 108224 & 272560 & 0.397  & 1.061 & 0.421 \\
+		\hline
+			16 & 268832 & 213984 & 363696 & 0.588  & 1.256 & 0.739 \\
+		\hline
+			32 & 613520 & 455376 & 571488 & 0.796  & 1.347 & 1.073 \\
+		\hline
+			64 & 1429152 & 951840 & 1063760 & 0.894  & 1.501 & 1.343 \\
+		\hline
+			128 & 2524576 & 2182176 & 2280608 & 0.956  & 1.156 & 1.106 \\
+		\hline
+			256 & 7816560 & 4642912 & 4782544 & 0.970  & 1.683 & 1.634 \\
+		\hline
+			512 & 17833216 & 9749392 & 10258304 & 0.950  & 1.829 & 1.738 \\
+		\hline
+			1024 & 37187824 & 20810160 & 22367904 & 0.930 & 1.787 & 1.662 \\
+		\hline
+			2048 & 79244560 & 44773584 & 49540224 & 0.903  & 1.769 & 1.599 \\
+		\hline
+			4096 & 171885520 & 95302656 & 107242560 & 0.888  & 1.803 & 1.602 \\
+		\hline
+			8192 & 369363168 & 191632704 & 221836560 & 0.863  & 1.927 & 1.665 \\
+		\hline
+			16384 & 781349776 & 401270912 & 473079168 & 0.848  & 1.947 & 1.651 \\
+		\hline
+			32768 & 1670361776 & 882252640 & 1065852080 & 0.827  & 1.893 & 1.567 \\
+		\hline
+			65536 & 3568050464 & 1873549072 & 2277199056 & 0.822  & 1.904 & 1.566 \\
+		\hline
+			131072 & 7538692864 & 3718695296 & 4572378768 & 0.813  & 2.027 & 1.648 \\
+		\hline
+			262144 & 15870953952 & 7744017984 & 9611314224 & 0.805  & 2.049 & 1.651 \\
+		\hline
+			524288 & 33266571168 & 16705027472 & 21105461872 & 0.791  & 1.991 & 1.576 \\
+		\hline
+			1048576 & 69926858336 & 34701409440 & 44269003616 & 0.783  & 2.015 & 1.579 \\
+		\hline
+			2097152 & 146290056320 & 72153753040 & 92620047520 & 0.779  & 2.027 & 1.579 \\
+		\hline
+			4194304 & 305621530000 & 149990136352 & 193768043584 & 0.774  & 2.037 & 1.577 \\
+		\hline
+	\end{tabular}
+\end{center}
+
+	\begin{center}
+	    \includegraphics[height=8.5cm]{images/pentium_d_mem_ipi.png}
+	\end{center}
+
+	\begin{center}
+	    \includegraphics[height=8.5cm]{images/pentium_d_gain_mono_mem_mono_ipi.png}
+	\end{center}
+
+\subsubsection{Intel® Pentium® Processor G2030 - Sorting usando Inter-processor interrupts}
+
+TODO: TEST IT!
