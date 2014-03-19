@@ -258,6 +258,7 @@ void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
 
                 *done = 0;
                 *start = 1;
+
                 for (Pair = Group; Pair < N / 2; Pair += Jump) {
                     //   Match position
                     Match = Pair + Step;
@@ -269,6 +270,7 @@ void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
                     Data[Pair] = operatorADD(&Product, &(Data[Pair]));
 
                 }
+
                 active_wait(*done);
                 *done = 0;
             }

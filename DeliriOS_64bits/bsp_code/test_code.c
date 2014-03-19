@@ -214,6 +214,7 @@ bool verifiy_fft(Complex* Input, Complex* Output, uint32_t N){
     return true;
 }
 
+#define MAX_FFT_LEN  (32*1024)
 void test_fft_mono(){
 	clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
@@ -224,7 +225,7 @@ void test_fft_mono(){
     uint8_t col = 0;
 
     print_string("fft monocore", line++, col);
-    for (*len = 2; *len < (32*1024); *len *= 2) {
+    for (*len = 2; *len < MAX_FFT_LEN; *len *= 2) {
         generate_fft_array(*len);
         MEDIR_TIEMPO_START(start);
 		Inverse_IO(Input,Output,*len,TRUE);
@@ -247,7 +248,7 @@ void test_fft_dual_mem(){
     uint8_t col = 30;
 
     print_string("fft dualcore", line++, col);
-    for (*len = 2; *len < (32*1024); *len *= 2) {
+    for (*len = 2; *len < MAX_FFT_LEN; *len *= 2) {
         generate_fft_array(*len);
         MEDIR_TIEMPO_START(start);
 		Inverse_IO_Dual(Input,Output,*len,TRUE);

@@ -113,13 +113,16 @@ void ap_jump()  //prueba para ipis
 void inner_fft_loop()
 {
 
+    unsigned int Step;
+    unsigned int Jump;
+    unsigned int Group;
+
     uint8_t *start = (uint8_t *) start_address;
     uint8_t *done = (uint8_t *) done_address;
     uint8_t *sleep = (uint8_t *) sleep_address;
     Complex *Data = (Complex *) array_start_address;
-    *start = 0;
-    *done = 0;
 
+    *start = 0;
     active_wait(*sleep) {
         active_wait(*start) {
             if (*sleep) {
@@ -130,23 +133,49 @@ void inner_fft_loop()
         unsigned int Match;
         unsigned int Pair;
 
-        unsigned int Step = *((unsigned int *) step_address);
-        unsigned int Jump = *((unsigned int *) jump_address);
-        unsigned int Group = *((unsigned int *) group_address);
+        Step = *((unsigned int *) step_address);
+        Jump = *((unsigned int *) jump_address);
+        Group = *((unsigned int *) group_address);
         Complex Factor = *((Complex *) factor_address);
         uint32_t N = *((uint32_t *) array_len_address);
 
-        for (Pair = Group + N/2; Pair < N; Pair += Jump) {
-                //   Match position
-                Match = Pair + Step;
-                //   Second term of two-point transform
-                Complex Product = operatorMUL(&Factor, &(Data[Match]));
-                //   Transform for fi + pi
-                Data[Match] = operatorSUB(&(Data[Pair]), &Product);
-                //   Transform for fi
-                Data[Pair] = operatorADD(&Product, &(Data[Pair]));
+        for (Pair = (Group + N / 2); Pair < N; Pair += Jump) {
+            //   Match position
+            Match = Pair + Step;
+            //   Second term of two-point transform
+            Complex Product = operatorMUL(&Factor, &(Data[Match]));
+            //   Transform for fi + pi
+            Data[Match] = operatorSUB(&(Data[Pair]), &Product);
+            //   Transform for fi
+            Data[Pair] = operatorADD(&Product, &(Data[Pair]));
         }
         *done = 1;
     }
+}
 
+
+void inner_fft_loop_int()
+{
+    Complex *Data = (Complex *) array_start_address;
+
+    unsigned int Match;
+    unsigned int Pair;
+
+    unsigned int Step = *((unsigned int *) step_address);
+    unsigned int Jump = *((unsigned int *) jump_address);
+    unsigned int Group = *((unsigned int *) group_address);
+    Complex Factor = *((Complex *) factor_address);
+    uint32_t N = *((uint32_t *) array_len_address);
+
+    for (Pair = Group + N / 2; Pair < N; Pair += Jump) {
+        //   Match position
+        Match = Pair + Step;
+        //   Second term of two-point transform
+        Complex Product = operatorMUL(&Factor, &(Data[Match]));
+        //   Transform for fi + pi
+        Data[Match] = operatorSUB(&(Data[Pair]), &Product);
+        //   Transform for fi
+        Data[Pair] = operatorADD(&Product, &(Data[Pair]));
+
+    }
 }
