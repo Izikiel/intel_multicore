@@ -11,6 +11,7 @@ make clean
 make
 popd
 pushd ../ap_code
+./update_link_point.py
 make clean
 make
 popd
