@@ -28,8 +28,5 @@ def modify_linking_point():
 	return
 
 
-
-
-
-
-modify_linking_point()
+if __name__ == '__main__':
+	modify_linking_point()
