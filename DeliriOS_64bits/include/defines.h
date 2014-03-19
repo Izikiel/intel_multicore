@@ -56,6 +56,12 @@
 
 #define time_measures_address 0x200240
 
+//variables fft
+#define group_address 	0x200300
+#define step_address 	0x200340
+#define jump_address 	0x200380
+#define factor_address  0x2003c0
+
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
 #define TEN_MEGA 0xa00000

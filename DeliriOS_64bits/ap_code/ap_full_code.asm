@@ -13,11 +13,13 @@ extern idt_inicializar
 ;; STACK
 extern core_stack_ptrs
 
-;; Sorting
+;; Tests
 extern sort_ap
 
 extern sum_vector_ap
 
+extern inner_fft_loop
+;; Multicore
 extern turn_on_apic_ap
 
 %macro get_lapic_id 0  ; para distinguir los procesadores entre si
@@ -100,6 +102,16 @@ long_mode:
     lidt [IDT_DESC]
     call idt_inicializar
     call turn_on_apic_ap
+
+enable_sse: ;Taken from osdev
+    mov rax, cr0
+    and ax, 0xFFFB      ;clear coprocessor emulation CR0.EM
+    or ax, 0x2          ;set coprocessor monitoring  CR0.MP
+    mov cr0, rax
+    mov rax, cr4
+    or ax, 3 << 9       ;set CR4.OSFXSR and CR4.OSXMMEXCPT at the same time
+    mov cr4, rax
+
     sti
 
     ;aumento la cantidad de cores en 1 lockeando
@@ -114,6 +126,9 @@ long_mode:
         call sort_ap
 
         ;mov byte [sleep], 0
+
+    ;do_fft:
+       ;call inner_fft_loop
 
     ;do_sum:
         ;call sum_vector_ap
