@@ -108,7 +108,7 @@ void test_2_cores()
     // uint64_t *time_measures = (uint64_t *) time_measures_address;
 
     // uint8_t col[6] = {0, 13, 26, 39, 52, 65};
-    uint8_t col  = 20;
+    uint8_t col  = 30;
     uint8_t line = 0;
     print_string("Test 2 cores", line++, col);
     // print_string("Sort", line, col[0]);
@@ -149,7 +149,7 @@ void test_ipi_cores()
     // uint64_t *time_measures = (uint64_t *) time_measures_address;
 
     // uint8_t col[6] = {0, 13, 26, 39, 52, 65};
-    uint8_t col = 40;
+    uint8_t col = 50;
     uint8_t line = 0;
     print_string("Test Dual Ipis", line++, col);
 
