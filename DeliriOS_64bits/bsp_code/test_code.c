@@ -8,7 +8,7 @@
 #include "fft.h"
 #include "complex.h"
 
-#define max_len (18*1024*1024)
+#define max_len (8*1024*1024)
 
 uint64_t start, stop;
 
@@ -118,7 +118,7 @@ void test_2_cores()
     // print_string("Copy", line, col[4]);
     // print_string("Sync", line, col[5]);
 
-    for (*len = 8; *len < max_len; *len *= 2) {
+    for (*len = 2; *len < max_len; *len *= 2) {
         uint32_t seed = 13214;
         generate_global_array(seed, *len);
         MEDIR_TIEMPO_START(start);
