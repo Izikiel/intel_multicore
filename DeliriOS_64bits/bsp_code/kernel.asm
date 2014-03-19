@@ -38,7 +38,6 @@ extern test_2_cores
 extern test_ipi_cores
 extern test_sum_vector1
 extern test_sum_vector2
-extern test_fft_dual_mem
 ;test basico para ver q andan las ipis
 extern make_ap_jump
 
@@ -47,6 +46,8 @@ extern sin
 
 ;test fft
 extern test_fft_mono
+extern test_fft_dual_mem
+extern test_half_fft
 
 ;Screen
 extern clear_screen
@@ -423,8 +424,10 @@ tests:
     call test_2_cores
     call test_ipi_cores
 
- ;   call test_fft_mono
-;    call test_fft_dual_mem
+    ;call test_fft_mono
+    ;call test_fft_dual_mem
+
+    ;call test_half_fft
 
     ;call test_sum_vector1
     ;call test_sum_vector2

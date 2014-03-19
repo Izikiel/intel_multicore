@@ -238,26 +238,26 @@ void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
         //   Iteration through groups of different transform factor
         for (Group = 0; Group < Step; ++(Group)) {
 
-            if (Step >= N / PROCESSORS) {
-                for (Pair = Group; Pair < N; Pair += Jump) {
-                    //   Match position
-                    Match = Pair + Step;
-                    //   Second term of two-point transform
-                    Product = operatorMUL(&Factor, &(Data[Match]));
-                    //   Transform for fi + pi
-                    Data[Match] = operatorSUB(&(Data[Pair]), &Product);
-                    //   Transform for fi
-                    Data[Pair] = operatorADD(&Product, &(Data[Pair]));
-                }
-            } else {
+            // if (Step >= N / PROCESSORS) {
+            //     for (Pair = Group; Pair < N; Pair += Jump) {
+            //         //   Match position
+            //         Match = Pair + Step;
+            //         //   Second term of two-point transform
+            //         Product = operatorMUL(&Factor, &(Data[Match]));
+            //         //   Transform for fi + pi
+            //         Data[Match] = operatorSUB(&(Data[Pair]), &Product);
+            //         //   Transform for fi
+            //         Data[Pair] = operatorADD(&Product, &(Data[Pair]));
+            //     }
+            // } else {
                 //Iteration within group
                 *Jump_G = Jump;
                 *Group_G = Group;
                 *Step_G = Step;
                 *Factor_G = Factor;
 
-                *done = 0;
-                *start = 1;
+                // *done = 0;
+                // *start = 1;
 
                 for (Pair = Group; Pair < N / 2; Pair += Jump) {
                     //   Match position
@@ -271,9 +271,9 @@ void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
 
                 }
 
-                active_wait(*done);
-                *done = 0;
-            }
+                // active_wait(*done);
+                // *done = 0;
+            // }
 
             //   Successive transform factor via trigonometric recurrence
             tempMul = operatorMUL(&Multiplier, &Factor);

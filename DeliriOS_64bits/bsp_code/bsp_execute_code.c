@@ -43,7 +43,7 @@ void sort_bsp()
 
     active_wait(*done);
     *done = 0;
-    *start = 0;
+
     *start_merge = 1;
     limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
 
@@ -119,6 +119,7 @@ void make_ap_jump(){
 void send_ipi_ap(uint32_t interrupt){
     intr_command_register icr;
     initialize_ipi_options(&icr, FIXED, interrupt, 1);
+    icr.destination_shorthand = 3;
     send_ipi(&icr);
     wait_for_ipi_reception();
 }

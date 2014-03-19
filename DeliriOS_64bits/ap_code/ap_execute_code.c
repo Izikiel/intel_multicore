@@ -16,12 +16,14 @@ void sort_ap()
     uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
 
     //waiting for go!
+    *sleep = 0;
     active_wait(*sleep) {
         active_wait(*start) {
             if (*sleep) {
                 return;
             }
         }
+        *start = 0;
 
         heapsort(array + *len / 2, *len / 2);
         *done = 1;
@@ -36,7 +38,6 @@ void sort_ap()
         copy(array, *len / 2, ap_temp, 0, *len / 2);
         *finish_copy = 1;
     }
-
 }
 
 void sum_vector_ap()

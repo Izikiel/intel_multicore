@@ -70,7 +70,7 @@
 #define array_start_address temp_address + MAX_PROCESSOR * TEN_MEGA
 
 #ifndef active_wait
-#define active_wait(switch) for(;!(switch);)
+#define active_wait(switch) while(!(switch))
 #endif
 
 #endif  /* !__DEFINES_H__ */

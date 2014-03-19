@@ -186,35 +186,39 @@ void test_ipi_cores()
     // *sleep = 1;
 }
 
-bool verifiy_fft(Complex* Input, Complex* Output, uint32_t N){
-    Complex *Output2 = (Complex *) (temp_address + TEN_MEGA);
-    Forward_IO(Output,Output2,N);
+bool cmp_complex_arrays(Complex* a, Complex* b, uint32_t N, double error){
     double diff;
-    double error = 0.1;
     for (uint32_t i = 0; i < N; ++i)
     {
 
-    	Input[i].m_re = Input[i].m_re < 0 ? -Input[i].m_re : Input[i].m_re;
-    	Output2[i].m_re = Output2[i].m_re < 0 ? -Output2[i].m_re : Output2[i].m_re;
+        a[i].m_re = a[i].m_re < 0 ? -a[i].m_re : a[i].m_re;
+        b[i].m_re = b[i].m_re < 0 ? -b[i].m_re : b[i].m_re;
 
-    	diff = Input[i].m_re > Output2[i].m_re ? Input[i].m_re - Output2[i].m_re : 	Output2[i].m_re - Input[i].m_re;
+        diff = a[i].m_re > b[i].m_re ? a[i].m_re - b[i].m_re :  b[i].m_re - a[i].m_re;
 
-    	if (diff > error)
-    	{
-    		return false;
-    	}
+        if (diff > error)
+        {
+            return false;
+        }
 
-    	Input[i].m_im = Input[i].m_im < 0 ? -Input[i].m_im : Input[i].m_im;
-    	Output2[i].m_im = Output2[i].m_im < 0 ? -Output2[i].m_im : Output2[i].m_im;
+        a[i].m_im = a[i].m_im < 0 ? -a[i].m_im : a[i].m_im;
+        b[i].m_im = b[i].m_im < 0 ? -b[i].m_im : b[i].m_im;
 
-    	diff = Input[i].m_im > Output2[i].m_im ? Input[i].m_im - Output2[i].m_im : 	Output2[i].m_im - Input[i].m_im;
+        diff = a[i].m_im > b[i].m_im ? a[i].m_im - b[i].m_im :  b[i].m_im - a[i].m_im;
 
-    	if (diff > error)
-    	{
-    		return false;
-    	}
+        if (diff > error)
+        {
+            return false;
+        }
     }
     return true;
+}
+
+bool verifiy_fft(Complex* Input, Complex* Output, uint32_t N){
+    Complex *Output2 = (Complex *) (temp_address + TEN_MEGA);
+    Forward_IO(Output,Output2,N);
+    double error = 0.1;
+    return cmp_complex_arrays(Input, Output2, N, error);
 }
 
 #define MAX_FFT_LEN  (32*1024)
@@ -263,6 +267,31 @@ void test_fft_dual_mem(){
         }
     }
     print_string("Done! :D", ++line, col);
+}
+
+void test_half_fft(){
+    clear_screen();
+    uint32_t *len = (uint32_t *) array_len_address;
+    Complex *Input = (Complex *) array_start_address;
+    Complex *Output = (Complex *) temp_address;
+    Complex *Output2 = (Complex *) (temp_address + TEN_MEGA);
+
+    uint8_t line = 0;
+    uint8_t col = 30;
+
+    *len = 1024;
+
+    generate_fft_array(*len);
+    Inverse_IO(Input,Output,*len,TRUE);
+    Inverse_IO_Dual(Input,Output2,*len,TRUE);
+
+    if (cmp_complex_arrays(Output, Output2, *len/2, 0.1)){
+        print_string("They are equal! :O", line, col);
+    }
+    else{
+        print_string("Not equal :(", line, col);
+    }
+
 }
 
 // {
