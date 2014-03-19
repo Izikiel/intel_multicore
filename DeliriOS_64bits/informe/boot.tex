@@ -1,10 +1,10 @@
     \subsection{Estructura de carpetas: Compilación, Linkeo y Scripts}
     \begin{itemize}
-	    \item \textbf{ap code: } Contiene el código de los Application processors, tanto de inicialización desde modo protegido a modo nativo x64 como parte del código de los algoritmos implementados para los experimentos.
-		\item \textbf{ap startup code: } Contiene el código de inicializacion de modo real a modo protegido de los Application processors
-		\item \textbf{bsp code: } Contiene el código de booteo del kernel principal de nivel 2, parte del código de los algoritmos implementados, y el encendido por parte del BSP de los Application Processors.
-		\item \textbf{common code: } Contiene el código común al Bootstrap Processor y los Application Processors.
-		\item \textbf{grub init: } Contiene scripts y archivos de configuracion de grub, en la subcarpeta src se encuentra el primer nivel de booteo que realiza el pasaje entre la máquina en estado mencionado en la especificación multiboot al segundo nivel de booteo del BSP.
+	    \item \textbf{ap\_code: } Contiene el código de los Application processors, tanto de inicialización desde modo protegido a modo nativo x64 como parte del código de los algoritmos implementados para los experimentos.
+		\item \textbf{ap\_startup\_code: } Contiene el código de inicializacion de modo real a modo protegido de los Application processors
+		\item \textbf{bsp\_code: } Contiene el código de booteo del kernel principal de nivel 2, parte del código de los algoritmos implementados, y el encendido por parte del BSP de los Application Processors.
+		\item \textbf{common\_code: } Contiene el código común al Bootstrap Processor y los Application Processors.
+		\item \textbf{grub\_init: } Contiene scripts y archivos de configuracion de grub, en la subcarpeta src se encuentra el primer nivel de booteo que realiza el pasaje entre la máquina en estado mencionado en la especificación multiboot al segundo nivel de booteo del BSP.
 		\item \textbf{run.sh: } Script para compilación y distribución del tp.
 		\item \textbf{macros: } Esta carpeta contiene macros utilizadas en el código.
 		\item \textbf{informe: } Contiene el informe del trabajo práctico en formato Latex y PDF.

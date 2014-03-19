@@ -1,4 +1,32 @@
 \subsection{Multicore: encendido de los AP's}
-    \subsubsection{TODO: Ingrese cosas de inicializacion multicore aqui.}
 
-    \textbf{Nota: } Dado que se realizan experimentos con un máximo de 2 cores, se limita el encendido de los Application Processors a uno, que junto con el Bootstrap Processor son 2 núcleos.
+Una vez inicializado el bsp, se procede a inicializar el resto de los procesadores del sistema.\\
+Para lograr esto, primero es necesario que encontrar una estructura de datos llamada MP Floating Pointer Structure, que contiene la información sobre: los demas procesadores; apic (advanced programable interrupt controller); y el I/O apic (análogo al apic, pero se encarga además de rutear interrupciones de input/output a los lapic's).
+
+\subsubsection{Búsqueda de la estructura MP Floating Pointer}
+Esta estructura puede estar en diferentes lugares de memoria, inicialmente se debe realizar la búsqueda dentro del primer kilobyte de la ebda (extended bios data area), de no encontrarse allí, se procede a buscar entre los 639K-640K de memoria.
+Para encontrar la tabla se busca dentro de esas areas de memoria la firma de la MP Floating Pointer Structure, la cual es "\_MP\_".
+
+\subsubsection{Comprobación de checksum de la estructura}
+Una vez encontrada una estructura con esa firma, es necesario realizar una comprobacion de checksum para verificar que la misma sea válida.
+De no ser válida la estructura encontrada, se continúa buscando dentro de las areas de memoria previamente mencionadas, al agotarse las áreas mencionadas sin éxito en la buqueda, se concluye que el sistema no soporta multicore.
+
+\subsubsection{Habilitacion de ICMR y Local APIC}
+El sistema luego es configurado usando la MP Configuration Table, extraída de la MP Floating Pointer Structure, que contiene en diferentes entradas la información acerca de los diferentes dispositivos utilizados en multicore.
+Una vez parseadas estas entradas, si la maquina tiene ICMR, se habilita ese registro, y luego se procede a inicializar el apic local del bsp, seteando el vector de interrupciones espurias (interrupciones por ruido de hardware, etc) y habilitando el bit de enable dentro de los registros del local apic. (Registros del local apic especificados en Table 10-1 Local APIC Register Address Map, manual 3 de intel capitulo 10).
+
+\subsubsection{Inicializacion de los AP's}
+
+Una vez finalizada la inicializacion del local apic, se debe pedir a la BIOS que setee el warm reset vector a la dirección donde esta localizado el inicio de modo real de los aps$(0x2000)$. Luego de este paso, se procede a encender los aps usando la información obtenida por la MP Configuration Table.
+
+El proceso de encendido los aps consiste en preparar 3 estructuras de interrupt command register (registro del apic usado para ipis) para luego enviar las ipis especificas de inicio. El primer icr se setea con el delivery mode de INIT, que sea una interrupción por nivel y con la dirección del ap a iniciar. El segundo icr se setea con el delivery mode de INIT\_DASSERT, que sea una interrupción por flanco, y que sea enviado a todos los procesadores. El tercer icr se setea con el delivery mode STARTUP, la dirección fisica de la página de inicio de ejecución del ap shifteado 12 a derecha, y la dirección del ap.
+
+Luego de tener listos los icr, se procede a mandar las ipis de INIT e INIT\_DASSERT, luego se espera unos 10 milisegundos, verificando previamente que las ipis se hayan enviado correctamente. Luego de la espera, se procede a enviar la ipi de STARTUP, se espera 10 ms, se verifica que se haya enviado correctamente, se la vuelve a enviar, se realiza otra espera de 10 ms, y se vuelve a verificar.
+
+Una vez terminado este proceso, se puede asumir que el ap fue encendido, y se continúa el encendido el resto de los aps encontrados en la MP Configuration Table.\\
+
+\textbf{Nota 1: } El proceso de inicializacion de los aps se encuentra especificado en detalle en el manual de intel volumen 3, capitulo 8, subsección 4, MULTIPLE-PROCESSOR (MP) INITIALIZATION.
+
+\textbf{Nota 2: } Dado que se realizan experimentos con un máximo de 2 cores, se limita el encendido de los Application Processors a uno, que junto con el Bootstrap Processor son 2 núcleos.\\
+
+\textbf{Nota 3: } Los identificadores de nucleo no necesariamente son valores numéricos consecutivos.

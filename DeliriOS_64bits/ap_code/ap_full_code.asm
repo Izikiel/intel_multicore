@@ -122,13 +122,13 @@ enable_sse: ;Taken from osdev
     add rax, 10
     imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, rax, 0
 
-    ;do_sort:
-        ;call sort_ap
+    do_sort:
+        call sort_ap
 
         ;mov byte [sleep], 0
 
-    do_fft:
-       call inner_fft_loop
+    ;do_fft:
+       ;call inner_fft_loop
 
     ;do_sum:
         ;call sum_vector_ap
