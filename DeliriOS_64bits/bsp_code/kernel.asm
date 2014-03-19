@@ -390,7 +390,7 @@ loop_64g_structure:
     ;inicializamos multicore
 
     ; inicializamos a 0 variables de multicore
-    mov rcx, 0x800>>3 ; divido por 8
+    mov rcx, 0x8000>>3 ; divido por 8
     mov rax, static_variable_area
     xor rdx, rdx
     clean_variables:
