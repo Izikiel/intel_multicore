@@ -96,7 +96,7 @@ void test_1_core()
             print_string("bad_sort :(", line++, col);
         }
     }
-    print_string("Done! :D", ++line, col);
+    print_string("Done! :D", line, col);
 
     //breakpoint
 }
@@ -149,7 +149,7 @@ void test_ipi_cores()
     // uint64_t *time_measures = (uint64_t *) time_measures_address;
 
     // uint8_t col[6] = {0, 13, 26, 39, 52, 65};
-    uint8_t col = 50;
+    uint8_t col = 60;
     uint8_t line = 0;
     print_string("Test Dual Ipis", line++, col);
 
