@@ -11,3 +11,4 @@ void merge_ap_int();
 void copy_ap_int();
 void ap_jump();
 void inner_fft_loop();
+void inner_fft_loop_int();

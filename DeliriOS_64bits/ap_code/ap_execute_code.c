@@ -121,7 +121,7 @@ void inner_fft_loop()
     uint8_t *start = (uint8_t *) start_address;
     uint8_t *done = (uint8_t *) done_address;
     uint8_t *sleep = (uint8_t *) sleep_address;
-    Complex *Data = (Complex *) array_start_address;
+    Complex *Data = (Complex *) temp_address;
 
     *start = 0;
     active_wait(*sleep) {
@@ -157,7 +157,7 @@ void inner_fft_loop()
 
 void inner_fft_loop_int()
 {
-    Complex *Data = (Complex *) array_start_address;
+    Complex *Data = (Complex *) temp_address;
 
     unsigned int Match;
     unsigned int Pair;
@@ -179,4 +179,5 @@ void inner_fft_loop_int()
         Data[Pair] = operatorADD(&Product, &(Data[Pair]));
 
     }
+    signal_finished();
 }

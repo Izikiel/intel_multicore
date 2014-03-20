@@ -47,6 +47,7 @@ extern sin
 ;test fft
 extern test_fft_mono
 extern test_fft_dual_mem
+extern test_fft_dual_ipi
 extern test_half_fft
 
 ;Screen
@@ -390,6 +391,7 @@ loop_64g_structure:
     ;inicializamos multicore
 
     ; inicializamos a 0 variables de multicore
+clean_static_variable_area:
     mov rcx, 0x8000>>3 ; divido por 8
     mov rax, static_variable_area
     xor rdx, rdx
@@ -421,13 +423,13 @@ enable_sse: ;Taken from osdev
     ;arrancan las pruebas!
 tests:
 
-    call test_1_core
-    call test_2_cores
-    call test_ipi_cores
+    ;call test_1_core
+    ;call test_2_cores
+    ;call test_ipi_cores
 
-    ;call test_fft_mono
-    ;call test_fft_dual_mem
-
+    call test_fft_mono
+    call test_fft_dual_mem
+    call test_fft_dual_ipi
     ;call test_half_fft
 
     ;call test_sum_vector1

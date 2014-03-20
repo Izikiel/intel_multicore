@@ -17,6 +17,9 @@ extern sort_ap_int
 extern merge_ap_int
 extern copy_ap_int
 
+;; fft
+extern inner_fft_loop_int
+
 extern ap_jump
 
 %define eoi_register_apic 0xFEE000B0
@@ -114,7 +117,7 @@ ISR_GENERIC_HANDLER 20, '#VE Virtualization Exception'
 
 
 set_user_interrupts 21, 39
-set_user_interrupts 43,143
+set_user_interrupts 44,143
 set_user_interrupts 144,256
 
 global _isr39
@@ -149,6 +152,15 @@ _isr42:
     pushaq
     mov rax, 42
     call copy_ap_int
+    popaq
+    interrupt_finished
+    iretq
+
+global _isr43
+_isr43:
+    pushaq
+    mov rax, 43
+    call inner_fft_loop_int
     popaq
     interrupt_finished
     iretq
