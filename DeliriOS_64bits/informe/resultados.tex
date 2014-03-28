@@ -780,4 +780,288 @@ Para intentar reducir los accesos a memoria, implementamos la sincronización en
 
 \subsubsection{Intel® Pentium® Processor G2030 - Sorting usando Inter-processor interrupts}
 
-TODO: TEST IT!
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|c|}
+		\hline	
+			Elements & Sort Single & Sort Dual Mem & Sort Dual Ipi & Ratio M/I & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 15452 & 21896 & 102700 & 0.213 & 0.705 & 0.150\\
+		\hline
+			4 & 29912 & 32196 & 110408 & 0.291 & 0.929 & 0.270\\
+		\hline
+			8 & 71836 & 50516 & 134456 & 0.375 & 1.422 & 0.534\\
+		\hline
+			16 & 169000 & 103400 & 183016 & 0.564 & 1.634 & 0.923\\
+		\hline
+			32 & 397952 & 211700 & 310164 & 0.682 & 1.879 & 1.283\\
+		\hline
+			64 & 916460 & 471424 & 565800 & 0.833 & 1.944 & 1.619\\
+		\hline
+			128 & 2139260 & 1090936 & 1181260 & 0.923 & 1.960 & 1.810\\
+		\hline
+			256 & 4788876 & 2416744 & 2549880 & 0.947 & 1.981 & 1.878\\
+		\hline
+			512 & 10815520 & 5308704 & 5487300 & 0.967 & 2.037 & 1.971\\
+		\hline
+			1024 & 23706116 & 11522124 & 11979292 & 0.961 & 2.057 & 1.978\\
+		\hline
+			2048 & 51881936 & 25373340 & 25050724 & 1.012 & 2.044 & 2.071\\
+		\hline
+			4096 & 112622828 & 56403280 & 57929704 & 0.973 & 1.996 & 1.944\\
+		\hline
+			8192 & 241852140 & 121972712 & 124943688 & 0.976 & 1.982 & 1.935\\
+		\hline
+			16384 & 515303872 & 262110928 & 266906044 & 0.982 & 1.965 & 1.930\\
+		\hline
+			32768 & 1138315716 & 556395036 & 564395308 & 0.985 & 2.045 & 2.016\\
+		\hline
+			65536 & 2328303276 & 1185656408 & 1198435060 & 0.989 & 1.963 & 1.942\\
+		\hline
+			131072 & 5102082740 & 2520384000 & 2552306004 & 0.987 & 2.024 & 1.999\\
+		\hline
+			262144 & 10786122552 & 5146255024 & 5192631012 & 0.991 & 2.095 & 2.077\\
+		\hline
+			524288 & 21983866092 & 10830150400 & 10945820376 & 0.989 & 2.029 & 2.008\\
+		\hline
+			1048576 & 46087236500 & 22837077648 & 23007268768 & 0.992 & 2.018 & 2.003\\
+		\hline
+			2097152 & 97382977980 & 47855259656 & 48355560760 & 0.989 & 2.034 & 2.013\\
+		\hline
+			4194304 & 203101063672 & 100389365112 & 100937254332 & 0.994 & 2.023 & 2.012\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	    \includegraphics[height=8cm]{images/memory_ipis_g2030_sortipi.png}
+	\end{center}
+
+
+\begin{center}
+	    \includegraphics[height=8cm]{images/sort_ipis_g2030.png}
+	\end{center}
+
+
+Dada la velocidad superior del bus de sistema y las nuevas tecnologías de caché de la arquitectura se ve una mejoria respecto al procesador Pentium D T4200 al momento de comparar sincronización entre memoria e ipis. 
+
+\subsubsection{Intel® Pentium® Processor T4200 - FFT Single - FFT Dual Mem - FFT Dual IPI}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline	
+			Elements & FFT Single & FFT Dual Mem & FFT Dual Ipi & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 70832 & 92672 & 94400 & 0.764 & 0.750\\
+		\hline
+			4 & 178464 & 229536 & 284256 & 0.777 & 0.627\\
+		\hline
+			8 & 420560 & 517824 & 671888 & 0.812 & 0.625\\
+		\hline
+			16 & 1247232 & 1132416 & 1502656 & 1.101 & 0.830\\
+		\hline
+			32 & 2860176 & 2475856 & 3286000 & 1.155 & 0.870\\
+		\hline
+			64 & 6449744 & 5451264 & 7063456 & 1.183 & 0.913\\
+		\hline
+			128 & 14460480 & 11873856 & 15290304 & 1.217 & 0.945\\
+		\hline
+			256 & 32076304 & 25889856 & 32869536 & 1.238 & 0.975\\
+		\hline
+			512 & 70559488 & 56002208 & 70211568 & 1.259 & 1.004\\
+		\hline
+			1024 & 154010400 & 120728848 & 149749936 & 1.275 & 1.028\\
+		\hline
+			2048 & 323222368 & 257452224 & 317900272 & 1.255 & 1.016\\
+		\hline
+			4096 & 701196608 & 552926256 & 675095392 & 1.268 & 1.038\\
+		\hline
+			8192 & 1521703040 & 1185646304 & 1429235616 & 1.283 & 1.064\\
+		\hline
+			16384 & 3270511200 & 2522381008 & 3018106480 & 1.296 & 1.083\\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+\begin{center}
+	    \includegraphics[height=8cm]{images/fft_pentiumd.png}
+	\end{center}
+
+	Se obtiene una mejora utilizando dual core a partir de los 16 elementos, culminando en un 30\% de mejora en la máxima cantidad testeada. En esta arquitectura el uso de IPIS no es muy favorable respecto a la sincronización por memoria.
+
+
+\subsubsection{Intel® Core™2 Quad Processor Q6600 - FFT Single - FFT Dual Mem - FFT Dual IPI}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline	
+			Elements & FFT Single & FFT Dual Mem & FFT Dual Ipi & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 28815 & 29427 & 29385 & 0.979 & 0.980\\
+		\hline
+			4 & 72845 & 70329 & 101031 & 1.035 & 0.721\\
+		\hline
+			8 & 173103 & 155848 & 194199 & 1.110 & 0.891\\
+		\hline
+			16 & 404991 & 344539 & 433483 & 1.175 & 0.934\\
+		\hline
+			32 & 924281 & 750856 & 949297 & 1.230 & 0.973\\
+		\hline
+			64 & 2098420 & 1639624 & 2054917 & 1.279 & 1.021\\
+		\hline
+			128 & 4705387 & 3568818 & 4415665 & 1.318 & 1.065\\
+		\hline
+			256 & 10448327 & 7752374 & 9476531 & 1.347 & 1.102\\
+		\hline
+			512 & 23017286 & 16735140 & 20251377 & 1.375 & 1.136\\
+		\hline
+			1024 & 50295528 & 36675672 & 43080728 & 1.371 & 1.167\\
+		\hline
+			2048 & 109147616 & 77031496 & 91376640 & 1.416 & 1.194\\
+		\hline
+			4096 & 235491488 & 165446541 & 193718867 & 1.423 & 1.215\\
+		\hline
+			8192 & 505322288 & 350143806 & 408601570 & 1.443 & 1.236\\
+		\hline
+			16384 & 1080310024 & 740571382 & 860584064 & 1.458 & 1.255\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	    \includegraphics[height=8cm]{images/fft_core2quad.png}
+	\end{center}
+
+Vemos como en esta arquitectura mejora contra la anterior la mejora máxima, de un 46\%. Las ipis todavia no son demasiado favorables, además se observa que el cross-over para la mejora en dual core es casi instantaneo sobre la cantidad de elementos.
+
+\subsubsection{Intel® Core™ i5-2500K Processor - FFT Single - FFT Dual Mem - FFT Dual IPI}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline	
+			Elements & FFT Single & FFT Dual Mem & FFT Dual Ipi & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 77784 & 82284 & 78968 & 0.945 & 0.985\\
+		\hline
+			4 & 214688 & 191236 & 216976 & 1.122 & 0.989\\
+		\hline
+			8 & 514696 & 428148 & 502068 & 1.202 & 1.025\\
+		\hline
+			16 & 1215252 & 927192 & 1114204 & 1.310 & 1.090\\
+		\hline
+			32 & 2802900 & 2014076 & 2419752 & 1.391 & 1.158\\
+		\hline
+			64 & 6360344 & 4367528 & 5236460 & 1.456 & 1.214\\
+		\hline
+			128 & 14268528 & 9535292 & 11246792 & 1.496 & 1.268\\
+		\hline
+			256 & 31695828 & 20575104 & 24102060 & 1.540 & 1.315\\
+		\hline
+			512 & 69969592 & 44330152 & 51512984 & 1.578 & 1.358\\
+		\hline
+			1024 & 153126636 & 95175168 & 109542068 & 1.608 & 1.397\\
+		\hline
+			2048 & 332522532 & 203051852 & 231857552 & 1.637 & 1.434\\
+		\hline
+			4096 & 717823008 & 432009528 & 489417964 & 1.661 & 1.466\\
+		\hline
+			8192 & 1541572072 & 916023644 & 1030637576 & 1.682 & 1.495\\
+		\hline
+			16384 & 3296190392 & 1937514232 & 2166612988 & 1.701 & 1.521\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	    \includegraphics[height=8cm]{images/fft_i5.png}
+	\end{center}
+En la arquitectura del core i5, mejora el rendimiento obtenido utilizando multicore, otorgando un 70\% de mejora versus monoprocesamiento. Las ipis proveen un 52\% de mejora, además observamos que el cross-over para la mejora en dual core es casi instantaneo sobre la cantidad de elementos.
+
+\subsubsection{Intel® Pentium® Processor G2030 - FFT Single - FFT Dual Mem - FFT Dual IPI}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline	
+			Elements & FFT Single & FFT Dual Mem & FFT Dual Ipi & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 75888 & 80812 & 77972 & 0.939 & 0.973\\
+		\hline
+			4 & 209524 & 191800 & 220424 & 1.092 & 0.950\\
+		\hline
+			8 & 514828 & 426920 & 510424 & 1.205 & 1.008\\
+		\hline
+			16 & 1205000 & 938892 & 1142776 & 1.283 & 1.054\\
+		\hline
+			32 & 2760068 & 2047208 & 2490212 & 1.348 & 1.108\\
+		\hline
+			64 & 6291332 & 4508696 & 5387504 & 1.395 & 1.167\\
+		\hline
+			128 & 14026052 & 9758488 & 11629396 & 1.437 & 1.206\\
+		\hline
+			256 & 31301112 & 21347084 & 24994892 & 1.466 & 1.252\\
+		\hline
+			512 & 69070356 & 46043584 & 53512760 & 1.500 & 1.290\\
+		\hline
+			1024 & 150448296 & 98699668 & 113700712 & 1.524 & 1.323\\
+		\hline
+			2048 & 325692216 & 211210216 & 241297652 & 1.542 & 1.349\\
+		\hline
+			4096 & 702220892 & 450242892 & 511164280 & 1.559 & 1.373\\
+		\hline
+			8192 & 1507872220 & 957204752 & 1079792760 & 1.575 & 1.396\\
+		\hline
+			16384 & 3222351048 & 2028073172 & 2273867600 & 1.588 & 1.417\\
+		\hline
+	\end{tabular}
+\end{center}
+
+
+\begin{center}
+	    \includegraphics[height=8cm]{images/fft_g2030.png}
+	\end{center}
+
+Aqui obtenemos una mejora maxima de un 59\%, el cross-over es casi instantaneo y mejoran bastante las ipis, en relación a su contraparte sincronizada por espera activa con accesos a memoria al compararse con monoprocesamiento.
+
+\subsubsection{Intel® Xeon® Processor E5345 - FFT Single - FFT Dual Mem - FFT Dual IPI}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline	
+			Elements & FFT Single & FFT Dual Mem & FFT Dual Ipi & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 93429 & 97160 & 97314 & 0.961 & 0.960\\
+		\hline
+			4 & 245973 & 231707 & 271544 & 1.061 & 0.905\\
+		\hline
+			8 & 597730 & 509642 & 627865 & 1.172 & 0.952\\
+		\hline
+			16 & 1394330 & 1109801 & 1382430 & 1.256 & 1.008\\
+		\hline
+			32 & 3210844 & 2413852 & 2992248 & 1.330 & 1.073\\
+		\hline
+			64 & 7297927 & 5258589 & 6447819 & 1.387 & 1.131\\
+		\hline
+			128 & 16403002 & 11400445 & 13845454 & 1.438 & 1.184\\
+		\hline
+			256 & 36485239 & 24669883 & 29654149 & 1.478 & 1.230\\
+		\hline
+			512 & 80414341 & 53201029 & 63250026 & 1.511 & 1.271\\
+		\hline
+			1024 & 175866670 & 114169888 & 134506631 & 1.540 & 1.307\\
+		\hline
+			2048 & 383665926 & 244086430 & 284939466 & 1.571 & 1.346\\
+		\hline
+			4096 & 831156431 & 512455125 & 590454613 & 1.621 & 1.407\\
+		\hline
+			8192 & 1799559559 & 1083358444 & 1262194136 & 1.661 & 1.425\\
+		\hline
+			16384 & 3789572983 & 2328605440 & 2658443333 & 1.627 & 1.425\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	    \includegraphics[height=8cm]{images/fft_xeon_e5345.png}
+	\end{center}
+
+En esta máquina se obtuvo un valor máximo de un 63\% de mejora entre single y dual core con espera activa, el cross-over es a partir de 4 elementos y la arquitectura brinda una mejora de 42\% respecto a las ipis contra single core.

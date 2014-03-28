@@ -34,22 +34,29 @@
 \BOOKMARK [3][-]{subsubsection.3.2.1}{Saturaci\363n del canal de memoria}{subsection.3.2}% 34
 \BOOKMARK [3][-]{subsubsection.3.2.2}{Sincronizacion entre n\372cleos}{subsection.3.2}% 35
 \BOOKMARK [2][-]{subsection.3.3}{Fast Fourier Transform}{section.3}% 36
-\BOOKMARK [1][-]{section.4}{Resultados}{}% 37
-\BOOKMARK [2][-]{subsection.4.1}{Lectura e interpretaci\363n de resultados por pantalla}{section.4}% 38
-\BOOKMARK [2][-]{subsection.4.2}{Resultados: Forma de medici\363n}{section.4}% 39
-\BOOKMARK [2][-]{subsection.4.3}{Resultados: Arquitectura de las m\341quinas utilizadas}{section.4}% 40
-\BOOKMARK [2][-]{subsection.4.4}{An\341lisis de resultados}{section.4}% 41
-\BOOKMARK [3][-]{subsubsection.4.4.1}{Intel\256 Pentium\256 Processor T4200 - Sorting}{subsection.4.4}% 42
-\BOOKMARK [3][-]{subsubsection.4.4.2}{Intel\256 Pentium\256 Processor T4200 - Vector modification}{subsection.4.4}% 43
-\BOOKMARK [3][-]{subsubsection.4.4.3}{Intel\256 Xeon\256 Processor E5345 - Sorting}{subsection.4.4}% 44
-\BOOKMARK [3][-]{subsubsection.4.4.4}{Intel\256 Xeon\256 Processor E5345 - Vector modification}{subsection.4.4}% 45
-\BOOKMARK [3][-]{subsubsection.4.4.5}{Intel\256 Pentium\256 Processor G2030 - Sorting}{subsection.4.4}% 46
-\BOOKMARK [3][-]{subsubsection.4.4.6}{Intel\256 Pentium\256 Processor G2030 - Vector modification}{subsection.4.4}% 47
-\BOOKMARK [3][-]{subsubsection.4.4.7}{Intel\256 Core\222 i7-920 Processor - Sorting - Vector modification }{subsection.4.4}% 48
-\BOOKMARK [3][-]{subsubsection.4.4.8}{Intel\256 Core\222 i5-2500K Processor - Sorting}{subsection.4.4}% 49
-\BOOKMARK [3][-]{subsubsection.4.4.9}{Intel\256 Core\222 i5-2500K Processor - Vector modification}{subsection.4.4}% 50
-\BOOKMARK [3][-]{subsubsection.4.4.10}{Intel\256 Core\2222 Quad Processor Q6600 Sorting}{subsection.4.4}% 51
-\BOOKMARK [3][-]{subsubsection.4.4.11}{Intel\256 Core\2222 Quad Processor Q6600 Vector modification}{subsection.4.4}% 52
-\BOOKMARK [3][-]{subsubsection.4.4.12}{Intel\256 Pentium\256 Processor T4200 - Sorting usando Inter-processor interrupts}{subsection.4.4}% 53
-\BOOKMARK [3][-]{subsubsection.4.4.13}{Intel\256 Pentium\256 Processor G2030 - Sorting usando Inter-processor interrupts}{subsection.4.4}% 54
-\BOOKMARK [1][-]{section.5}{Conclusi\363n Final}{}% 55
+\BOOKMARK [3][-]{subsubsection.3.3.1}{Introducci\363n al algoritmo}{subsection.3.3}% 37
+\BOOKMARK [3][-]{subsubsection.3.3.2}{Algoritmo de diezmado en el tiempo}{subsection.3.3}% 38
+\BOOKMARK [1][-]{section.4}{Resultados}{}% 39
+\BOOKMARK [2][-]{subsection.4.1}{Lectura e interpretaci\363n de resultados por pantalla}{section.4}% 40
+\BOOKMARK [2][-]{subsection.4.2}{Resultados: Forma de medici\363n}{section.4}% 41
+\BOOKMARK [2][-]{subsection.4.3}{Resultados: Arquitectura de las m\341quinas utilizadas}{section.4}% 42
+\BOOKMARK [2][-]{subsection.4.4}{An\341lisis de resultados}{section.4}% 43
+\BOOKMARK [3][-]{subsubsection.4.4.1}{Intel\256 Pentium\256 Processor T4200 - Sorting}{subsection.4.4}% 44
+\BOOKMARK [3][-]{subsubsection.4.4.2}{Intel\256 Pentium\256 Processor T4200 - Vector modification}{subsection.4.4}% 45
+\BOOKMARK [3][-]{subsubsection.4.4.3}{Intel\256 Xeon\256 Processor E5345 - Sorting}{subsection.4.4}% 46
+\BOOKMARK [3][-]{subsubsection.4.4.4}{Intel\256 Xeon\256 Processor E5345 - Vector modification}{subsection.4.4}% 47
+\BOOKMARK [3][-]{subsubsection.4.4.5}{Intel\256 Pentium\256 Processor G2030 - Sorting}{subsection.4.4}% 48
+\BOOKMARK [3][-]{subsubsection.4.4.6}{Intel\256 Pentium\256 Processor G2030 - Vector modification}{subsection.4.4}% 49
+\BOOKMARK [3][-]{subsubsection.4.4.7}{Intel\256 Core\222 i7-920 Processor - Sorting - Vector modification }{subsection.4.4}% 50
+\BOOKMARK [3][-]{subsubsection.4.4.8}{Intel\256 Core\222 i5-2500K Processor - Sorting}{subsection.4.4}% 51
+\BOOKMARK [3][-]{subsubsection.4.4.9}{Intel\256 Core\222 i5-2500K Processor - Vector modification}{subsection.4.4}% 52
+\BOOKMARK [3][-]{subsubsection.4.4.10}{Intel\256 Core\2222 Quad Processor Q6600 Sorting}{subsection.4.4}% 53
+\BOOKMARK [3][-]{subsubsection.4.4.11}{Intel\256 Core\2222 Quad Processor Q6600 Vector modification}{subsection.4.4}% 54
+\BOOKMARK [3][-]{subsubsection.4.4.12}{Intel\256 Pentium\256 Processor T4200 - Sorting usando Inter-processor interrupts}{subsection.4.4}% 55
+\BOOKMARK [3][-]{subsubsection.4.4.13}{Intel\256 Pentium\256 Processor G2030 - Sorting usando Inter-processor interrupts}{subsection.4.4}% 56
+\BOOKMARK [3][-]{subsubsection.4.4.14}{Intel\256 Pentium\256 Processor T4200 - FFT Single - FFT Dual Mem - FFT Dual IPI}{subsection.4.4}% 57
+\BOOKMARK [3][-]{subsubsection.4.4.15}{Intel\256 Core\2222 Quad Processor Q6600 - FFT Single - FFT Dual Mem - FFT Dual IPI}{subsection.4.4}% 58
+\BOOKMARK [3][-]{subsubsection.4.4.16}{Intel\256 Core\222 i5-2500K Processor - FFT Single - FFT Dual Mem - FFT Dual IPI}{subsection.4.4}% 59
+\BOOKMARK [3][-]{subsubsection.4.4.17}{Intel\256 Pentium\256 Processor G2030 - FFT Single - FFT Dual Mem - FFT Dual IPI}{subsection.4.4}% 60
+\BOOKMARK [3][-]{subsubsection.4.4.18}{Intel\256 Xeon\256 Processor E5345 - FFT Single - FFT Dual Mem - FFT Dual IPI}{subsection.4.4}% 61
+\BOOKMARK [1][-]{section.5}{Conclusi\363n Final}{}% 62
