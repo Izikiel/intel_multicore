@@ -38,6 +38,7 @@ void sort_ap()
         copy(array, *len / 2, ap_temp, 0, *len / 2);
         *finish_copy = 1;
     }
+    *sleep = 0;
 }
 
 void sum_vector_ap()

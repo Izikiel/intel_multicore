@@ -123,9 +123,9 @@ enable_sse: ;Taken from osdev
     imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, rax, 0
 
     do_sort:
-       ; call sort_ap
+        call sort_ap
 
-        ;mov byte [sleep], 0
+        mov byte [sleep], 0
 
     do_fft:
        call inner_fft_loop

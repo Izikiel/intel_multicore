@@ -14,7 +14,7 @@ uint64_t start, stop;
 
 void wait()
 {
-    uint64_t limit = 53200000000;
+    uint64_t limit = 532000000;
     MEDIR_TIEMPO_START(start);
     do {
         MEDIR_TIEMPO_STOP(stop);
@@ -230,6 +230,7 @@ bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
 #define MAX_FFT_LEN  (32*1024)
 void test_fft_mono()
 {
+    wait();
     clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
     Complex *Input = (Complex *) array_start_address;
