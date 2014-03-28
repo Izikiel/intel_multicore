@@ -24,7 +24,7 @@ LDFLAGS=-static -melf_x86_64 -T $(LINKSCRIPT)
 
 QUIET = @
 
-.PHONY=clean all image
+.PHONY=clean all
 
 all: console_clear clean common_code fft_code kernel.bin
 

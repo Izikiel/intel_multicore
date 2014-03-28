@@ -61,6 +61,7 @@
 #define step_address 	0x200340
 #define jump_address 	0x200380
 #define factor_address  0x2003c0
+#define LIMIT			8
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 

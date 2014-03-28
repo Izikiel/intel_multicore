@@ -200,7 +200,6 @@ void Perform(Complex *Data, unsigned int N, char Inverse /* = false */)
     jump_address
     factor_address
 */
-#define PROCESSORS 2
 void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
 {
     const double pi = Inverse ? 3.14159265358979323846 : -3.14159265358979323846;
@@ -238,7 +237,7 @@ void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
         //   Iteration through groups of different transform factor
         for (Group = 0; Group < Step; ++(Group)) {
 
-            if (Step >= N / PROCESSORS) {
+            if (Step >= N / LIMIT) {
                 for (Pair = Group; Pair < N; Pair += Jump) {
                     //   Match position
                     Match = Pair + Step;

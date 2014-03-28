@@ -9,7 +9,6 @@ void send_ipi_ap(uint32_t interrupt);
 #define merge_ap_ipi 41
 #define copy_ap_ipi 42
 #define fft_int 43
-#define PROCESSORS 2
 
 static void clean_flags()
 {
@@ -159,7 +158,7 @@ void Perform_P_Int(Complex *Data, unsigned int N, char Inverse /* = false */)
         //   Iteration through groups of different transform factor
         for (Group = 0; Group < Step; ++(Group)) {
 
-            if (Step >= N / PROCESSORS) {
+            if (Step >= N / LIMIT) {
                 for (Pair = Group; Pair < N; Pair += Jump) {
                     //   Match position
                     Match = Pair + Step;
