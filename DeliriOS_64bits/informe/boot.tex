@@ -21,4 +21,19 @@
     Los módulos de 32 bits estan compilados en formato elf32 y los de 64 bits en binario plano de 64 bits, esto se debe a temas de compatibilidad de grub al cargar modulos y kernels.
     \\
     \\
-    Para correr el trabajo practico unicamente hace falta tipear $./run.sh -r$ en consola y se recompilará automaticamente para luego ejecutarse en bochs.
+    Para correr el trabajo practico unicamente hace falta tipear $./run.sh -r$ en consola y se recompilará automaticamente para luego ejecutarse en bochs.\\
+    En caso de querer correr en una máquina real el trabajo práctico, ejecutar $./run.sh -usb <path al usb montado>$\\
+    Se ejecutará en orden lo siguiente:
+    \begin{itemize}
+        \item Inicializacion del sistema
+        \item Sorting \begin{itemize}
+                    \item Sorting utilizando un solo núcleo
+                    \item Sorting utilizando dos núcleos sincronizando vía espera activa
+                    \item Sorting utilizando dos núcleos sincronizando vía interrupciones
+              \end{itemize}
+        \item Fast Fourier Transform \begin{itemize}
+                    \item FFT utilizando un solo núcleo
+                    \item FFT utilizando dos núcleos sincronizando vía espera activa
+                    \item FFT utilizando dos núcleos sincronizando vía interrupciones
+              \end{itemize}
+    \end{itemize}

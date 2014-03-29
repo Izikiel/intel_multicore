@@ -1,0 +1,254 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="modules-diagram.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path3905"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow1Lend-8"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path3905-8"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         transform="matrix(-0.8,0,0,-0.8,-10,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.98994949"
+     inkscape:cx="285.43332"
+     inkscape:cy="675.48197"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
+     inkscape:window-x="1272"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1"
+     inkscape:object-paths="false"
+     inkscape:snap-nodes="false"
+     inkscape:snap-bbox="false"
+     inkscape:snap-bbox-midpoints="false"
+     inkscape:snap-bbox-edge-midpoints="false"
+     inkscape:bbox-nodes="false"
+     inkscape:bbox-paths="false"
+     inkscape:snap-page="true"
+     inkscape:snap-global="false" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#008080"
+       id="rect3012"
+       width="245.71426"
+       height="151.71573"
+       x="25.714289"
+       y="28.076469" />
+    <text
+       xml:space="preserve"
+       style="font-size:41.56616211px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="84.858459"
+       y="61.3172"
+       id="text3016"
+       sodipodi:linespacing="89.999998%"
+       transform="scale(0.61630152,1.6225824)"><tspan
+         sodipodi:role="line"
+         id="tspan3018"
+         x="84.858459"
+         y="61.3172">Grub to DeliriOS</tspan><tspan
+         sodipodi:role="line"
+         x="84.858459"
+         y="98.726746"
+         id="tspan4350">        Loader</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="160"
+       y="146.6479"
+       id="text3020"
+       sodipodi:linespacing="89.999998%"><tspan
+         sodipodi:role="line"
+         id="tspan3022" /></text>
+    <rect
+       style="fill:#ff8080"
+       id="rect3012-1"
+       width="234.28571"
+       height="212.85715"
+       x="465.29587"
+       y="222.91183" />
+    <text
+       xml:space="preserve"
+       style="font-size:33.35580826px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="608.37817"
+       y="201.77296"
+       id="text3054"
+       sodipodi:linespacing="89.999998%"
+       transform="scale(0.77348421,1.2928512)"><tspan
+         sodipodi:role="line"
+         id="tspan3056"
+         x="608.37817"
+         y="201.77296">AP startup loader</tspan></text>
+    <rect
+       style="fill:#008080"
+       id="rect3012-1-7"
+       width="232.85713"
+       height="215.71428"
+       x="275.71429"
+       y="758.07642" />
+    <text
+       xml:space="preserve"
+       style="font-size:41.53001404px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="418.70233"
+       y="652.83893"
+       id="text3054-4"
+       sodipodi:linespacing="89.999998%"
+       transform="scale(0.74722371,1.3382873)"><tspan
+         sodipodi:role="line"
+         id="tspan3056-0"
+         x="418.70233"
+         y="652.83893">AP full code </tspan><tspan
+         sodipodi:role="line"
+         x="418.70233"
+         y="690.21594"
+         id="tspan4348">   module</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:30.29315948px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="594.69873"
+       y="280.92065"
+       id="text3101"
+       sodipodi:linespacing="89.999998%"
+       transform="scale(0.78800318,1.2690304)"><tspan
+         sodipodi:role="line"
+         id="tspan3103"
+         x="594.69873"
+         y="280.92065">pos: 0xABBAABBA</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:27.73911095px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="650.51416"
+       y="307.06168"
+       id="text3101-9"
+       sodipodi:linespacing="89.999998%"
+       transform="scale(0.72407029,1.3810814)"><tspan
+         sodipodi:role="line"
+         id="tspan3103-4"
+         x="650.51416"
+         y="307.06168">jmp [pos]</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2.50531626;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#Arrow1Lend)"
+       d="M 463.38776,435.58307 400.30723,492.24482 322.1713,748.75263"
+       id="path3128"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:26.80230713px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="488.29437"
+       y="478.72122"
+       id="text4342"
+       sodipodi:linespacing="89.999998%"
+       transform="scale(0.81681186,1.2242721)"><tspan
+         sodipodi:role="line"
+         id="tspan4344"
+         x="488.29437"
+         y="478.72122">Luego, en el inicio de los AP</tspan><tspan
+         sodipodi:role="line"
+         x="488.29437"
+         y="502.84329"
+         id="tspan4406">Se realiza un salto en la ejecución</tspan><tspan
+         sodipodi:role="line"
+         x="488.29437"
+         y="526.96539"
+         id="tspan4352">por encima del primer mega</tspan><tspan
+         sodipodi:role="line"
+         x="488.29437"
+         y="551.08746"
+         id="tspan4346" /></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:2.50531626;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;stroke-dashoffset:0;marker-end:url(#Arrow1Lend)"
+       d="m 34.529894,185.37129 54.809964,165.87209 368.695132,0.6202"
+       id="path3128-2"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="ccc" />
+    <text
+       xml:space="preserve"
+       style="font-size:28.63411713px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="116.07176"
+       y="169.87354"
+       id="text4378"
+       sodipodi:linespacing="89.999998%"
+       transform="scale(0.78778925,1.269375)"><tspan
+         sodipodi:role="line"
+         id="tspan4382"
+         x="116.07176"
+         y="169.87354">Realiza una búsqueda lineal </tspan><tspan
+         sodipodi:role="line"
+         x="116.07176"
+         y="195.64424"
+         id="tspan4392">sobre el módulo hasta encontrar </tspan><tspan
+         sodipodi:role="line"
+         x="116.07176"
+         y="221.41495"
+         id="tspan4396">la variable que contenga contenido</tspan><tspan
+         sodipodi:role="line"
+         x="116.07176"
+         y="247.18565"
+         id="tspan4390">0xABBAABBA y la sobreescribe con</tspan><tspan
+         sodipodi:role="line"
+         x="116.07176"
+         y="272.95636"
+         id="tspan4386">la posicion del mòdulo full code</tspan></text>
+  </g>
+</svg>

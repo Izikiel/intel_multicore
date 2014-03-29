@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="887.888"
+   height="432.13147"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="ap-stages-diagram.svg">
+  <defs
+     id="defs4">
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lend-9"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lend">
+      <path
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         id="path4101-2"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lend-4"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lend">
+      <path
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         id="path4101-5"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow1Lend"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow1Lend">
+      <path
+         transform="matrix(-0.8,0,0,-0.8,-10,0)"
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1pt"
+         d="M 0,0 5,-5 -12.5,0 5,5 0,0 z"
+         id="path4083"
+         inkscape:connector-curvature="0" />
+    </marker>
+    <marker
+       style="overflow:visible"
+       id="Arrow2Lend"
+       refX="0"
+       refY="0"
+       orient="auto"
+       inkscape:stockid="Arrow2Lend">
+      <path
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         id="path4101"
+         inkscape:connector-curvature="0" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="503.06982"
+     inkscape:cy="151.96301"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1-8"
+     showgrid="false"
+     fit-margin-left="1"
+     fit-margin-top="1"
+     fit-margin-right="1"
+     fit-margin-bottom="1"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
+     inkscape:window-x="1272"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(-90.341718,-290.58216)">
+    <g
+       transform="translate(64.057177,-54.181831)"
+       id="layer1-8"
+       inkscape:label="Capa 1">
+      <text
+         sodipodi:linespacing="125%"
+         id="text2985"
+         y="402.67917"
+         x="33.600094"
+         style="font-size:18.5031147px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="402.67917"
+           x="33.600094"
+           sodipodi:role="line"
+           id="tspan3138">Ap bootea en 0x2000 en modo real</tspan><tspan
+           y="425.80807"
+           x="33.600094"
+           sodipodi:role="line"
+           id="tspan3014"> * Creación de GDT temporal en código</tspan><tspan
+           y="448.93695"
+           x="33.600094"
+           sodipodi:role="line"
+           id="tspan3142"> * Salto de modo real a modo protegido</tspan><tspan
+           y="472.06586"
+           x="33.600094"
+           sodipodi:role="line"
+           id="tspan3144"> * Salto a loader de nivel 2</tspan></text>
+      <g
+         transform="matrix(1.2558765,0,0,1.2558765,124.32498,-60.965387)"
+         id="g3108">
+        <text
+           xml:space="preserve"
+           style="font-size:19.15707779px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="175.95297"
+           y="464.76862"
+           id="text2991"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="175.95297"
+             y="464.76862"
+             id="tspan3146">nivel 2: Modo protegido a modo x64</tspan></text>
+        <text
+           xml:space="preserve"
+           style="font-size:12.03474998px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+           x="176.99126"
+           y="483.54678"
+           id="text2995"
+           sodipodi:linespacing="125%"><tspan
+             sodipodi:role="line"
+             x="176.99126"
+             y="483.54678"
+             id="tspan2999"> * Asignar GDT, IDT, Paginación</tspan><tspan
+             sodipodi:role="line"
+             x="176.99126"
+             y="498.59021"
+             id="tspan3001"> * Seteo de la pila.</tspan><tspan
+             sodipodi:role="line"
+             x="176.99126"
+             y="513.63367"
+             id="tspan3003"> * Salto a modo x64.</tspan><tspan
+             sodipodi:role="line"
+             x="176.99126"
+             y="528.67712"
+             id="tspan3024" /></text>
+      </g>
+      <flowRoot
+         style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         id="flowRoot3086"
+         xml:space="preserve"><flowRegion
+           id="flowRegion3088"><rect
+             y="28.380196"
+             x="24.285715"
+             height="160"
+             width="981.42859"
+             id="rect3090" /></flowRegion><flowPara
+           id="flowPara3092" /></flowRoot>      <text
+         sodipodi:linespacing="125%"
+         id="text3094"
+         y="695.27466"
+         x="716.67584"
+         style="font-size:27.3382473px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="695.27466"
+           x="716.67584"
+           id="tspan3096"
+           sodipodi:role="line">Inicio completo!</tspan></text>
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path3126"
+         d="m 367.61774,411.60927 c 50.84499,36.63245 147.9127,-47.25668 147.9127,68.17615"
+         style="fill:none;stroke:#000000;stroke-width:1.91502225;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Lend)" />
+      <path
+         sodipodi:nodetypes="cc"
+         inkscape:connector-curvature="0"
+         id="path3126-8"
+         d="m 586.08439,573.68323 c 76.21782,47.99285 140.65688,-34.86075 157.65534,73.00525"
+         style="fill:none;stroke:#000000;stroke-width:2.04590845;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Lend)" />
+    </g>
+  </g>
+</svg>

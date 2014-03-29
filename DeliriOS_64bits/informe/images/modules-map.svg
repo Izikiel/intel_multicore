@@ -1,0 +1,228 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="210mm"
+   height="297mm"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="modules-map.svg">
+  <defs
+     id="defs4" />
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="0.7"
+     inkscape:cx="275.35137"
+     inkscape:cy="480.63816"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
+     inkscape:window-x="1272"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+        <dc:title />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1">
+    <rect
+       style="fill:#f4d7d7;fill-rule:evenodd;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       id="rect2985"
+       width="344.28571"
+       height="947.14288"
+       x="42.857143"
+       y="56.647896" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="390"
+       y="56.647896"
+       id="text2987"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2989"
+         x="390"
+         y="56.647896">0x00000000</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="388.57141"
+       y="325.21933"
+       id="text2991"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2993"
+         x="388.57141"
+         y="325.21933">0x000FFFFF</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1px;stroke-linecap:butt;stroke-linejoin:miter;stroke-opacity:1"
+       d="m 387.14286,325.21933 -340.000003,0 0,1.42857"
+       id="path2995"
+       inkscape:connector-curvature="0" />
+    <rect
+       style="fill:#008080"
+       id="rect3005"
+       width="342.85715"
+       height="97.14286"
+       x="42.857143"
+       y="56.647892" />
+    <rect
+       style="fill:#ff8080"
+       id="rect3005-1"
+       width="342.85715"
+       height="164.28572"
+       x="42.85714"
+       y="155.21933" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="51.42857"
+       y="120.93361"
+       id="text3027"
+       sodipodi:linespacing="89.999998%"><tspan
+         sodipodi:role="line"
+         id="tspan3029"
+         x="51.42857"
+         y="120.93361">Memoria del BIOS</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="44.285717"
+       y="258.07645"
+       id="text3031"
+       sodipodi:linespacing="89.999998%"><tspan
+         sodipodi:role="line"
+         id="tspan3033"
+         x="44.285717"
+         y="258.07645">Memoria de GRUB</tspan></text>
+    <rect
+       style="fill:#0088aa"
+       id="rect3005-1-9"
+       width="342.85715"
+       height="131.42857"
+       x="42.857143"
+       y="360.2193" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="88.571426"
+       y="413.79074"
+       id="text3107"
+       sodipodi:linespacing="89.999998%"><tspan
+         sodipodi:role="line"
+         id="tspan3109"
+         x="88.571426"
+         y="413.79074">kernel64.bin64</tspan><tspan
+         sodipodi:role="line"
+         x="88.571426"
+         y="449.79074"
+         id="tspan3111">Grub Module</tspan></text>
+    <rect
+       style="fill:#0088aa"
+       id="rect3005-1-9-4"
+       width="342.85715"
+       height="164.28572"
+       x="42.85714"
+       y="505.93359" />
+    <rect
+       style="fill:#0088aa"
+       id="rect3005-1-9-8"
+       width="342.85715"
+       height="72.857147"
+       x="42.85714"
+       y="680.21936" />
+    <rect
+       style="fill:#ff8080"
+       id="rect3005-1-9-82"
+       width="341.42859"
+       height="151.42857"
+       x="44.285709"
+       y="848.79071" />
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="391.57645"
+       y="363.63589"
+       id="text2991-4"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan2993-5"
+         x="391.57645"
+         y="363.63589">0x00100000</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="44.285717"
+       y="562.36218"
+       id="text3166"
+       sodipodi:linespacing="89.999998%"><tspan
+         sodipodi:role="line"
+         id="tspan3168"
+         x="44.285717"
+         y="562.36218">ap_full_code.bin64</tspan><tspan
+         sodipodi:role="line"
+         x="44.285717"
+         y="598.36218"
+         id="tspan3170">    Grub Module</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="50.072544"
+       y="708.67859"
+       id="text3166-5"
+       sodipodi:linespacing="89.999998%"><tspan
+         sodipodi:role="line"
+         id="tspan3168-1"
+         x="50.072544"
+         y="708.67859">ap_startup_code</tspan><tspan
+         sodipodi:role="line"
+         x="50.072544"
+         y="744.67859"
+         id="tspan3170-7">    Grub Module</tspan></text>
+    <text
+       xml:space="preserve"
+       style="font-size:40px;font-style:normal;font-weight:normal;line-height:89.99999762%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="85.714287"
+       y="910.93359"
+       id="text3196"
+       sodipodi:linespacing="89.999998%"><tspan
+         sodipodi:role="line"
+         id="tspan3198"
+         x="85.714287"
+         y="910.93359">Datos de Kernel</tspan><tspan
+         sodipodi:role="line"
+         x="85.714287"
+         y="946.93359"
+         id="tspan3012"> de DeliriOS</tspan><tspan
+         sodipodi:role="line"
+         x="85.714287"
+         y="982.93359"
+         id="tspan3200" /></text>
+  </g>
+</svg>
