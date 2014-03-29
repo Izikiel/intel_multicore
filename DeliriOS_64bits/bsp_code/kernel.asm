@@ -423,9 +423,9 @@ enable_sse: ;Taken from osdev
     ;arrancan las pruebas!
 tests:
 
-    ;call test_1_core
-    ;call test_2_cores
-    ;call test_ipi_cores
+    call test_1_core
+    call test_2_cores
+    call test_ipi_cores
 
     call test_fft_mono
     call test_fft_dual_mem

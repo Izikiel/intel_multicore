@@ -78,6 +78,7 @@ void generate_fft_array(uint32_t N)
 
 void test_1_core()
 {
+    wait();
     clean_array(max_len);
     clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;

@@ -153,6 +153,7 @@ void inner_fft_loop()
         }
         *done = 1;
     }
+    *sleep = 0;
 }
 
 
