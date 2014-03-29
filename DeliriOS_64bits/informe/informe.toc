@@ -37,6 +37,7 @@
 \contentsline {subsection}{\numberline {3.3}Fast Fourier Transform}{18}{subsection.3.3}
 \contentsline {subsubsection}{\numberline {3.3.1}Introducci\IeC {\'o}n al algoritmo}{18}{subsubsection.3.3.1}
 \contentsline {subsubsection}{\numberline {3.3.2}Algoritmo de diezmado en el tiempo}{18}{subsubsection.3.3.2}
+\contentsline {subsubsection}{\numberline {3.3.3}Modificaci\IeC {\'o}n en el cross-over para delegar trabajo a varios n\IeC {\'u}cleos}{19}{subsubsection.3.3.3}
 \contentsline {section}{\numberline {4}Resultados}{20}{section.4}
 \contentsline {subsection}{\numberline {4.1}Lectura e interpretaci\IeC {\'o}n de resultados por pantalla}{20}{subsection.4.1}
 \contentsline {subsection}{\numberline {4.2}Resultados: Forma de medici\IeC {\'o}n}{20}{subsection.4.2}
@@ -55,9 +56,11 @@
 \contentsline {subsubsection}{\numberline {4.4.11}Intel\IeC {\textregistered } Core\IeC {\texttrademark }2 Quad Processor Q6600 Vector modification}{32}{subsubsection.4.4.11}
 \contentsline {subsubsection}{\numberline {4.4.12}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor T4200 - Sorting usando Inter-processor interrupts}{32}{subsubsection.4.4.12}
 \contentsline {subsubsection}{\numberline {4.4.13}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor G2030 - Sorting usando Inter-processor interrupts}{34}{subsubsection.4.4.13}
-\contentsline {subsubsection}{\numberline {4.4.14}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor T4200 - FFT Single - FFT Dual Mem - FFT Dual IPI}{36}{subsubsection.4.4.14}
-\contentsline {subsubsection}{\numberline {4.4.15}Intel\IeC {\textregistered } Core\IeC {\texttrademark }2 Quad Processor Q6600 - FFT Single - FFT Dual Mem - FFT Dual IPI}{37}{subsubsection.4.4.15}
-\contentsline {subsubsection}{\numberline {4.4.16}Intel\IeC {\textregistered } Core\IeC {\texttrademark } i5-2500K Processor - FFT Single - FFT Dual Mem - FFT Dual IPI}{38}{subsubsection.4.4.16}
-\contentsline {subsubsection}{\numberline {4.4.17}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor G2030 - FFT Single - FFT Dual Mem - FFT Dual IPI}{39}{subsubsection.4.4.17}
-\contentsline {subsubsection}{\numberline {4.4.18}Intel\IeC {\textregistered } Xeon\IeC {\textregistered } Processor E5345 - FFT Single - FFT Dual Mem - FFT Dual IPI}{40}{subsubsection.4.4.18}
-\contentsline {section}{\numberline {5}Conclusi\IeC {\'o}n Final}{41}{section.5}
+\contentsline {subsubsection}{\numberline {4.4.14}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor T4200 - FFT Single - FFT Dual Mem - FFT Dual IPI}{35}{subsubsection.4.4.14}
+\contentsline {subsubsection}{\numberline {4.4.15}Intel\IeC {\textregistered } Core\IeC {\texttrademark }2 Quad Processor Q6600 - FFT Single - FFT Dual Mem - FFT Dual IPI}{36}{subsubsection.4.4.15}
+\contentsline {subsubsection}{\numberline {4.4.16}Intel\IeC {\textregistered } Core\IeC {\texttrademark } i5-2500K Processor - FFT Single - FFT Dual Mem - FFT Dual IPI}{36}{subsubsection.4.4.16}
+\contentsline {subsubsection}{\numberline {4.4.17}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor G2030 - FFT Single - FFT Dual Mem - FFT Dual IPI}{37}{subsubsection.4.4.17}
+\contentsline {subsubsection}{\numberline {4.4.18}Intel\IeC {\textregistered } Xeon\IeC {\textregistered } Processor E5345 - FFT Single - FFT Dual Mem - FFT Dual IPI}{38}{subsubsection.4.4.18}
+\contentsline {subsubsection}{\numberline {4.4.19}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor G2030 - FFT Single - FFT Dual Mem - FFT Dual IPI - Corregido par\IeC {\'a}metro cross-over}{38}{subsubsection.4.4.19}
+\contentsline {subsubsection}{\numberline {4.4.20}Intel\IeC {\textregistered } Pentium\IeC {\textregistered } Processor T4200 - FFT Single - FFT Dual Mem - FFT Dual IPI - Corregido par\IeC {\'a}metro cross-over}{39}{subsubsection.4.4.20}
+\contentsline {section}{\numberline {5}Conclusi\IeC {\'o}n Final}{40}{section.5}

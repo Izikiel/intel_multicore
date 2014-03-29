@@ -10,7 +10,7 @@ Las mediciones se realizaron utilizando los registros del procesador que contien
 	\item Finalizar medicion
 \end{itemize}
 
-Notemos que estas formas de medición no solo analizan el rendimiento del algoritmo propiamente dicho, sino además los tiempos de sincronización requeridos para cada implementación. (ver gráficos de los protocolos de sincronización), esto nos permitirá ver como en algunos casos, donde el tamaño de la entrada de datos es relativamente pequeña, la mejora obtenida en el multiprocesamiento es licuada por los tiempos extras requeridos para la sincronización, dándonos además un cross-over, el cual nos indica a partir de que tamaño de entrada comienza a ser mas ventajoso utilizar multiprocesamiento, permitiendonos si lo desearamos, realizar algoritmos mas inteligentes que dependiendo de los datos de entrada utilicen la implementación que tenga el mejor rendimiento.
+Notemos que estas formas de medición no solo analizan el rendimiento del algoritmo propiamente dicho, sino además los tiempos de sincronización requeridos para cada implementación. (ver gráficos de los protocolos de sincronización), esto nos permitirá ver como en algunos casos, donde el tamaño de la entrada de datos es relativamente pequeña, la mejora obtenida en el multiprocesamiento es licuada por los tiempos extras requeridos para la sincronización, dándonos además un cross-over, el cual nos indica a partir de que tamaño de entrada comienza a ser mas ventajoso utilizar multiprocesamiento, permitiéndonos si lo desearamos, realizar algoritmos mas inteligentes que dependiendo de los datos de entrada utilicen la implementación que tenga el mejor rendimiento.
 
 
 \subsection{Resultados: Arquitectura de las máquinas utilizadas}
@@ -478,7 +478,7 @@ Podemos observar como, incluso utilizando dos núcleos, la saturación del canal
 \end{center}
 
 	\begin{center}
-	    \includegraphics[height=8cm]{images/i7-vectorsum-sorting.png}
+	    \includegraphics[height=7cm]{images/i7-vectorsum-sorting.png}
 	\end{center}
 
 	Podemos observar aqui que en arquitecturas mas nuevas de intel, se va mejorando la performance promedio obtenida, cada vez mas cercana a duplicar la performance single core, a pesar de esto, los accesos a memoria siguien siendo un problema en algunos casos.
@@ -771,11 +771,11 @@ Para intentar reducir los accesos a memoria, implementamos la sincronización en
 \end{center}
 
 	\begin{center}
-	    \includegraphics[height=8.5cm]{images/pentium_d_mem_ipi.png}
+	    \includegraphics[height=7cm]{images/pentium_d_mem_ipi.png}
 	\end{center}
 
 	\begin{center}
-	    \includegraphics[height=8.5cm]{images/pentium_d_gain_mono_mem_mono_ipi.png}
+	    \includegraphics[height=6cm]{images/pentium_d_gain_mono_mem_mono_ipi.png}
 	\end{center}
 
 \subsubsection{Intel® Pentium® Processor G2030 - Sorting usando Inter-processor interrupts}
@@ -833,12 +833,12 @@ Para intentar reducir los accesos a memoria, implementamos la sincronización en
 \end{center}
 
 \begin{center}
-	    \includegraphics[height=8cm]{images/memory_ipis_g2030_sortipi.png}
+	    \includegraphics[height=7cm]{images/memory_ipis_g2030_sortipi.png}
 	\end{center}
 
 
 \begin{center}
-	    \includegraphics[height=8cm]{images/sort_ipis_g2030.png}
+	    \includegraphics[height=6cm]{images/sort_ipis_g2030.png}
 	\end{center}
 
 
@@ -884,7 +884,7 @@ Dada la velocidad superior del bus de sistema y las nuevas tecnologías de cach�
 
 
 \begin{center}
-	    \includegraphics[height=8cm]{images/fft_pentiumd.png}
+	    \includegraphics[height=6cm]{images/fft_pentiumd.png}
 	\end{center}
 
 	Se obtiene una mejora utilizando dual core a partir de los 16 elementos, culminando en un 30\% de mejora en la máxima cantidad testeada. En esta arquitectura el uso de IPIS no es muy favorable respecto a la sincronización por memoria.
@@ -929,7 +929,7 @@ Dada la velocidad superior del bus de sistema y las nuevas tecnologías de cach�
 \end{center}
 
 \begin{center}
-	    \includegraphics[height=8cm]{images/fft_core2quad.png}
+	    \includegraphics[height=6cm]{images/fft_core2quad.png}
 	\end{center}
 
 Vemos como en esta arquitectura mejora contra la anterior la mejora máxima, de un 46\%. Las ipis todavia no son demasiado favorables, además se observa que el cross-over para la mejora en dual core es casi instantaneo sobre la cantidad de elementos.
@@ -973,7 +973,7 @@ Vemos como en esta arquitectura mejora contra la anterior la mejora máxima, de 
 \end{center}
 
 \begin{center}
-	    \includegraphics[height=8cm]{images/fft_i5.png}
+	    \includegraphics[height=6cm]{images/fft_i5.png}
 	\end{center}
 En la arquitectura del core i5, mejora el rendimiento obtenido utilizando multicore, otorgando un 70\% de mejora versus monoprocesamiento. Las ipis proveen un 52\% de mejora, además observamos que el cross-over para la mejora en dual core es casi instantaneo sobre la cantidad de elementos.
 
@@ -1017,7 +1017,7 @@ En la arquitectura del core i5, mejora el rendimiento obtenido utilizando multic
 
 
 \begin{center}
-	    \includegraphics[height=8cm]{images/fft_g2030.png}
+	    \includegraphics[height=6cm]{images/fft_g2030.png}
 	\end{center}
 
 Aqui obtenemos una mejora maxima de un 59\%, el cross-over es casi instantaneo y mejoran bastante las ipis, en relación a su contraparte sincronizada por espera activa con accesos a memoria al compararse con monoprocesamiento.
@@ -1061,7 +1061,91 @@ Aqui obtenemos una mejora maxima de un 59\%, el cross-over es casi instantaneo y
 \end{center}
 
 \begin{center}
-	    \includegraphics[height=8cm]{images/fft_xeon_e5345.png}
-	\end{center}
+	    \includegraphics[height=5cm]{images/fft_xeon_e5345.png}
+\end{center}
 
 En esta máquina se obtuvo un valor máximo de un 63\% de mejora entre single y dual core con espera activa, el cross-over es a partir de 4 elementos y la arquitectura brinda una mejora de 42\% respecto a las ipis contra single core.
+
+\subsubsection{Intel® Pentium® Processor G2030 - FFT Single - FFT Dual Mem - FFT Dual IPI - Corregido parámetro cross-over}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline	
+			Elements & FFT Single & FFT Dual Mem & FFT Dual Ipi & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 76928 & 80184 & 77008 & 0.959393395191061 & 0.998961146893829\\
+		\hline
+			4 & 209344 & 209876 & 209620 & 0.997465169909852 & 0.998683331743154\\
+		\hline
+			8 & 509544 & 504388 & 508344 & 1.01022228919007 & 1.00236060620367\\
+		\hline
+			16 & 1204652 & 1095428 & 1136104 & 1.09970897220082 & 1.06033602557512\\
+		\hline
+			32 & 2769940 & 2375436 & 2468452 & 1.16607645922685 & 1.12213646447247\\
+		\hline
+			64 & 6285460 & 5116232 & 5351456 & 1.2285330297766 & 1.17453268792643\\
+		\hline
+			128 & 14118780 & 11058380 & 11609068 & 1.27674939728966 & 1.21618548534646\\
+		\hline
+			256 & 31421656 & 23805852 & 24912928 & 1.3199131037192 & 1.26125905393376\\
+		\hline
+			512 & 69159148 & 50957916 & 53272104 & 1.35718163984571 & 1.29822445158164\\
+		\hline
+			1024 & 150365428 & 108450908 & 113057384 & 1.38648380887692 & 1.32999210383286\\
+		\hline
+			2048 & 325566300 & 230628592 & 239963220 & 1.41164760698882 & 1.35673416951148\\
+		\hline
+			4096 & 701862512 & 488929320 & 508322008 & 1.43550914884794 & 1.38074390042935\\
+		\hline
+			8192 & 1507207556 & 1034818916 & 1075238928 & 1.45649401329653 & 1.40174199124606\\
+		\hline
+			16384 & 3220958472 & 2182392616 & 2262842272 & 1.47588405880127 & 1.42341271941733\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+	    \includegraphics[height=6cm]{images/fft_g2030_corrected.png}
+\end{center}
+
+\subsubsection{Intel® Pentium® Processor T4200 - FFT Single - FFT Dual Mem - FFT Dual IPI - Corregido parámetro cross-over}
+
+\begin{center}
+	\begin{tabular}{|c|c|c|c|c|c|}
+		\hline	
+			Elements & FFT Single & FFT Dual Mem & FFT Dual Ipi & Single/DMem & Single/DIpi\\
+		\hline
+			2 & 35761 & 35805 & 35486 & 0.998771121351766 & 1.0077495350279\\
+		\hline
+			4 & 90915 & 91388 & 92862 & 0.994824265767934 & 0.979033404406539\\
+		\hline
+			8 & 217316 & 214940 & 219373 & 1.01105424769703 & 0.990623276337562\\
+		\hline
+			16 & 509124 & 465883 & 501732 & 1.09281514886785 & 1.01473296500921\\
+		\hline
+			32 & 1173953 & 1007820 & 1092289 & 1.16484392054137 & 1.07476409631517\\
+		\hline
+			64 & 2669315 & 2171323 & 2385240 & 1.22934957166668 & 1.11909703006825\\
+		\hline
+			128 & 5989203 & 4716437 & 5155986 & 1.26985752168427 & 1.16160187401595\\
+		\hline
+			256 & 13300727 & 10159050 & 11098527 & 1.30924909317308 & 1.19842272762863\\
+		\hline
+			512 & 29302328 & 21799811 & 23799919 & 1.34415513969364 & 1.23119444230041\\
+		\hline
+			1024 & 64078740 & 46520694 & 50830560 & 1.37742442105442 & 1.26063415394204\\
+		\hline
+			2048 & 139116241 & 99224873 & 108137887 & 1.4020299224772 & 1.28647086473957\\
+		\hline
+			4096 & 302052850 & 212169727 & 230777096 & 1.42363783123499 & 1.30885107419846\\
+		\hline
+			8192 & 648160260 & 447351124 & 486158453 & 1.44888483615389 & 1.3332284073234\\
+		\hline
+			16384 & 1385888295 & 944842954 & 1026775189 & 1.4667922210065 & 1.34974852318914\\
+		\hline
+	\end{tabular}
+\end{center}
+
+\begin{center}
+    \includegraphics[height=6cm]{images/fft_pentiumd_corrected.png}
+\end{center}

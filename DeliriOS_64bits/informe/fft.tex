@@ -28,3 +28,7 @@ Sincronización de FFT:
 \begin{center}
     \includegraphics[height=8cm]{images/DIT-FFT-butterfly.png}
 \end{center}
+
+\subsubsection{Modificación en el cross-over para delegar trabajo a varios núcleos}
+	Luego de las primeras pruebas, se modificó el parámetro que indica cuando comenzar a ejecutar el algoritmo de FFT en un solo núcleo a partir de cierto tamaño de entrada.
+	Esto logró optimizar significativamente el rendimiento, mejorando además la brecha que había entre sincronización vía espera activa y sincronización vía interrupciones.
