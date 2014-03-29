@@ -271,7 +271,6 @@ void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
                 }
 
                 active_wait(*done);
-                *done = 0;
             }
 
             //   Successive transform factor via trigonometric recurrence

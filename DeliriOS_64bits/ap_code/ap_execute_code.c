@@ -125,6 +125,7 @@ void inner_fft_loop()
     Complex *Data = (Complex *) temp_address;
 
     *start = 0;
+    *sleep = 0;
     active_wait(*sleep) {
         active_wait(*start) {
             if (*sleep) {
@@ -153,7 +154,6 @@ void inner_fft_loop()
         }
         *done = 1;
     }
-    *sleep = 0;
 }
 
 
