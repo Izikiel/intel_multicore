@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.3.23)  29 MAR 2014 20:40
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.3.23)  30 MAR 2014 12:12
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1445,10 +1445,6 @@ File: images/fft_xeon_e5345.png Graphic file (type png)
 Package pdftex.def Info: images/fft_xeon_e5345.png used on input line 1064.
 (pdftex.def)             Requested size: 440.30676pt x 142.26378pt.
 
-Overfull \hbox (4.22754pt too wide) in paragraph at lines 1072--1105
- [] 
- []
-
 <images/fft_g2030_corrected.png, id=700, 963.6pt x 372.39125pt>
 File: images/fft_g2030_corrected.png Graphic file (type png)
 
@@ -1457,10 +1453,6 @@ Package pdftex.def Info: images/fft_g2030_corrected.png used on input line 1108
 .
 (pdftex.def)             Requested size: 441.76164pt x 170.71652pt.
  [38 <./images/fft_xeon_e5345.png>]
-Overfull \hbox (4.22754pt too wide) in paragraph at lines 1114--1147
- [] 
- []
-
 <images/fft_pentiumd_corrected.png, id=707, 1008.76875pt x 372.39125pt>
 File: images/fft_pentiumd_corrected.png Graphic file (type png)
 
@@ -1509,7 +1501,7 @@ s/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1
 s/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.
 pfb>
-Output written on informe.pdf (40 pages, 1809713 bytes).
+Output written on informe.pdf (40 pages, 1809154 bytes).
 PDF statistics:
  792 PDF objects out of 1000 (max. 8388607)
  651 compressed objects within 7 object streams
