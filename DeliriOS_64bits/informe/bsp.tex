@@ -7,7 +7,7 @@
 \begin{center}
     \begin{tabular}{|c|c|}
         \hline
-        Indice & Descriptor\\
+        Índice & Descriptor\\
         \hline
         0 & Descriptor nulo\\
         \hline
@@ -22,7 +22,7 @@
 \vspace{0.5cm}
 
 \subsubsection{Modo Legacy x64: Modelo de paginación de los primeros 4gb}
-    Se utilizó un modelo de paginación en identity mapping donde se cubren los primeros 64 GB de memoria. El modo de paginación elegido fue IA32e en 3 niveles con páginas de 2 megas, es importante remarcar que como para pasar a modo largo de 64 bits es obligatorio tener paginación activa, el mapeo de la memoria virtual fue realizado en 2 etapas, en la primera se mapearon unicamente los primeros 4gb pues desde modo protegido puedo direccionar como máximo hasta 4gb y luego desde modo largo, se completa el esquema de paginacion a 64gb agregando las entradas necesarias a las estructuras.
+    Se utilizó un modelo de paginación en identity mapping donde se cubren los primeros 64 GB de memoria. El modo de paginación elegido fue IA32e en 3 niveles con páginas de 2 megas, es importante remarcar que como para pasar a modo largo de 64 bits es obligatorio tener paginación activa, el mapeo de la memoria virtual fue realizado en 2 etapas, en la primera se mapearon únicamente los primeros 4gb pues desde modo protegido puedo direccionar como máximo hasta 4gb y luego desde modo largo, se completa el esquema de paginación a 64gb agregando las entradas necesarias a las estructuras.
     \\
 
     Esquema de paginación IA32-e:
@@ -45,7 +45,7 @@
 
     \subsection{Inicialización del Bootstrap processor: Pasaje a modo largo x64 nativo}
 
-    Para pasar de modo compatibilidad a modo nativo de 64 bits, es necesario realizar un salto largo en la ejecucion a un descriptor de la GDT de código de 64 bits.\\
+    Para pasar de modo compatibilidad a modo nativo de 64 bits, es necesario realizar un salto largo en la ejecución a un descriptor de la GDT de código de 64 bits.\\
     \\
     Luego de realizar el salto al segmento de código de x64 de la GDT establecemos un contexto seguro con los registros en cero, seteamos los selectores correspondientes de la GDT y establecemos los punteros a una pila asignada al BSP.
 
@@ -56,7 +56,7 @@
     \subsubsection{Modo Largo x64: Inicialización del PIC - Captura de excepciones e interrupciones}
 	
     Enviamos señales al PIC para reprogramarlo de forma tal en la que atienda las interrupciones enmascarables.
-    Luego, asignamos una IDT que captura todas las excepciones e interrupciones y de ser necesario, realiza las acciones correspondientes con su ISR asociada. Particularmente las excepciones son capturadas y mostradas en pantalla y se utiliza la interrupcion de reloj para sincronizacion y esperas, las demás interrupciones son ignoradas.
+    Luego, asignamos una IDT que captura todas las excepciones e interrupciones y de ser necesario, realiza las acciones correspondientes con su ISR asociada. Particularmente las excepciones son capturadas y mostradas en pantalla y se utiliza la interrupción de reloj para sincronización y esperas, las demás interrupciones son ignoradas.
 
     \begin{center}
         \includegraphics[height=10cm]{images/interrupts.png}

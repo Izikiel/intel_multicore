@@ -1,14 +1,14 @@
     \subsection{Estructura de carpetas: Compilación, Linkeo y Scripts}
     \begin{itemize}
 	    \item \textbf{ap\_code: } Contiene el código de los Application processors, tanto de inicialización desde modo protegido a modo nativo x64 como parte del código de los algoritmos implementados para los experimentos.
-		\item \textbf{ap\_startup\_code: } Contiene el código de inicializacion de modo real a modo protegido de los Application processors
+		\item \textbf{ap\_startup\_code: } Contiene el código de inicialización de modo real a modo protegido de los Application processors
 		\item \textbf{bsp\_code: } Contiene el código de booteo del kernel principal de nivel 2, parte del código de los algoritmos implementados, y el encendido por parte del BSP de los Application Processors.
 		\item \textbf{common\_code: } Contiene el código común al Bootstrap Processor y los Application Processors.
-		\item \textbf{grub\_init: } Contiene scripts y archivos de configuracion de grub, en la subcarpeta src se encuentra el primer nivel de booteo que realiza el pasaje entre la máquina en estado mencionado en la especificación multiboot al segundo nivel de booteo del BSP.
+		\item \textbf{grub\_init: } Contiene scripts y archivos de configuración de grub, en la subcarpeta src se encuentra el primer nivel de booteo que realiza el pasaje entre la máquina en estado mencionado en la especificación multiboot al segundo nivel de booteo del BSP.
 		\item \textbf{run.sh: } Script para compilación y distribución del tp.
 		\item \textbf{macros: } Esta carpeta contiene macros utilizadas en el código.
 		\item \textbf{informe: } Contiene el informe del trabajo práctico en formato Latex y PDF.
-		\item \textbf{include: } Contiene las cabeceras de las librerias incluidas en el código.
+		\item \textbf{include: } Contiene las cabeceras de las librerías incluidas en el código.
     \end{itemize}
 
     El tp está compilado en varios ejecutables, de esta forma cargamos algunas partes como módulos de grub.
@@ -17,15 +17,15 @@
     \\
     \\
     El linkeo está realizado con linking scripts en las carpetas donde sea necesario,
-    cada sección esta alineada a 4k por temas de compatibilidad, asimismo hay símbolos que pueden ser leidos desde el codigo si es necesario saber la ubicación de estas secciones en memoria.
-    Los módulos de 32 bits estan compilados en formato elf32 y los de 64 bits en binario plano de 64 bits, esto se debe a temas de compatibilidad de grub al cargar modulos y kernels.
+    cada sección esta alineada a 4k por temas de compatibilidad, asimismo hay símbolos que pueden ser leídos desde el código si es necesario saber la ubicación de estas secciones en memoria.
+    Los módulos de 32 bits están compilados en formato elf32 y los de 64 bits en binario plano de 64 bits, esto se debe a temas de compatibilidad de grub al cargar módulos y kernels.
     \\
     \\
-    Para correr el trabajo practico unicamente hace falta tipear $./run.sh -r$ en consola y se recompilará automaticamente para luego ejecutarse en bochs.\\
+    Para correr el trabajo practico únicamente hace falta tipear $./run.sh -r$ en consola y se recompilará automáticamente para luego ejecutarse en bochs.\\
     En caso de querer correr en una máquina real el trabajo práctico, se debe contar con un pendrive usb con Grub 0.97 instalado y luego ejecutar el comando \textbf{./run.sh -usb path\_al\_usb\_montado} para recompilar y copiar los archivos necesarios al usb.\\
     Al correr el trabajo, se ejecutará en orden lo siguiente:
     \begin{itemize}
-        \item Inicializacion del sistema
+        \item Inicialización del sistema
         \item Sorting \begin{itemize}
                     \item Sorting utilizando un solo núcleo
                     \item Sorting utilizando dos núcleos sincronizando vía espera activa

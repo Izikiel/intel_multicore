@@ -1,16 +1,16 @@
 \section{Resultados}
-En esta sección se plasmarán los resultados obtenidos en las pruebas de las secciones anteriores, asimismo se darán detalles tecnicos de los equipos donde fueron realizados los experimentos.
+En esta sección se plasmarán los resultados obtenidos en las pruebas de las secciones anteriores, asimismo se darán detalles técnicos de los equipos donde fueron realizados los experimentos.
 \subsection{Lectura e interpretación de resultados por pantalla}
 El sistema luego de realizar la inicialización, comienza a arrojar por pantalla, los resultados(medidos en ticks) de los distintos algoritmos (separados por columna) aplicados sobre distintos tamaños de datos(separados por filas). Sobre estos datos obtenidos en una variedad de máquinas reales, se realizaron documentos, análisis y gráficos y serán plasmados debajo.
 \subsection{Resultados: Forma de medición}
-Las mediciones se realizaron utilizando los registros del procesador que contienen la cantidad de ticks transcurridos. Los puntos del código elegidos para comenzar y finalizar la medición son antes y despues de llamar a los métodos de test, por ejemplo:
+Las mediciones se realizaron utilizando los registros del procesador que contienen la cantidad de ticks transcurridos. Los puntos del código elegidos para comenzar y finalizar la medición son antes y después de llamar a los métodos de test, por ejemplo:
 \begin{itemize}
-	\item Comenzar medicion
+	\item Comenzar medición
 	\item Ejecutar sort\_single\_core\(\)
-	\item Finalizar medicion
+	\item Finalizar medición
 \end{itemize}
 
-Notemos que estas formas de medición no solo analizan el rendimiento del algoritmo propiamente dicho, sino además los tiempos de sincronización requeridos para cada implementación. (ver gráficos de los protocolos de sincronización), esto nos permitirá ver como en algunos casos, donde el tamaño de la entrada de datos es relativamente pequeña, la mejora obtenida en el multiprocesamiento es licuada por los tiempos extras requeridos para la sincronización, dándonos además un cross-over, el cual nos indica a partir de que tamaño de entrada comienza a ser mas ventajoso utilizar multiprocesamiento, permitiéndonos si lo desearamos, realizar algoritmos mas inteligentes que dependiendo de los datos de entrada utilicen la implementación que tenga el mejor rendimiento.
+Notemos que estas formas de medición no solo analizan el rendimiento del algoritmo propiamente dicho, sino además los tiempos de sincronización requeridos para cada implementación. (ver gráficos de los protocolos de sincronización), esto nos permitirá ver como en algunos casos, donde el tamaño de la entrada de datos es relativamente pequeña, la mejora obtenida en el multiprocesamiento es licuada por los tiempos extras requeridos para la sincronización, dándonos además un cross-over, el cual nos indica a partir de que tamaño de entrada comienza a ser mas ventajoso utilizar multiprocesamiento, permitiéndonos si lo deseáramos, realizar algoritmos mas inteligentes que dependiendo de los datos de entrada utilicen la implementación que tenga el mejor rendimiento.
 
 
 \subsection{Resultados: Arquitectura de las máquinas utilizadas}
@@ -247,7 +247,7 @@ Podemos observar como, incluso utilizando dos núcleos, la saturación del canal
 	    \includegraphics[height=6cm]{images/XEON_Sorting.png}
 	\end{center}
 
-	Dadas las mejores prestaciónes de caché y arquitectura de esta configuración, vemos que se obtiene un 84\% de mejora al realizar el multiprocesamiento al ordenar muestras de 2097152 elementos. El cross-over donde conviene utilizar multicore es muy bajo, desde 8 elementos ya es mas rápido el ordenamiento dual core. 
+	Dadas las mejores prestaciones de caché y arquitectura de esta configuración, vemos que se obtiene un 84\% de mejora al realizar el multiprocesamiento al ordenar muestras de 2097152 elementos. El cross-over donde conviene utilizar multicore es muy bajo, desde 8 elementos ya es mas rápido el ordenamiento dual core. 
 
 \subsubsection{Intel® Xeon® Processor E5345 - Vector modification}
 \begin{center}
@@ -481,7 +481,7 @@ Podemos observar como, incluso utilizando dos núcleos, la saturación del canal
 	    \includegraphics[height=7cm]{images/i7-vectorsum-sorting.png}
 	\end{center}
 
-	Podemos observar aqui que en arquitecturas mas nuevas de intel, se va mejorando la performance promedio obtenida, cada vez mas cercana a duplicar la performance single core, a pesar de esto, los accesos a memoria siguien siendo un problema en algunos casos.
+	Podemos observar aquí que en arquitecturas mas nuevas de intel, se va mejorando la performance promedio obtenida, cada vez mas cercana a duplicar la performance single core, a pesar de esto, los accesos a memoria siguen siendo un problema en algunos casos.
 
 \subsubsection{Intel® Core™ i5-2500K Processor - Sorting}
 \begin{center}
@@ -654,7 +654,7 @@ Podemos observar como, incluso utilizando dos núcleos, la saturación del canal
 	    \includegraphics[height=6cm]{images/core2quad_sorting.png}
 	\end{center}
 
-	Esta arquitectura, a pesar de ser mas antigua de los ix, nos muestra una buena performance utilizando multicore, de aproximadamente el doble, la mejora respecto de la cantidad de elementos en aumento es casi instantanea, a partir de 8 elementos.
+	Esta arquitectura, a pesar de ser mas antigua de los ix, nos muestra una buena performance utilizando multicore, de aproximadamente el doble, la mejora respecto de la cantidad de elementos en aumento es casi instantánea, a partir de 8 elementos.
 
 \subsubsection{Intel® Core™2 Quad Processor Q6600 Vector modification}
 \begin{center}
@@ -716,7 +716,7 @@ Podemos observar como, incluso utilizando dos núcleos, la saturación del canal
 	
 \subsubsection{Intel® Pentium® Processor T4200 - Sorting usando Inter-processor interrupts}
 
-Para intentar reducir los accesos a memoria, implementamos la sincronización entre núcleos mediante interrupciones entre procesadores en lugar de realizar espera activa a memoria. Los resultados fueron curiosos, dado que dió peor la performance respecto a la sincronización con variables en memoria RAM. Creemos que esto se debe a las velocidades del bus de memoria y el bus de sistema y la memoria caché.
+Para intentar reducir los accesos a memoria, implementamos la sincronización entre núcleos mediante interrupciones entre procesadores en lugar de realizar espera activa a memoria. Los resultados fueron curiosos, dado que dio peor la performance respecto a la sincronización con variables en memoria RAM. Creemos que esto se debe a las velocidades del bus de memoria y el bus de sistema y la memoria caché.
 
 \begin{center}
 	\begin{tabular}{|c|c|c|c|c|c|c|}
@@ -842,7 +842,7 @@ Para intentar reducir los accesos a memoria, implementamos la sincronización en
 	\end{center}
 
 
-Dada la velocidad superior del bus de sistema y las nuevas tecnologías de caché de la arquitectura se ve una mejoria respecto al procesador Pentium D T4200 al momento de comparar sincronización entre memoria e ipis. 
+Dada la velocidad superior del bus de sistema y las nuevas tecnologías de caché de la arquitectura se ve una mejoría respecto al procesador Pentium D T4200 al momento de comparar sincronización entre memoria e ipis. 
 
 \subsubsection{Intel® Pentium® Processor T4200 - FFT Single - FFT Dual Mem - FFT Dual IPI}
 
@@ -932,7 +932,7 @@ Dada la velocidad superior del bus de sistema y las nuevas tecnologías de cach�
 	    \includegraphics[height=6cm]{images/fft_core2quad.png}
 	\end{center}
 
-Vemos como en esta arquitectura mejora contra la anterior la mejora máxima, de un 46\%. Las ipis todavia no son demasiado favorables, además se observa que el cross-over para la mejora en dual core es casi instantaneo sobre la cantidad de elementos.
+Vemos como en esta arquitectura mejora contra la anterior la mejora máxima, de un 46\%. Las ipis todavía no son demasiado favorables, además se observa que el cross-over para la mejora en dual core es casi instantáneo sobre la cantidad de elementos.
 
 \subsubsection{Intel® Core™ i5-2500K Processor - FFT Single - FFT Dual Mem - FFT Dual IPI}
 
@@ -975,7 +975,7 @@ Vemos como en esta arquitectura mejora contra la anterior la mejora máxima, de 
 \begin{center}
 	    \includegraphics[height=6cm]{images/fft_i5.png}
 	\end{center}
-En la arquitectura del core i5, mejora el rendimiento obtenido utilizando multicore, otorgando un 70\% de mejora versus monoprocesamiento. Las ipis proveen un 52\% de mejora, además observamos que el cross-over para la mejora en dual core es casi instantaneo sobre la cantidad de elementos.
+En la arquitectura del core i5, mejora el rendimiento obtenido utilizando multicore, otorgando un 70\% de mejora versus monoprocesamiento. Las ipis proveen un 52\% de mejora, además observamos que el cross-over para la mejora en dual core es casi instantáneo sobre la cantidad de elementos.
 
 \subsubsection{Intel® Pentium® Processor G2030 - FFT Single - FFT Dual Mem - FFT Dual IPI}
 
@@ -1020,7 +1020,7 @@ En la arquitectura del core i5, mejora el rendimiento obtenido utilizando multic
 	    \includegraphics[height=6cm]{images/fft_g2030.png}
 	\end{center}
 
-Aqui obtenemos una mejora maxima de un 59\%, el cross-over es casi instantaneo y mejoran bastante las ipis, en relación a su contraparte sincronizada por espera activa con accesos a memoria al compararse con monoprocesamiento.
+Aquí obtenemos una mejora máxima de un 59\%, el cross-over es casi instantáneo y mejoran bastante las ipis, en relación a su contra parte sincronizada por espera activa con accesos a memoria al compararse con monoprocesamiento.
 
 \subsubsection{Intel® Xeon® Processor E5345 - FFT Single - FFT Dual Mem - FFT Dual IPI}
 
