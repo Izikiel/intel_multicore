@@ -13,7 +13,7 @@ The kernel project per-se is named DeliriOS_64bits, and it currently executes te
 * FFT implemented with the Cooley-Tukey algorithm dualcore synchronized by memory.
 * FFT implemented with the Cooley-Tukey algorithm dualcore synchronized by interprocessor interrupts.
 
-We tested this algorithms on several processors of different architectures, obtaining pretty interesting results, which are in the informe.pdf file, (to be uploaded, for now it's in spanish).
+We tested this algorithms on several processors of different architectures, obtaining pretty interesting results, which are in the DeliriOS_64bits/informe/informe.pdf file (for now it's in spanish).
 
 This work was developed by me (Izikiel), Silvio Vileriño (svilerino) , and Juan Pablo Darago (jpdarago).
 
