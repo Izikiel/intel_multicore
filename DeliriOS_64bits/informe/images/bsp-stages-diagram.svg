@@ -1,0 +1,265 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!-- Created with Inkscape (http://www.inkscape.org/) -->
+
+<svg
+   xmlns:dc="http://purl.org/dc/elements/1.1/"
+   xmlns:cc="http://creativecommons.org/ns#"
+   xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:svg="http://www.w3.org/2000/svg"
+   xmlns="http://www.w3.org/2000/svg"
+   xmlns:sodipodi="http://sodipodi.sourceforge.net/DTD/sodipodi-0.dtd"
+   xmlns:inkscape="http://www.inkscape.org/namespaces/inkscape"
+   width="1052.3622"
+   height="744.09448"
+   id="svg2"
+   version="1.1"
+   inkscape:version="0.48.4 r9939"
+   sodipodi:docname="bsp-stages-diagram.svg">
+  <defs
+     id="defs4">
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow2Lend"
+       style="overflow:visible;">
+      <path
+         id="path4101"
+         style="fill-rule:evenodd;stroke-width:0.62500000;stroke-linejoin:round;"
+         d="M 8.7185878,4.0337352 L -2.2072895,0.016013256 L 8.7185884,-4.0017078 C 6.9730900,-1.6296469 6.9831476,1.6157441 8.7185878,4.0337352 z "
+         transform="scale(1.1) rotate(180) translate(1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow1Lend"
+       orient="auto"
+       refY="0.0"
+       refX="0.0"
+       id="Arrow1Lend"
+       style="overflow:visible;">
+      <path
+         id="path4083"
+         d="M 0.0,0.0 L 5.0,-5.0 L -12.5,0.0 L 5.0,5.0 L 0.0,0.0 z "
+         style="fill-rule:evenodd;stroke:#000000;stroke-width:1.0pt;"
+         transform="scale(0.8) rotate(180) translate(12.5,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-4"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4101-5"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+    <marker
+       inkscape:stockid="Arrow2Lend"
+       orient="auto"
+       refY="0"
+       refX="0"
+       id="Arrow2Lend-9"
+       style="overflow:visible">
+      <path
+         inkscape:connector-curvature="0"
+         id="path4101-2"
+         style="fill-rule:evenodd;stroke-width:0.625;stroke-linejoin:round"
+         d="M 8.7185878,4.0337352 -2.2072895,0.01601326 8.7185884,-4.0017078 c -1.7454984,2.3720609 -1.7354408,5.6174519 -6e-7,8.035443 z"
+         transform="matrix(-1.1,0,0,-1.1,-1.1,0)" />
+    </marker>
+  </defs>
+  <sodipodi:namedview
+     id="base"
+     pagecolor="#ffffff"
+     bordercolor="#666666"
+     borderopacity="1.0"
+     inkscape:pageopacity="0.0"
+     inkscape:pageshadow="2"
+     inkscape:zoom="1.4"
+     inkscape:cx="519.6714"
+     inkscape:cy="525.10798"
+     inkscape:document-units="px"
+     inkscape:current-layer="layer1"
+     showgrid="false"
+     inkscape:window-width="1920"
+     inkscape:window-height="1138"
+     inkscape:window-x="1272"
+     inkscape:window-y="-8"
+     inkscape:window-maximized="1" />
+  <metadata
+     id="metadata7">
+    <rdf:RDF>
+      <cc:Work
+         rdf:about="">
+        <dc:format>image/svg+xml</dc:format>
+        <dc:type
+           rdf:resource="http://purl.org/dc/dcmitype/StillImage" />
+      </cc:Work>
+    </rdf:RDF>
+  </metadata>
+  <g
+     inkscape:label="Capa 1"
+     inkscape:groupmode="layer"
+     id="layer1"
+     transform="translate(0,-308.2677)">
+    <text
+       xml:space="preserve"
+       style="font-size:18.76546288px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="76.413223"
+       y="304.46146"
+       id="text2985"
+       sodipodi:linespacing="125%"
+       transform="scale(0.85042597,1.1758813)"><tspan
+         sodipodi:role="line"
+         id="tspan2987"
+         x="76.413223"
+         y="304.46146">Grub lleva pc a un estado </tspan><tspan
+         sodipodi:role="line"
+         x="76.413223"
+         y="327.91827"
+         id="tspan2989">conocido detallado</tspan><tspan
+         sodipodi:role="line"
+         x="76.413223"
+         y="351.37512"
+         id="tspan3022">en la especificación</tspan><tspan
+         sodipodi:role="line"
+         x="76.413223"
+         y="374.83194"
+         id="tspan3025">multiboot </tspan></text>
+    <g
+       id="g3108"
+       transform="translate(98.697525,-12.222269)">
+      <text
+         sodipodi:linespacing="125%"
+         id="text2991"
+         y="464.76862"
+         x="175.95297"
+         style="font-size:19.15707779px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="464.76862"
+           x="175.95297"
+           id="tspan2993"
+           sodipodi:role="line">nivel 1: Puente entre Grub y DeliriOS</tspan><tspan
+           y="488.71497"
+           x="175.95297"
+           sodipodi:role="line"
+           id="tspan3021" /></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text2995"
+         y="483.54678"
+         x="176.99126"
+         style="font-size:12.03474998px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="483.54678"
+           x="176.99126"
+           id="tspan2997"
+           sodipodi:role="line"> * Validaciones de especificacion multiboot.</tspan><tspan
+           id="tspan2999"
+           y="498.59021"
+           x="176.99126"
+           sodipodi:role="line"> * Obtención de las posiciones en memoria de los módulos.</tspan><tspan
+           id="tspan3001"
+           y="513.63367"
+           x="176.99126"
+           sodipodi:role="line"> * Copia del módulo ap_startup_code a la posición 0x2000.</tspan><tspan
+           id="tspan3003"
+           y="528.67712"
+           x="176.99126"
+           sodipodi:role="line"> * Inyección de datos entre módulos.</tspan><tspan
+           id="tspan3024"
+           y="543.72052"
+           x="176.99126"
+           sodipodi:role="line"> * Otorgar control al módulo kernel64</tspan></text>
+    </g>
+    <g
+       id="g3098"
+       transform="translate(71.547058,1.8574738)">
+      <text
+         sodipodi:linespacing="125%"
+         id="text2991-4"
+         y="609.10748"
+         x="451.50766"
+         style="font-size:19.15707779px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="609.10748"
+           x="451.50766"
+           id="tspan2993-8"
+           sodipodi:role="line">nivel 2: Puente entre DeliriOS y modo x64</tspan></text>
+      <text
+         sodipodi:linespacing="125%"
+         id="text2995-8"
+         y="627.88568"
+         x="459.68881"
+         style="font-size:12.03474998px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+         xml:space="preserve"><tspan
+           y="627.88568"
+           x="459.68881"
+           id="tspan2997-6"
+           sodipodi:role="line"> * Asignar GDT, Paginación, Interrupciones, etc.</tspan><tspan
+           id="tspan2999-8"
+           y="642.92914"
+           x="459.68881"
+           sodipodi:role="line"> * Reprogramación del PIC.</tspan><tspan
+           id="tspan3001-3"
+           y="657.97253"
+           x="459.68881"
+           sodipodi:role="line"> * Envío de señal de encendido a los AP's .</tspan><tspan
+           id="tspan3003-2"
+           y="673.01599"
+           x="459.68881"
+           sodipodi:role="line"> * Limpieza de registros de propósito general.</tspan><tspan
+           id="tspan3024-4"
+           y="688.05945"
+           x="459.68881"
+           sodipodi:role="line"> * Seteo de la pila.</tspan><tspan
+           y="703.10284"
+           x="459.68881"
+           sodipodi:role="line"
+           id="tspan4776"> * Salto a 64 bits</tspan></text>
+    </g>
+    <flowRoot
+       xml:space="preserve"
+       id="flowRoot3086"
+       style="fill:black;stroke:none;stroke-opacity:1;stroke-width:1px;stroke-linejoin:miter;stroke-linecap:butt;fill-opacity:1;font-family:Sans;font-style:normal;font-weight:normal;font-size:40px;line-height:125%;letter-spacing:0px;word-spacing:0px"><flowRegion
+         id="flowRegion3088"><rect
+           id="rect3090"
+           width="981.42859"
+           height="160"
+           x="24.285715"
+           y="28.380196" /></flowRegion><flowPara
+         id="flowPara3092" /></flowRoot>    <text
+       xml:space="preserve"
+       style="font-size:21.76826096px;font-style:normal;font-weight:normal;line-height:125%;letter-spacing:0px;word-spacing:0px;fill:#000000;fill-opacity:1;stroke:none;font-family:Sans"
+       x="770.36084"
+       y="771.36749"
+       id="text3094"
+       sodipodi:linespacing="125%"><tspan
+         sodipodi:role="line"
+         id="tspan3096"
+         x="770.36084"
+         y="771.36749">Inicio completo!</tspan></text>
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.89999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Lend)"
+       d="M 222.14286,377.36218 C 285,406.53102 405,339.73374 405,431.6479"
+       id="path3126"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.89999998;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Lend)"
+       d="m 521.97403,505.86127 c 62.85714,29.16883 182.85714,-37.62844 182.85714,54.28572"
+       id="path3126-9"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+    <path
+       style="fill:none;stroke:#000000;stroke-width:1.56518459;stroke-linecap:butt;stroke-linejoin:miter;stroke-miterlimit:4;stroke-opacity:1;stroke-dasharray:none;marker-start:none;marker-end:url(#Arrow2Lend)"
+       d="m 774.91602,657.37469 c 26.5383,49.45617 63.75458,-0.46512 84.94928,79.29793"
+       id="path3126-8"
+       inkscape:connector-curvature="0"
+       sodipodi:nodetypes="cc" />
+  </g>
+</svg>

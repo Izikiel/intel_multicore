@@ -1,12 +1,11 @@
-This is pdfTeX, Version 3.1415926-2.4-1.40.13 (TeX Live 2012/Debian) (format=pdflatex 2013.6.5)  20 MAR 2014 09:33
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.3.23)  30 MAR 2014 12:43
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
 **informe.tex
 (./informe.tex
 LaTeX2e <2011/06/27>
-Babel <v3.8m> and hyphenation patterns for english, dumylang, nohyphenation, lo
-aded.
+Babel <3.9f> and hyphenation patterns for 78 languages loaded.
 (/usr/share/texlive/texmf-dist/tex/latex/base/article.cls
 Document Class: article 2007/10/19 v1.4h Standard LaTeX document class
 (/usr/share/texlive/texmf-dist/tex/latex/base/size10.clo
@@ -273,28 +272,23 @@ Now handling font encoding U ...
    defining Unicode char U+2423 (decimal 9251)
 ))
 (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.sty
-Package: babel 2008/07/08 v3.8m The Babel package
+Package: babel 2013/05/16 v3.9f The Babel package
 
-(/usr/share/texlive/texmf-dist/tex/generic/babel/spanish.ldf
-Language: spanish.ldf 2011/10/06 v5.0k Spanish support from the babel system
+(/usr/share/texlive/texmf-dist/tex/generic/babel-spanish/spanish.ldf
+Language: spanish.ldf 2010/05/23 v5.0j Spanish support from the babel system
 
 (/usr/share/texlive/texmf-dist/tex/generic/babel/babel.def
-File: babel.def 2008/07/08 v3.8m Babel common definitions
+File: babel.def 2013/05/16 v3.9f Babel common definitions
 \babel@savecnt=\count90
 \U@D=\dimen111
 )
-
-Package babel Warning: No hyphenation patterns were loaded for
-(babel)                the language `Spanish'
-(babel)                I will use the patterns loaded for \language=0 instead.
-
-\l@spanish = a dialect from \language0
 \es@datefmt=\count91
 \es@quottoks=\toks18
 \es@quotdepth=\count92
-Package babel Info: Making " an active character on input line 496.
-Package babel Info: Making . an active character on input line 599.
-)) (/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty
+Package babel Info: Making " an active character on input line 495.
+Package babel Info: Making . an active character on input line 588.
+))
+(/usr/share/texlive/texmf-dist/tex/latex/setspace/setspace.sty
 Package: setspace 2011/12/19 v6.7a set line spacing
 )
 (/usr/share/texlive/texmf-dist/tex/latex/fancyhdr/fancyhdr.sty
@@ -309,10 +303,10 @@ Package: setspace 2011/12/19 v6.7a set line spacing
 \f@ncyO@orf=\skip51
 )
 (/usr/share/texlive/texmf-dist/tex/latex/lastpage/lastpage.sty
-Package: lastpage 2011/09/01 v1.2k Refers to last page's name (HMM; JPG)
+Package: lastpage 2013/01/28 v1.2l Refers to last page's name (HMM; JPG)
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amsmath/amsmath.sty
-Package: amsmath 2000/07/18 v2.13 AMS math features
+Package: amsmath 2013/01/14 v2.14 AMS math features
 \@mathmargin=\skip52
 
 For additional information on amsmath, use the `?' option.
@@ -332,20 +326,20 @@ Package: amsbsy 1999/11/29 v1.2d
 Package: amsopn 1999/12/14 v2.01 operator names
 )
 \inf@bad=\count93
-LaTeX Info: Redefining \frac on input line 211.
+LaTeX Info: Redefining \frac on input line 210.
 \uproot@=\count94
 \leftroot@=\count95
-LaTeX Info: Redefining \overline on input line 307.
+LaTeX Info: Redefining \overline on input line 306.
 \classnum@=\count96
 \DOTSCASE@=\count97
-LaTeX Info: Redefining \ldots on input line 379.
-LaTeX Info: Redefining \dots on input line 382.
-LaTeX Info: Redefining \cdots on input line 467.
+LaTeX Info: Redefining \ldots on input line 378.
+LaTeX Info: Redefining \dots on input line 381.
+LaTeX Info: Redefining \cdots on input line 466.
 \Mathstrutbox@=\box26
 \strutbox@=\box27
 \big@size=\dimen114
-LaTeX Font Info:    Redeclaring font encoding OML on input line 567.
-LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
+LaTeX Font Info:    Redeclaring font encoding OML on input line 566.
+LaTeX Font Info:    Redeclaring font encoding OMS on input line 567.
 \macc@depth=\count98
 \c@MaxMatrixCols=\count99
 \dotsspace@=\muskip10
@@ -366,15 +360,15 @@ LaTeX Font Info:    Redeclaring font encoding OMS on input line 568.
 \multlinegap=\skip53
 \multlinetaggap=\skip54
 \mathdisplay@stack=\toks23
-LaTeX Info: Redefining \[ on input line 2666.
-LaTeX Info: Redefining \] on input line 2667.
+LaTeX Info: Redefining \[ on input line 2665.
+LaTeX Info: Redefining \] on input line 2666.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/amsfonts.sty
-Package: amsfonts 2009/06/22 v3.00 Basic AMSFonts support
+Package: amsfonts 2013/01/14 v3.01 Basic AMSFonts support
 \symAMSa=\mathgroup4
 \symAMSb=\mathgroup5
 LaTeX Font Info:    Overwriting math alphabet `\mathfrak' in version `bold'
-(Font)                  U/euf/m/n --> U/euf/b/n on input line 96.
+(Font)                  U/euf/m/n --> U/euf/b/n on input line 106.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/tools/verbatim.sty
 Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
@@ -397,15 +391,15 @@ Package: verbatim 2003/08/22 v1.5q LaTeX2e package for verbatim enhancements
 \lst@maxwidth=\dimen124
 
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstmisc.sty
-File: lstmisc.sty 2007/02/22 1.4 (Carsten Heinz)
+File: lstmisc.sty 2013/07/10 1.5 (Carsten Heinz)
 \c@lstnumber=\count111
 \lst@skipnumbers=\count112
 \lst@framebox=\box29
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/listings.cfg
-File: listings.cfg 2007/02/22 1.4 listings configuration
+File: listings.cfg 2013/06/27 1.5pre1 listings configuration
 ))
-Package: listings 2007/02/22 1.4 (Carsten Heinz)
+Package: listings 2013/07/10 1.5 (Carsten Heinz)
 
 (/usr/share/texlive/texmf-dist/tex/latex/graphics/graphicx.sty
 Package: graphicx 1999/02/16 v1.0f Enhanced LaTeX Graphics (DPC,SPQR)
@@ -465,7 +459,7 @@ File: color.cfg 2007/01/18 v1.5 color configuration of teTeX/TeXLive
 Package color Info: Driver file: pdftex.def on input line 130.
 )
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hyperref.sty
-Package: hyperref 2012/05/13 v6.82q Hypertext links for LaTeX
+Package: hyperref 2012/11/06 v6.83m Hypertext links for LaTeX
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/hobsub-hyperref.sty
 Package: hobsub-hyperref 2012/05/28 v1.13 Bundle oberdiek, subset hyperref (HO)
@@ -510,6 +504,9 @@ Package: atbegshi 2011/10/05 v1.16 At begin shipout hook (HO)
 Package: refcount 2011/10/16 v3.4 Data extraction from label references (HO)
 Package: hycolor 2011/01/30 v1.7 Color options for hyperref/bookmark (HO)
 )
+(/usr/share/texlive/texmf-dist/tex/latex/oberdiek/auxhook.sty
+Package: auxhook 2011/03/04 v1.3 Hooks for auxiliary files (HO)
+)
 (/usr/share/texlive/texmf-dist/tex/latex/oberdiek/kvoptions.sty
 Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 )
@@ -518,7 +515,7 @@ Package: kvoptions 2011/06/30 v3.11 Key value format for package options (HO)
 \Hy@pagecounter=\count120
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/pd1enc.def
-File: pd1enc.def 2012/05/13 v6.82q Hyperref: PDFDocEncoding definition (HO)
+File: pd1enc.def 2012/11/06 v6.83m Hyperref: PDFDocEncoding definition (HO)
 Now handling font encoding PD1 ...
 ... no UTF-8 mapping file for font encoding PD1
 )
@@ -527,32 +524,33 @@ Now handling font encoding PD1 ...
 (/usr/share/texlive/texmf-dist/tex/latex/latexconfig/hyperref.cfg
 File: hyperref.cfg 2002/06/06 v1.2 hyperref configuration of TeXLive
 )
-Package hyperref Info: Hyper figures OFF on input line 4062.
-Package hyperref Info: Link nesting OFF on input line 4067.
-Package hyperref Info: Hyper index ON on input line 4070.
-Package hyperref Info: Plain pages OFF on input line 4077.
-Package hyperref Info: Backreferencing OFF on input line 4082.
+Package hyperref Info: Hyper figures OFF on input line 4443.
+Package hyperref Info: Link nesting OFF on input line 4448.
+Package hyperref Info: Hyper index ON on input line 4451.
+Package hyperref Info: Plain pages OFF on input line 4458.
+Package hyperref Info: Backreferencing OFF on input line 4463.
 Package hyperref Info: Implicit mode ON; LaTeX internals redefined.
-Package hyperref Info: Bookmarks ON on input line 4300.
+Package hyperref Info: Bookmarks ON on input line 4688.
 \c@Hy@tempcnt=\count122
 
 (/usr/share/texlive/texmf-dist/tex/latex/url/url.sty
 \Urlmuskip=\muskip11
 Package: url 2006/04/12  ver 3.3  Verb mode for urls, etc.
 )
-LaTeX Info: Redefining \url on input line 4653.
+LaTeX Info: Redefining \url on input line 5041.
+\XeTeXLinkMargin=\dimen128
 \Fld@menulength=\count123
-\Field@Width=\dimen128
-\Fld@charsize=\dimen129
-Package hyperref Info: Hyper figures OFF on input line 5773.
-Package hyperref Info: Link nesting OFF on input line 5778.
-Package hyperref Info: Hyper index ON on input line 5781.
-Package hyperref Info: backreferencing OFF on input line 5788.
-Package hyperref Info: Link coloring OFF on input line 5793.
-Package hyperref Info: Link coloring with OCG OFF on input line 5798.
-Package hyperref Info: PDF/A mode OFF on input line 5803.
-LaTeX Info: Redefining \ref on input line 5843.
-LaTeX Info: Redefining \pageref on input line 5847.
+\Field@Width=\dimen129
+\Fld@charsize=\dimen130
+Package hyperref Info: Hyper figures OFF on input line 6295.
+Package hyperref Info: Link nesting OFF on input line 6300.
+Package hyperref Info: Hyper index ON on input line 6303.
+Package hyperref Info: backreferencing OFF on input line 6310.
+Package hyperref Info: Link coloring OFF on input line 6315.
+Package hyperref Info: Link coloring with OCG OFF on input line 6320.
+Package hyperref Info: PDF/A mode OFF on input line 6325.
+LaTeX Info: Redefining \ref on input line 6365.
+LaTeX Info: Redefining \pageref on input line 6369.
 \Hy@abspage=\count124
 \c@Item=\count125
 \c@Hfootnote=\count126
@@ -561,7 +559,7 @@ LaTeX Info: Redefining \pageref on input line 5847.
 Package hyperref Message: Driver (autodetected): hpdftex.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/hpdftex.def
-File: hpdftex.def 2012/05/13 v6.82q Hyperref driver for pdfTeX
+File: hpdftex.def 2012/11/06 v6.83m Hyperref driver for pdfTeX
 \Fld@listcount=\count127
 \c@bookmark@seq@number=\count128
 
@@ -623,14 +621,14 @@ Package: pgfsys 2010/06/30 v2.10 (rcs-revision 1.37)
 (/usr/share/texmf/tex/generic/pgf/utilities/pgfkeysfiltered.code.tex
 \pgfkeys@tmptoks=\toks32
 ))
-\pgf@x=\dimen130
-\pgf@y=\dimen131
-\pgf@xa=\dimen132
-\pgf@ya=\dimen133
-\pgf@xb=\dimen134
-\pgf@yb=\dimen135
-\pgf@xc=\dimen136
-\pgf@yc=\dimen137
+\pgf@x=\dimen131
+\pgf@y=\dimen132
+\pgf@xa=\dimen133
+\pgf@ya=\dimen134
+\pgf@xb=\dimen135
+\pgf@yb=\dimen136
+\pgf@xc=\dimen137
+\pgf@yc=\dimen138
 \w@pgf@writea=\write3
 \r@pgf@reada=\read2
 \c@pgf@counta=\count129
@@ -664,7 +662,7 @@ Package: pgfcore 2010/04/11 v2.10 (rcs-revision 1.7)
 (/usr/share/texmf/tex/generic/pgf/math/pgfmathcalc.code.tex
 (/usr/share/texmf/tex/generic/pgf/math/pgfmathutil.code.tex)
 (/usr/share/texmf/tex/generic/pgf/math/pgfmathparser.code.tex
-\pgfmath@dimen=\dimen138
+\pgfmath@dimen=\dimen139
 \pgfmath@count=\count135
 \pgfmath@box=\box33
 \pgfmath@toks=\toks33
@@ -684,30 +682,30 @@ Package: pgfcore 2010/04/11 v2.10 (rcs-revision 1.7)
 ))
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepoints.code.tex
 File: pgfcorepoints.code.tex 2010/04/09  (rcs-revision 1.20)
-\pgf@picminx=\dimen139
-\pgf@picmaxx=\dimen140
-\pgf@picminy=\dimen141
-\pgf@picmaxy=\dimen142
-\pgf@pathminx=\dimen143
-\pgf@pathmaxx=\dimen144
-\pgf@pathminy=\dimen145
-\pgf@pathmaxy=\dimen146
-\pgf@xx=\dimen147
-\pgf@xy=\dimen148
-\pgf@yx=\dimen149
-\pgf@yy=\dimen150
-\pgf@zx=\dimen151
-\pgf@zy=\dimen152
+\pgf@picminx=\dimen140
+\pgf@picmaxx=\dimen141
+\pgf@picminy=\dimen142
+\pgf@picmaxy=\dimen143
+\pgf@pathminx=\dimen144
+\pgf@pathmaxx=\dimen145
+\pgf@pathminy=\dimen146
+\pgf@pathmaxy=\dimen147
+\pgf@xx=\dimen148
+\pgf@xy=\dimen149
+\pgf@yx=\dimen150
+\pgf@yy=\dimen151
+\pgf@zx=\dimen152
+\pgf@zy=\dimen153
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathconstruct.code.tex
 File: pgfcorepathconstruct.code.tex 2010/08/03  (rcs-revision 1.24)
-\pgf@path@lastx=\dimen153
-\pgf@path@lasty=\dimen154
+\pgf@path@lastx=\dimen154
+\pgf@path@lasty=\dimen155
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorepathusage.code.tex
 File: pgfcorepathusage.code.tex 2008/04/22  (rcs-revision 1.12)
-\pgf@shorten@end@additional=\dimen155
-\pgf@shorten@start@additional=\dimen156
+\pgf@shorten@end@additional=\dimen156
+\pgf@shorten@start@additional=\dimen157
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorescopes.code.tex
 File: pgfcorescopes.code.tex 2010/09/08  (rcs-revision 1.34)
@@ -718,13 +716,13 @@ File: pgfcorescopes.code.tex 2010/09/08  (rcs-revision 1.34)
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoregraphicstate.code.tex
 File: pgfcoregraphicstate.code.tex 2008/04/22  (rcs-revision 1.9)
-\pgflinewidth=\dimen157
+\pgflinewidth=\dimen158
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoretransformations.code.tex
 File: pgfcoretransformations.code.tex 2009/06/10  (rcs-revision 1.11)
-\pgf@pt@x=\dimen158
-\pgf@pt@y=\dimen159
-\pgf@pt@temp=\dimen160
+\pgf@pt@x=\dimen159
+\pgf@pt@y=\dimen160
+\pgf@pt@temp=\dimen161
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcorequick.code.tex
 File: pgfcorequick.code.tex 2008/10/09  (rcs-revision 1.3)
@@ -740,7 +738,7 @@ File: pgfcorearrows.code.tex 2008/04/23  (rcs-revision 1.11)
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreshade.code.tex
 File: pgfcoreshade.code.tex 2008/11/23  (rcs-revision 1.13)
-\pgf@max=\dimen161
+\pgf@max=\dimen162
 \pgf@sys@shading@range@num=\count138
 )
 (/usr/share/texmf/tex/generic/pgf/basiclayer/pgfcoreimage.code.tex
@@ -768,8 +766,8 @@ File: pgfmoduleplot.code.tex 2010/10/22  (rcs-revision 1.8)
 )
 (/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-0-65.sty
 Package: pgfcomp-version-0-65 2007/07/03 v2.10 (rcs-revision 1.7)
-\pgf@nodesepstart=\dimen162
-\pgf@nodesepend=\dimen163
+\pgf@nodesepstart=\dimen163
+\pgf@nodesepend=\dimen164
 )
 (/usr/share/texmf/tex/latex/pgf/compatibility/pgfcomp-version-1-18.sty
 Package: pgfcomp-version-1-18 2007/07/23 v2.10 (rcs-revision 1.1)
@@ -779,8 +777,8 @@ Package: pgfcomp-version-1-18 2007/07/23 v2.10 (rcs-revision 1.1)
 (/usr/share/texmf/tex/generic/pgf/utilities/pgfkeys.code.tex))
 (/usr/share/texmf/tex/generic/pgf/utilities/pgffor.code.tex
 Package: pgffor 2010/03/23 v2.10 (rcs-revision 1.18)
-\pgffor@iter=\dimen164
-\pgffor@skip=\dimen165
+\pgffor@iter=\dimen165
+\pgffor@skip=\dimen166
 \pgffor@stack=\toks36
 \pgffor@toks=\toks37
 ))
@@ -790,14 +788,14 @@ Package: tikz 2010/10/13 v2.10 (rcs-revision 1.76)
 (/usr/share/texmf/tex/generic/pgf/libraries/pgflibraryplothandlers.code.tex
 File: pgflibraryplothandlers.code.tex 2010/05/31 v2.10 (rcs-revision 1.15)
 \pgf@plot@mark@count=\count139
-\pgfplotmarksize=\dimen166
+\pgfplotmarksize=\dimen167
 )
-\tikz@lastx=\dimen167
-\tikz@lasty=\dimen168
-\tikz@lastxsaved=\dimen169
-\tikz@lastysaved=\dimen170
-\tikzleveldistance=\dimen171
-\tikzsiblingdistance=\dimen172
+\tikz@lastx=\dimen168
+\tikz@lasty=\dimen169
+\tikz@lastxsaved=\dimen170
+\tikz@lastysaved=\dimen171
+\tikzleveldistance=\dimen172
+\tikzsiblingdistance=\dimen173
 \tikz@figbox=\box39
 \tikz@tempbox=\box40
 \tikztreelevel=\count140
@@ -826,14 +824,14 @@ ations.pathreplacing.code.tex
 (/usr/share/texmf/tex/generic/pgf/frontendlayer/tikz/libraries/tikzlibrarydecor
 ations.code.tex
 (/usr/share/texmf/tex/generic/pgf/modules/pgfmoduledecorations.code.tex
-\pgfdecoratedcompleteddistance=\dimen173
-\pgfdecoratedremainingdistance=\dimen174
-\pgfdecoratedinputsegmentcompleteddistance=\dimen175
-\pgfdecoratedinputsegmentremainingdistance=\dimen176
-\pgf@decorate@distancetomove=\dimen177
+\pgfdecoratedcompleteddistance=\dimen174
+\pgfdecoratedremainingdistance=\dimen175
+\pgfdecoratedinputsegmentcompleteddistance=\dimen176
+\pgfdecoratedinputsegmentremainingdistance=\dimen177
+\pgf@decorate@distancetomove=\dimen178
 \pgf@decorate@repeatstate=\count148
-\pgfdecorationsegmentamplitude=\dimen178
-\pgfdecorationsegmentlength=\dimen179
+\pgfdecorationsegmentamplitude=\dimen179
+\pgfdecorationsegmentlength=\dimen180
 )
 \tikz@lib@dec@box=\box41
 )
@@ -861,10 +859,10 @@ Package: everysel 2011/10/28 v1.2 EverySelectfont Package (MS)
 \JustifyingParindent=\skip71
 )
 (/usr/share/texlive/texmf-dist/tex/latex/listings/lstlang1.sty
-File: lstlang1.sty 2004/09/05 1.3 listings language file
+File: lstlang1.sty 2013/06/27 1.5pre1 listings language file
 ) (./informe.aux
-LaTeX Info: Redefining \. on input line 18.
-LaTeX Info: Redefining \% on input line 18.
+LaTeX Info: Redefining \. on input line 20.
+LaTeX Info: Redefining \% on input line 20.
 )
 \openout1 = `informe.aux'.
 
@@ -929,13 +927,13 @@ Package lastpage Info: Please have a look at the pageslts package at
 (/usr/share/texlive/texmf-dist/tex/context/base/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
 \scratchcounter=\count150
-\scratchdimen=\dimen180
+\scratchdimen=\dimen181
 \scratchbox=\box42
 \nofMPsegments=\count151
 \nofMParguments=\count152
 \everyMPshowfont=\toks38
 \MPscratchCnt=\count153
-\MPscratchDim=\dimen181
+\MPscratchDim=\dimen182
 \MPnumerator=\count154
 \makeMPintoPDFobject=\count155
 \everyMPtoPDFconversion=\toks39
@@ -958,7 +956,7 @@ e
 Package hyperref Info: Link coloring OFF on input line 191.
 
 (/usr/share/texlive/texmf-dist/tex/latex/hyperref/nameref.sty
-Package: nameref 2010/04/30 v2.40 Cross-referencing by name of section
+Package: nameref 2012/10/27 v2.43 Cross-referencing by name of section
 
 (/usr/share/texlive/texmf-dist/tex/generic/oberdiek/gettitlestring.sty
 Package: gettitlestring 2010/12/03 v1.4 Cleanup title references (HO)
@@ -977,13 +975,13 @@ LaTeX Info: Redefining \nameref on input line 191.
 ABD: EverySelectfont initializing macros
 LaTeX Info: Redefining \selectfont on input line 191.
 
-<images/DC.png, id=256, 802.9197pt x 287.6346pt>
+<images/DC.png, id=268, 802.9197pt x 287.6346pt>
 File: images/DC.png Graphic file (type png)
  <use images/DC.png>
 Package pdftex.def Info: images/DC.png used on input line 203.
 (pdftex.def)             Requested size: 158.84137pt x 56.9055pt.
 
-<images/UBA.jpg, id=258, 233.4321pt x 233.9139pt>
+<images/UBA.jpg, id=270, 233.4321pt x 233.9139pt>
 File: images/UBA.jpg Graphic file (type jpg)
  <use images/UBA.jpg>
 Package pdftex.def Info: images/UBA.jpg used on input line 205.
@@ -991,12 +989,12 @@ Package pdftex.def Info: images/UBA.jpg used on input line 205.
 LaTeX Font Info:    Try loading font information for U+msa on input line 231.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsa.fd
-File: umsa.fd 2009/06/22 v3.00 AMS symbols A
+File: umsa.fd 2013/01/14 v3.01 AMS symbols A
 )
 LaTeX Font Info:    Try loading font information for U+msb on input line 231.
 
 (/usr/share/texlive/texmf-dist/tex/latex/amsfonts/umsb.fd
-File: umsb.fd 2009/06/22 v3.00 AMS symbols B
+File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ) [1
 
 {/var/lib/texmf/fonts/map/pdftex/updmap/pdftex.map} <./images/DC.png> <./images
@@ -1004,12 +1002,12 @@ File: umsb.fd 2009/06/22 v3.00 AMS symbols B
 (./informe.toc
 LaTeX Info: Redefining \. on input line 1.
 LaTeX Info: Redefining \% on input line 1.
-LaTeX Font Info:    Try loading font information for OMS+cmr on input line 45.
+LaTeX Font Info:    Try loading font information for OMS+cmr on input line 46.
  (/usr/share/texlive/texmf-dist/tex/latex/base/omscmr.fd
 File: omscmr.fd 1999/05/25 v2.5h Standard LaTeX font definitions
 )
 LaTeX Font Info:    Font shape `OMS/cmr/m/n' in size <10> not available
-(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 45.
+(Font)              Font shape `OMS/cmsy/m/n' tried instead on input line 46.
 
 [2])
 \tf@toc=\write5
@@ -1020,17 +1018,17 @@ Underfull \hbox (badness 10000) in paragraph at lines 2--4
 
  []
 
-) [4] (./boot.tex)
-Underfull \hbox (badness 10000) in paragraph at lines 14--268
+) [4] (./boot.tex
+Underfull \hbox (badness 10000) in paragraph at lines 14--27
 
  []
 
 
-Underfull \hbox (badness 10000) in paragraph at lines 14--268
+Underfull \hbox (badness 10000) in paragraph at lines 14--27
 
  []
 
-[5] (./grub.tex
+) [5] (./grub.tex
 Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
@@ -1050,14 +1048,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 10--11
 
  []
 
-<images/modules-map.pdf, id=365, 597.50786pt x 845.04686pt>
+<images/modules-map.pdf, id=382, 597.50786pt x 845.04686pt>
 File: images/modules-map.pdf Graphic file (type pdf)
 
 <use images/modules-map.pdf>
 Package pdftex.def Info: images/modules-map.pdf used on input line 44.
 (pdftex.def)             Requested size: 140.82463pt x 199.16928pt.
  [6]
-<images/modules-diagram.pdf, id=379, 597.50786pt x 845.04686pt>
+<images/modules-diagram.pdf, id=396, 597.50786pt x 845.04686pt>
 File: images/modules-diagram.pdf Graphic file (type pdf)
 
 <use images/modules-diagram.pdf>
@@ -1067,7 +1065,7 @@ Package pdftex.def Info: images/modules-diagram.pdf used on input line 49.
 
 pdfTeX warning: pdflatex (file ./images/modules-diagram.pdf): PDF inclusion: mu
 ltiple pdfs with page group included in a single page
->] <images/bsp-stages-diagram.pdf, id=401, 845.04686pt x 597.50786pt>
+>] <images/bsp-stages-diagram.pdf, id=418, 845.04686pt x 597.50786pt>
 File: images/bsp-stages-diagram.pdf Graphic file (type pdf)
 
 <use images/bsp-stages-diagram.pdf>
@@ -1078,7 +1076,7 @@ Overfull \hbox (110.3996pt too wide) in paragraph at lines 57--58
  [] 
  []
 
-<images/ap-stages-diagram.pdf, id=402, 712.97409pt x 347.00157pt>
+<images/ap-stages-diagram.pdf, id=419, 712.97409pt x 347.00157pt>
 File: images/ap-stages-diagram.pdf Graphic file (type pdf)
 
 <use images/ap-stages-diagram.pdf>
@@ -1098,7 +1096,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 25--27
 
  []
 
-<images/ia32e-overview-paging.png, id=423, 216.81pt x 125.268pt>
+<images/ia32e-overview-paging.png, id=440, 216.81pt x 125.268pt>
 File: images/ia32e-overview-paging.png Graphic file (type png)
 
 <use images/ia32e-overview-paging.png>
@@ -1106,19 +1104,12 @@ Package pdftex.def Info: images/ia32e-overview-paging.png used on input line 41
 .
 (pdftex.def)             Requested size: 295.47302pt x 170.71652pt.
 
-Overfull \hbox (14.71173pt too wide) in paragraph at lines 44--45
-[]\OT1/cmr/m/n/10 Luego de es-table-cer es-tas es-truc-turas, re-al-izamos una 
-com-pro-baci^^Son v^^S^^Pa $\OML/cmm/m/it/10 cpuid$ \OT1/cmr/m/n/10 para saber 
-si est^^Sa disponible
- []
-
-
 Underfull \hbox (badness 10000) in paragraph at lines 48--51
 
  []
 
 [9 <./images/ia32e-overview-paging.png>]
-<images/interrupts.png, id=430, 460.72125pt x 420.82219pt>
+<images/interrupts.png, id=447, 460.72125pt x 420.82219pt>
 File: images/interrupts.png Graphic file (type png)
 
 <use images/interrupts.png>
@@ -1151,14 +1142,14 @@ Underfull \hbox (badness 10000) in paragraph at lines 9--15
  []
 
 ) [13] (./sorting.tex
-<images/dualcore-sorting.pdf, id=453, 1162.2756pt x 665.59732pt>
+<images/dualcore-sorting.pdf, id=470, 1162.2756pt x 665.59732pt>
 File: images/dualcore-sorting.pdf Graphic file (type pdf)
 
 <use images/dualcore-sorting.pdf>
 Package pdftex.def Info: images/dualcore-sorting.pdf used on input line 14.
 (pdftex.def)             Requested size: 447.1494pt x 256.0748pt.
  [14 <./images/dualcore-sorting.pdf>]
-<images/sync-sorting-seq.png, id=477, 1205.50375pt x 389.455pt>
+<images/sync-sorting-seq.png, id=494, 1205.50375pt x 389.455pt>
 File: images/sync-sorting-seq.png Graphic file (type png)
 
 <use images/sync-sorting-seq.png>
@@ -1174,7 +1165,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 42--43
 
  []
 
-<images/ipis-sorting-seq.png, id=478, 807.015pt x 333.245pt>
+<images/ipis-sorting-seq.png, id=495, 807.015pt x 333.245pt>
 File: images/ipis-sorting-seq.png Graphic file (type png)
 
 <use images/ipis-sorting-seq.png>
@@ -1182,14 +1173,14 @@ Package pdftex.def Info: images/ipis-sorting-seq.png used on input line 54.
 (pdftex.def)             Requested size: 447.8863pt x 184.9429pt.
  [15 <./images/sync-sorting-seq.png>])
 [16 <./images/ipis-sorting-seq.png>] (./vectorsum.tex
-<images/dualcore-vectorsum.pdf, id=499, 1162.2756pt x 379.016pt>
+<images/dualcore-vectorsum.pdf, id=516, 1162.2756pt x 379.016pt>
 File: images/dualcore-vectorsum.pdf Graphic file (type pdf)
 
 <use images/dualcore-vectorsum.pdf>
 Package pdftex.def Info: images/dualcore-vectorsum.pdf used on input line 6.
 (pdftex.def)             Requested size: 349.00461pt x 113.81102pt.
 
-<images/sync-vectorsum-seq.png, id=500, 1072.005pt x 277.035pt>
+<images/sync-vectorsum-seq.png, id=517, 1072.005pt x 277.035pt>
 File: images/sync-vectorsum-seq.png Graphic file (type png)
 
 <use images/sync-vectorsum-seq.png>
@@ -1201,7 +1192,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 3--4
 
  []
 
-<images/fft_formula.png, id=526, 168.63pt x 50.1875pt>
+<images/fft_formula.png, id=543, 168.63pt x 50.1875pt>
 File: images/fft_formula.png Graphic file (type png)
 
 <use images/fft_formula.png>
@@ -1210,12 +1201,6 @@ Package pdftex.def Info: images/fft_formula.png used on input line 6.
 
 Underfull \hbox (badness 10000) in paragraph at lines 11--13
 
- []
-
-
-Overfull \hbox (6.81174pt too wide) in paragraph at lines 14--15
-[]\OT1/cmr/m/n/10 Este al-go-rit-mo cal-cu-la ini-cial-mente por sep-a-ra-do lo
-s ^^S^^Pndices pares de los im-pares, nosotros aprovechamos
  []
 
 
@@ -1228,7 +1213,7 @@ Underfull \hbox (badness 10000) in paragraph at lines 16--17
 
  []
 
-<images/Cooley-tukey-general.png, id=527, 401.5pt x 265.99374pt>
+<images/Cooley-tukey-general.png, id=544, 401.5pt x 265.99374pt>
 File: images/Cooley-tukey-general.png Graphic file (type png)
 
 <use images/Cooley-tukey-general.png>
@@ -1236,7 +1221,7 @@ Package pdftex.def Info: images/Cooley-tukey-general.png used on input line 23.
 
 (pdftex.def)             Requested size: 343.58624pt x 227.62204pt.
 
-<images/DIT-FFT-butterfly.png, id=528, 177.7842pt x 144.54pt>
+<images/DIT-FFT-butterfly.png, id=545, 177.7842pt x 144.54pt>
 File: images/DIT-FFT-butterfly.png Graphic file (type png)
 
 <use images/DIT-FFT-butterfly.png>
@@ -1248,14 +1233,14 @@ Package pdftex.def Info: images/DIT-FFT-butterfly.png used on input line 29.
 LaTeX Font Info:    Font shape `OMS/cmr/bx/n' in size <10> not available
 (Font)              Font shape `OMS/cmsy/b/n' tried instead on input line 86.
  [21]
-<images/pentium_d_sorting.png, id=558, 1041.8925pt x 393.47pt>
+<images/pentium_d_sorting.png, id=576, 1041.8925pt x 393.47pt>
 File: images/pentium_d_sorting.png Graphic file (type png)
 
 <use images/pentium_d_sorting.png>
 Package pdftex.def Info: images/pentium_d_sorting.png used on input line 137.
 (pdftex.def)             Requested size: 452.04314pt x 170.71652pt.
  [22 <./images/pentium_d_sorting.png>]
-<images/pentium_d_vectorsum.png, id=568, 1025.8325pt x 372.39125pt>
+<images/pentium_d_vectorsum.png, id=585, 1025.8325pt x 372.39125pt>
 File: images/pentium_d_vectorsum.png Graphic file (type png)
 
 <use images/pentium_d_vectorsum.png>
@@ -1268,7 +1253,7 @@ Overfull \hbox (17.32419pt too wide) in paragraph at lines 193--194
  []
 
 [23 <./images/pentium_d_vectorsum.png>]
-<images/XEON_Sorting.png, id=575, 1049.9225pt x 372.39125pt>
+<images/XEON_Sorting.png, id=592, 1049.9225pt x 372.39125pt>
 File: images/XEON_Sorting.png Graphic file (type png)
 
 <use images/XEON_Sorting.png>
@@ -1280,7 +1265,7 @@ Overfull \hbox (28.36823pt too wide) in paragraph at lines 247--248
  []
 
 [24 <./images/XEON_Sorting.png>]
-<images/xeon_vector_sum.png, id=582, 1032.85875pt x 372.39125pt>
+<images/xeon_vector_sum.png, id=599, 1032.85875pt x 372.39125pt>
 File: images/xeon_vector_sum.png Graphic file (type png)
 
 <use images/xeon_vector_sum.png>
@@ -1292,7 +1277,7 @@ Overfull \hbox (20.54536pt too wide) in paragraph at lines 306--307
  []
 
 [25 <./images/xeon_vector_sum.png>]
-<images/g2030_sorting.png, id=590, 995.72pt x 372.39125pt>
+<images/g2030_sorting.png, id=607, 995.72pt x 372.39125pt>
 File: images/g2030_sorting.png Graphic file (type png)
 
 <use images/g2030_sorting.png>
@@ -1304,7 +1289,7 @@ Overfull \hbox (3.51913pt too wide) in paragraph at lines 364--365
  []
 
 [26 <./images/g2030_sorting.png>]
-<images/g2030_vectorsum.png, id=597, 996.72375pt x 372.39125pt>
+<images/g2030_vectorsum.png, id=614, 996.72375pt x 372.39125pt>
 File: images/g2030_vectorsum.png Graphic file (type png)
 
 <use images/g2030_vectorsum.png>
@@ -1321,22 +1306,22 @@ Overfull \hbox (24.81073pt too wide) in paragraph at lines 429--478
  []
 
 [27 <./images/g2030_vectorsum.png>]
-<images/i7-vectorsum-sorting.png, id=604, 602.25pt x 372.39125pt>
+<images/i7-vectorsum-sorting.png, id=621, 824.07875pt x 372.39125pt>
 File: images/i7-vectorsum-sorting.png Graphic file (type png)
 
 <use images/i7-vectorsum-sorting.png>
 Package pdftex.def Info: images/i7-vectorsum-sorting.png used on input line 481
 .
-(pdftex.def)             Requested size: 368.13469pt x 227.62204pt.
+(pdftex.def)             Requested size: 440.75832pt x 199.16928pt.
  [28 <./images/i7-vectorsum-sorting.png>]
-<images/i5_sorting.png, id=611, 976.64874pt x 372.39125pt>
+<images/i5_sorting.png, id=628, 976.64874pt x 372.39125pt>
 File: images/i5_sorting.png Graphic file (type png)
 
 <use images/i5_sorting.png>
 Package pdftex.def Info: images/i5_sorting.png used on input line 539.
 (pdftex.def)             Requested size: 447.74382pt x 170.71652pt.
  [29 <./images/i5_sorting.png>]
-<images/i5_vector_sum.png, id=618, 990.70125pt x 372.39125pt>
+<images/i5_vector_sum.png, id=635, 990.70125pt x 372.39125pt>
 File: images/i5_vector_sum.png Graphic file (type png)
 
 <use images/i5_vector_sum.png>
@@ -1348,7 +1333,7 @@ Overfull \hbox (1.21829pt too wide) in paragraph at lines 597--598
  []
 
 [30 <./images/i5_vector_sum.png>]
-<images/core2quad_sorting.png, id=625, 990.70125pt x 372.39125pt>
+<images/core2quad_sorting.png, id=642, 990.70125pt x 372.39125pt>
 File: images/core2quad_sorting.png Graphic file (type png)
 
 <use images/core2quad_sorting.png>
@@ -1360,7 +1345,7 @@ Overfull \hbox (1.21829pt too wide) in paragraph at lines 654--655
  []
 
 [31 <./images/core2quad_sorting.png>]
-<images/core2quad_sum.png, id=633, 996.72375pt x 391.4625pt>
+<images/core2quad_sum.png, id=650, 996.72375pt x 391.4625pt>
 File: images/core2quad_sum.png Graphic file (type png)
 
 <use images/core2quad_sum.png>
@@ -1372,102 +1357,138 @@ Overfull \hbox (15.4219pt too wide) in paragraph at lines 722--771
  []
 
 [32 <./images/core2quad_sum.png>]
-<images/pentium_d_mem_ipi.png, id=640, 602.25pt x 372.39125pt>
+<images/pentium_d_mem_ipi.png, id=657, 842.14626pt x 372.39125pt>
 File: images/pentium_d_mem_ipi.png Graphic file (type png)
 
 <use images/pentium_d_mem_ipi.png>
 Package pdftex.def Info: images/pentium_d_mem_ipi.png used on input line 774.
-(pdftex.def)             Requested size: 391.14542pt x 241.84842pt.
+(pdftex.def)             Requested size: 450.42172pt x 199.16928pt.
 
-<images/pentium_d_gain_mono_mem_mono_ipi.png, id=641, 870.25125pt x 371.3875pt>
+<images/pentium_d_gain_mono_mem_mono_ipi.png, id=658, 982.67125pt x 371.3875pt>
 File: images/pentium_d_gain_mono_mem_mono_ipi.png Graphic file (type png)
 <use images/pentium_d_gain_mono_mem_mono_ipi.png>
 Package pdftex.def Info: images/pentium_d_gain_mono_mem_mono_ipi.png used on in
 put line 778.
-(pdftex.def)             Requested size: 566.71893pt x 241.84842pt.
+(pdftex.def)             Requested size: 451.71938pt x 170.71652pt.
 
-Overfull \hbox (113.75104pt too wide) in paragraph at lines 778--779
- [] 
- []
-
-[33 <./images/pentium_d_mem_ipi.png>]
 Overfull \hbox (15.4219pt too wide) in paragraph at lines 784--833
  [] 
  []
 
-<images/memory_ipis_g2030_sortipi.png, id=648, 602.25pt x 372.39125pt>
+[33 <./images/pentium_d_mem_ipi.png> <./images/pentium_d_gain_mono_mem_mono_ipi
+.png>]
+<images/memory_ipis_g2030_sortipi.png, id=666, 832.10875pt x 372.39125pt>
 File: images/memory_ipis_g2030_sortipi.png Graphic file (type png)
 
 <use images/memory_ipis_g2030_sortipi.png>
 Package pdftex.def Info: images/memory_ipis_g2030_sortipi.png used on input lin
 e 836.
-(pdftex.def)             Requested size: 368.13469pt x 227.62204pt.
- [34 <./images/pentium_d_gain_mono_mem_mono_ipi.png>] <images/sort_ipis_g2030.p
-ng, id=655, 602.25pt x 372.39125pt>
+(pdftex.def)             Requested size: 445.05316pt x 199.16928pt.
+
+<images/sort_ipis_g2030.png, id=667, 926.46124pt x 372.39125pt>
 File: images/sort_ipis_g2030.png Graphic file (type png)
 
 <use images/sort_ipis_g2030.png>
 Package pdftex.def Info: images/sort_ipis_g2030.png used on input line 841.
-(pdftex.def)             Requested size: 368.13469pt x 227.62204pt.
- [35 <./images/memory_ipis_g2030_sortipi.png> <./images/sort_ipis_g2030.png>]
-<images/fft_pentiumd.png, id=663, 602.25pt x 372.39125pt>
+(pdftex.def)             Requested size: 424.7354pt x 170.71652pt.
+ [34 <./images/memory_ipis_g2030_sortipi.png> <./images/sort_ipis_g2030.png>]
+<images/fft_pentiumd.png, id=675, 1001.7425pt x 372.39125pt>
 File: images/fft_pentiumd.png Graphic file (type png)
 
 <use images/fft_pentiumd.png>
 Package pdftex.def Info: images/fft_pentiumd.png used on input line 887.
-(pdftex.def)             Requested size: 368.13469pt x 227.62204pt.
- [36 <./images/fft_pentiumd.png>]
-<images/fft_core2quad.png, id=670, 602.25pt x 372.39125pt>
+(pdftex.def)             Requested size: 459.24803pt x 170.71652pt.
+
+Overfull \hbox (6.28014pt too wide) in paragraph at lines 887--888
+ [] 
+ []
+
+[35 <./images/fft_pentiumd.png>]
+<images/fft_core2quad.png, id=682, 995.72pt x 372.39125pt>
 File: images/fft_core2quad.png Graphic file (type png)
 
 <use images/fft_core2quad.png>
 Package pdftex.def Info: images/fft_core2quad.png used on input line 932.
-(pdftex.def)             Requested size: 368.13469pt x 227.62204pt.
- [37 <./images/fft_core2quad.png>]
-<images/fft_i5.png, id=678, 602.25pt x 372.39125pt>
+(pdftex.def)             Requested size: 456.48703pt x 170.71652pt.
+
+Overfull \hbox (3.51913pt too wide) in paragraph at lines 932--933
+ [] 
+ []
+
+<images/fft_i5.png, id=683, 1001.7425pt x 372.39125pt>
 File: images/fft_i5.png Graphic file (type png)
  <use images/fft_i5.png>
 Package pdftex.def Info: images/fft_i5.png used on input line 976.
-(pdftex.def)             Requested size: 368.13469pt x 227.62204pt.
+(pdftex.def)             Requested size: 459.24803pt x 170.71652pt.
 
-[38 <./images/fft_i5.png>]
-<images/fft_g2030.png, id=685, 602.25pt x 372.39125pt>
+Overfull \hbox (6.28014pt too wide) in paragraph at lines 976--977
+ [] 
+ []
+
+[36 <./images/fft_core2quad.png>]
+<images/fft_g2030.png, id=690, 996.72375pt x 372.39125pt>
 File: images/fft_g2030.png Graphic file (type png)
 
 <use images/fft_g2030.png>
 Package pdftex.def Info: images/fft_g2030.png used on input line 1020.
-(pdftex.def)             Requested size: 368.13469pt x 227.62204pt.
- [39 <./images/fft_g2030.png>]
-<images/fft_xeon_e5345.png, id=692, 602.25pt x 338.26375pt>
+(pdftex.def)             Requested size: 456.9472pt x 170.71652pt.
+
+Overfull \hbox (3.97931pt too wide) in paragraph at lines 1020--1021
+ [] 
+ []
+
+[37 <./images/fft_i5.png> <./images/fft_g2030.png>]
+<images/fft_xeon_e5345.png, id=699, 1046.91125pt x 338.26375pt>
 File: images/fft_xeon_e5345.png Graphic file (type png)
 
 <use images/fft_xeon_e5345.png>
 Package pdftex.def Info: images/fft_xeon_e5345.png used on input line 1064.
-(pdftex.def)             Requested size: 405.26979pt x 227.62204pt.
-) [40 <./images/fft_xeon_e5345.png>]
+(pdftex.def)             Requested size: 440.30676pt x 142.26378pt.
+
+<images/fft_g2030_corrected.png, id=700, 963.6pt x 372.39125pt>
+File: images/fft_g2030_corrected.png Graphic file (type png)
+
+<use images/fft_g2030_corrected.png>
+Package pdftex.def Info: images/fft_g2030_corrected.png used on input line 1108
+.
+(pdftex.def)             Requested size: 441.76164pt x 170.71652pt.
+ [38 <./images/fft_xeon_e5345.png>]
+<images/fft_pentiumd_corrected.png, id=707, 1008.76875pt x 372.39125pt>
+File: images/fft_pentiumd_corrected.png Graphic file (type png)
+
+<use images/fft_pentiumd_corrected.png>
+Package pdftex.def Info: images/fft_pentiumd_corrected.png used on input line 1
+150.
+(pdftex.def)             Requested size: 462.46922pt x 170.71652pt.
+
+Overfull \hbox (9.50133pt too wide) in paragraph at lines 1150--1151
+ [] 
+ []
+
+) [39 <./images/fft_g2030_corrected.png> <./images/fft_pentiumd_corrected.png>]
 (./conclusion.tex) 
 AED: lastpage setting LastPage
-[41]
+[40]
 Package atveryend Info: Empty hook `BeforeClearDocument' on input line 293.
 Package atveryend Info: Empty hook `AfterLastShipout' on input line 293.
  (./informe.aux
-LaTeX Info: Redefining \. on input line 18.
-LaTeX Info: Redefining \% on input line 18.
+LaTeX Info: Redefining \. on input line 20.
+LaTeX Info: Redefining \% on input line 20.
 )
 Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 293.
 Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 293.
 Package rerunfilecheck Info: File `informe.out' has not changed.
-(rerunfilecheck)             Checksum: A0A75B32CCABDAA91A9E6C11D71A3756;6693.
+(rerunfilecheck)             Checksum: 625AB2F32F2DE49F1B9FFB310454528A;7201.
 Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 293.
  ) 
 Here is how much of TeX's memory you used:
- 17907 strings out of 495059
- 311557 string characters out of 3182031
- 438092 words of memory out of 3000000
- 20540 multiletter control sequences out of 15000+200000
- 8235 words of font info for 32 fonts, out of 3000000 for 9000
- 14 hyphenation exceptions out of 8191
- 56i,13n,57p,1059b,595s stack positions out of 5000i,500n,10000p,200000b,50000s
+ 18114 strings out of 493307
+ 315079 string characters out of 6139905
+ 444044 words of memory out of 5000000
+ 21009 multiletter control sequences out of 15000+600000
+ 8235 words of font info for 32 fonts, out of 8000000 for 9000
+ 957 hyphenation exceptions out of 8191
+ 56i,13n,57p,1063b,600s stack positions out of 5000i,500n,10000p,200000b,80000s
 </usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbsy10.pfb></u
 sr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/sha
 re/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx12.pfb></usr/share/tex
@@ -1480,10 +1501,10 @@ s/type1/public/amsfonts/cm/cmr12.pfb></usr/share/texlive/texmf-dist/fonts/type1
 s/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/c
 mti10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmtt10.
 pfb>
-Output written on informe.pdf (41 pages, 1660390 bytes).
+Output written on informe.pdf (40 pages, 1809303 bytes).
 PDF statistics:
- 775 PDF objects out of 1000 (max. 8388607)
- 637 compressed objects within 7 object streams
- 132 named destinations out of 1000 (max. 500000)
- 689 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 792 PDF objects out of 1000 (max. 8388607)
+ 651 compressed objects within 7 object streams
+ 134 named destinations out of 1000 (max. 500000)
+ 723 words of extra memory for PDF output out of 10000 (max. 10000000)
 

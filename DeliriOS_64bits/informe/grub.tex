@@ -15,7 +15,7 @@
 				\begin{enumerate}
 					\item Se realizan validaciones requeridas por la especificación multiboot, verificación de firmas, etc.
 					
-					\item Se obtienen de la metadata provista por grub las posiciones de memoria donde estan cargados los módulos, ellos son:
+					\item Se obtienen de la metadata provista por grub las posiciones de memoria donde están cargados los módulos, ellos son:
 					\vspace{0.1cm}
 					\begin{description}
 						\item [kernel64.bin64:] \hfill \\
@@ -29,16 +29,16 @@
 					
 					\item Los Application Processors inician en modo real, es por esto que deben comenzar su ejecución por debajo del primer mega de memoria principal. Por este motivo se copia el módulo ap\_startup\_code a una dirección arbitraria alineada a página 0x2000.
 					\vspace{0.1cm}
-					\item Como los AP comienzan su ejecución por debajo del primer mega, esto hace posible la superposicion de código con grub y otras estructuras del kernel, para evitarlo, minimizamos el tamaño del startup de modo real del ap, haciendo lo antes posible un salto a un loader de nivel 2 por encima del mega, este loader de nivel 2 es ap\_full\_code.bin64.
+					\item Como los AP comienzan su ejecución por debajo del primer mega, esto hace posible la superposición de código con grub y otras estructuras del kernel, para evitarlo, minimizamos el tamaño del startup de modo real del ap, haciendo lo antes posible un salto a un loader de nivel 2 por encima del mega, este loader de nivel 2 es ap\_full\_code.bin64.
 					\vspace{0.1cm}
-					\item Al tener el Application Processor que hacer un salto entre los dos niveles de booteo, se le inyecta al primer módulo la direccion donde esta cargado el segundo nivel de booteo.
+					\item Al tener el Application Processor que hacer un salto entre los dos niveles de booteo, se le inyecta al primer módulo la dirección donde esta cargado el segundo nivel de booteo.
 					\vspace{0.1cm}
 					\item Finalmente, se realiza un salto en la ejecución a donde comienza el modulo kernel64.bin64 donde el BSP finaliza la inicializacion del contexto hasta modo largo de 64 bits y enciende a los demás núcleos del sistema.
 				\end{enumerate}
 			\end{enumerate}
 	\end{itemize}
 
-	\subsubsection{Booteo e integración con grub: Mapa de memoria: Memoria baja y modulos en memoria alta}
+	\subsubsection{Booteo e integración con grub: Mapa de memoria: Memoria baja y módulos en memoria alta}
 
 	\begin{center}
 		\includegraphics[height=7cm]{images/modules-map.pdf} 
