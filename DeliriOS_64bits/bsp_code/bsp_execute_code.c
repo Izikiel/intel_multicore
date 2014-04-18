@@ -10,6 +10,9 @@ void send_ipi_ap(uint32_t interrupt);
 #define copy_ap_ipi 42
 #define fft_int 43
 
+
+uint64_t init, stop;
+
 static void clean_flags()
 {
     *((uint8_t *) start_address) = 0;
@@ -36,26 +39,47 @@ void sort_bsp()
     uint32_t *array = (uint32_t *) array_start_address;
 
     uint32_t *bsp_temp = (uint32_t *) temp_address;
+    uint64_t *time_measures = (uint64_t *) time_measures_address;
 
     //ready, set, go!
     clean_flags();
 
     *start = 1;
+    MEDIR_TIEMPO_START(init);
     heapsort(array, *len / 2);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[0] = stop - init;
 
+    MEDIR_TIEMPO_START(init);
     active_wait(*done);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[1] = stop - init;
+
     *done = 0;
 
     *start_merge = 1;
+    MEDIR_TIEMPO_START(init);
     limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[2] = stop - init;
 
+    MEDIR_TIEMPO_START(init);
     active_wait(*done);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[3] = stop - init;
+
     *done = 0;
 
     *start_copy = 1;
+    MEDIR_TIEMPO_START(init);
     copy(array, 0, bsp_temp, 0, *len / 2);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[4] = stop - init;
 
+    MEDIR_TIEMPO_START(init);
     active_wait(*finish_copy);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[5] = stop - init;
 
     clean_flags();
 
@@ -93,21 +117,49 @@ void sort_bsp_ipi()
 
     uint32_t *bsp_temp = (uint32_t *) temp_address;
 
+    uint64_t *time_measures = (uint64_t *) time_measures_address;
+
+
     //ready, set, go!
     // breakpoint
     send_ipi_ap(sort_ap_ipi);
+
+    MEDIR_TIEMPO_START(init);
     heapsort(array, *len / 2);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[0] = stop - init;
+
+    MEDIR_TIEMPO_START(init);
     check_rax();
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[1] = stop - init;
+
 
     // breakpoint
     send_ipi_ap(merge_ap_ipi);
+
+    MEDIR_TIEMPO_START(init);
     limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[2] = stop - init;
+
+    MEDIR_TIEMPO_START(init);
     check_rax();
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[3] = stop - init;
 
     // breakpoint
     send_ipi_ap(copy_ap_ipi);
+
+    MEDIR_TIEMPO_START(init);
     copy(array, 0, bsp_temp, 0, *len / 2);
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[4] = stop - init;
+
+    MEDIR_TIEMPO_START(init);
     check_rax();
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[5] = stop - init;
 
 }
 
