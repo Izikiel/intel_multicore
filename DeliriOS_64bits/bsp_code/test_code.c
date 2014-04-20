@@ -78,7 +78,7 @@ void generate_fft_array(uint32_t N)
 
 void test_1_core()
 {
-    wait();
+    // wait();
     clean_array(max_len);
     clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
@@ -107,20 +107,21 @@ void test_1_core()
 
 void test_2_cores()
 {
+    clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
     uint8_t *sleep = (uint8_t *) sleep_address;
-    // uint64_t *time_measures = (uint64_t *) time_measures_address;
+    uint64_t *time_measures = (uint64_t *) time_measures_address;
 
-    // uint8_t col[6] = {0, 13, 26, 39, 52, 65};
-    uint8_t col  = 30;
+    uint8_t col[6] = {0, 13, 26, 39, 52, 65};
+    // uint8_t col  = 30;
     uint8_t line = 0;
-    print_string("Test 2 cores", line++, col);
-    // print_string("Sort", line, col[0]);
-    // print_string("Sync", line, col[1]);
-    // print_string("Merge", line, col[2]);
-    // print_string("Sync", line, col[3]);
-    // print_string("Copy", line, col[4]);
-    // print_string("Sync", line, col[5]);
+    print_string("Test 2 cores", line++, col[0]);
+    print_string("Sort", line, col[0]);
+    print_string("Sync", line, col[1]);
+    print_string("Merge", line, col[2]);
+    print_string("Sync", line, col[3]);
+    print_string("Copy", line, col[4]);
+    print_string("Sync", line, col[5]);
 
     for (*len = 2; *len < max_len; *len *= 2) {
         uint32_t seed = 13214;
@@ -129,40 +130,44 @@ void test_2_cores()
         sort_bsp();
         MEDIR_TIEMPO_STOP(stop);
         if (verfiy_sort()) {
-            // line++;
-            // for (uint8_t i = 0; i < 6; ++i) {
-            //     print_number_u64(time_measures[i], line, col[i]);
-            // }
-            print_number_u64(stop - start, line++, col);
+            line++;
+            for (uint8_t i = 0; i < 6; ++i) {
+                print_number_u64(time_measures[i], line, col[i]);
+            }
+            // print_number_u64(stop - start, line++, col);
         } else {
-            print_string("bad_sort :(", line++, col);
+            for (uint8_t i = 0; i < 6; ++i) {
+                print_string("bad_sort :(", line++, col[i]);
+            }
         }
 
     }
-    // line++;
-    // for (uint8_t i = 0; i < 6; ++i) {
-    print_string("Done! :D", line, col);
-    // }
+    line++;
+    for (uint8_t i = 0; i < 6; ++i) {
+        print_string("Done!", line, col[i]);
+    }
     *sleep = 1;
 }
 
 void test_ipi_cores()
 {
+    wait();
+    clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
     // uint8_t *sleep = (uint8_t *) sleep_address;
-    // uint64_t *time_measures = (uint64_t *) time_measures_address;
+    uint64_t *time_measures = (uint64_t *) time_measures_address;
 
-    // uint8_t col[6] = {0, 13, 26, 39, 52, 65};
-    uint8_t col = 60;
+    uint8_t col[6] = {0, 13, 26, 39, 52, 65};
+    //uint8_t col = 60;
     uint8_t line = 0;
-    print_string("Test Dual Ipis", line++, col);
+    print_string("Test Dual Ipis", line++, col[0]);
 
-    // print_string("Sort", line, col[0]);
-    // print_string("Sync", line, col[1]);
-    // print_string("Merge", line, col[2]);
-    // print_string("Sync", line, col[3]);
-    // print_string("Copy", line, col[4]);
-    // print_string("Sync", line, col[5]);
+    print_string("Sort", line, col[0]);
+    print_string("Sync", line, col[1]);
+    print_string("Merge", line, col[2]);
+    print_string("Sync", line, col[3]);
+    print_string("Copy", line, col[4]);
+    print_string("Sync", line, col[5]);
 
     for (*len = 2; *len < max_len; *len *= 2) {
         uint32_t seed = 13214;
@@ -171,22 +176,25 @@ void test_ipi_cores()
         sort_bsp_ipi();
         MEDIR_TIEMPO_STOP(stop);
         if (verfiy_sort()) {
-            // line++;
-            // uint8_t i;
-            // for (i = 0; i < 6; ++i) {
-            //     print_number_u64(time_measures[i], line, col[i]);
-            // }
-            print_number_u64(stop - start, line++, col);
+            line++;
+            uint8_t i;
+            for (i = 0; i < 6; ++i) {
+                print_number_u64(time_measures[i], line, col[i]);
+            }
+            // print_number_u64(stop - start, line++, col);
         } else {
-            print_string("bad_sort :(", line++, col);
+            // print_string("bad_sort :(", line++, col);
+            for (uint8_t i = 0; i < 6; ++i) {
+                print_string("bad_sort :(", line++, col[i]);
+            }
         }
 
     }
-    // uint8_t i;
-    // line++;
-    // for (i = 0; i < 6; ++i) {
-    print_string("Done! :D", line, col);
-    // }
+    uint8_t i;
+    line++;
+    for (i = 0; i < 6; ++i) {
+        print_string("Done!", line, col[i]);
+    }
     // *sleep = 1;
 }
 
