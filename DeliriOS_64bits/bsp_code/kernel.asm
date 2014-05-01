@@ -424,12 +424,12 @@ enable_sse: ;Taken from osdev
 tests:
 
     ;call test_1_core
-    call test_2_cores
-    call test_ipi_cores
+    ; call test_2_cores
+    ; call test_ipi_cores
 
-    ;call test_fft_mono
-    ;call test_fft_dual_mem
-    ;call test_fft_dual_ipi
+    call test_fft_mono
+    call test_fft_dual_mem
+    call test_fft_dual_ipi
     ;call test_half_fft
 
     ;call test_sum_vector1
