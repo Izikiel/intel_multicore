@@ -90,7 +90,7 @@
     \draw   (#2, #3) rectangle +(4, 1) +(2, 0.5) node{#4}
           ++(4, 0)   rectangle +(4, 1) +(2, 0.5) node{#5}
           ++(4, 0)   rectangle +(4, 1) +(2, 0.5) node{#6}
-          ++(4, 0)   rectangle +(4, 1) +(2, 0.5) node{#7};          
+          ++(4, 0)   rectangle +(4, 1) +(2, 0.5) node{#7};
 }
 
 % Uso: \registroOcho{etiqueta}{x}{y}{a8}{a7}{a6}...{a1}
@@ -104,7 +104,7 @@
     \def\av{#7}
     \def\aiv{#8}
     \def\aiii{#9}
-    \registroOchoX    
+    \registroOchoX
 }
 \newcommand{\registroOchoX}[2]{ % Auxiliar - no usar directamente
     \def\aii{#1}
@@ -200,9 +200,9 @@
 
 \begin{center}
 
-\includegraphics[height=2cm]{images/DC.png} 
+\includegraphics[height=2cm]{images/DC.png}
 \hfill
-\includegraphics[height=2cm]{images/UBA.jpg} 
+\includegraphics[height=2cm]{images/UBA.jpg}
 
 \vspace{2cm}
 
@@ -264,15 +264,15 @@ Marzo 2014
     %% Desarrollo                                                                %%
     %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     \section{Desarrollo: Inicialización y contexto del sistema}
-        \input{boot.tex}    
+        \input{boot.tex}
         \newpage
-        \input{grub.tex}    
+        \input{grub.tex}
         \newpage
-        \input{bsp.tex}    
+        \input{bsp.tex}
         \newpage
-        \input{multiboot.tex}    
+        \input{multiboot.tex}
         \newpage
-        \input{ap_boot.tex}   
+        \input{ap_boot.tex}
         \newpage
     \section{Desarrollo: Algoritmos implementados}
         En esta sección, con el contexto del sistema inicializado completamente, describiremos los algoritmos paralelizados implementados y sus resultados.

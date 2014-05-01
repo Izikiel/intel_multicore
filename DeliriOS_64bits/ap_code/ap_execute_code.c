@@ -10,10 +10,10 @@ void sort_ap()
     uint8_t *sleep = (uint8_t *) sleep_address;
     uint8_t *start_copy = (uint8_t *) start_copy_address;
 
-    uint32_t *len = (uint32_t *) array_len_address;
-    uint32_t *array = (uint32_t *) array_start_address;
+    // uint32_t *len = (uint32_t *) array_len_address;
+    // uint32_t *array = (uint32_t *) array_start_address;
 
-    uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
+    // uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
 
     //waiting for go!
     *sleep = 0;
@@ -25,17 +25,17 @@ void sort_ap()
         }
         *start = 0;
 
-        heapsort(array + *len / 2, *len / 2);
+        // heapsort(array + *len / 2, *len / 2);
         *done = 1;
 
         active_wait(*start_merge);
 
-        limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+        // limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
         *done = 1;
 
         active_wait(*start_copy);
 
-        copy(array, *len / 2, ap_temp, 0, *len / 2);
+        // copy(array, *len / 2, ap_temp, 0, *len / 2);
         *finish_copy = 1;
     }
     *sleep = 0;
@@ -107,10 +107,10 @@ void copy_ap_int()
 
 void ap_jump()  //prueba para ipis
 {
-    clear_screen();
-    print_string("Soy un ap que salta", 0, 0);
+    // clear_screen();
+    // print_string("Soy un ap que salta", 0, 0);
+    signal_finished();
 }
-
 
 void inner_fft_loop()
 {

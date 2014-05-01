@@ -26,7 +26,7 @@ QUIET = @
 
 .PHONY=clean all
 
-all: console_clear clean common_code fft_code kernel.bin
+all:  clean common_code fft_code kernel.bin
 
 %.o: %.c
 	$(CC) $(CFLAGS) -c -o $@ $^
@@ -43,8 +43,6 @@ kernel.bin: $(OBJ)
 	cp kernel.bin ../grub-init/kernel64.bin64
 	@echo ''
 
-console_clear:
-	reset
 
 common_code:
 	cd ../common_code; make
