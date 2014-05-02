@@ -9,7 +9,7 @@ def modify_linking_point():
 	kernel_size = os.stat(kernel_bin_path).st_size
 	kernel_start = 0x117000
 	kernel_end = kernel_size + kernel_start
-	ap_full_code_start = hex(kernel_end + 0x2000 - kernel_end%0x1000)
+	ap_full_code_start = hex(kernel_end + 0x2000 - kernel_end%0x1000).replace("L","")
 
 	flag = ". = 0x"
 	line_to_write = "    . = %s; "%ap_full_code_start
