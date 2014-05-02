@@ -126,7 +126,6 @@ void inner_fft_loop()
 
     *start = 0;
     *sleep = 0;
-    uint32_t line = 0;
     active_wait(*sleep) {
         active_wait(*start) {
             if (*sleep) {
@@ -134,7 +133,6 @@ void inner_fft_loop()
             }
         }
         *start = 0;
-        print_string("Hola", line++, 0);
         unsigned int Match;
         unsigned int Pair;
 
