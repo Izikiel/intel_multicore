@@ -213,6 +213,7 @@ void Perform_P_Int(Complex *Data, unsigned int N, char Inverse /* = false */)
     unsigned int *Group_G = (unsigned int *) group_address;
     unsigned int *Step_G = (unsigned int *) step_address;
     unsigned int *Jump_G = (unsigned int *) jump_address;
+    uint8_t *done = (uint8_t *) done_address;
     Complex *Factor_G = (Complex *) factor_address;
 
     unsigned int Group, Step, Jump;
@@ -264,6 +265,7 @@ void Perform_P_Int(Complex *Data, unsigned int N, char Inverse /* = false */)
                     Data[Pair] = operatorADD(&Product, &(Data[Pair]));
 
                 }
+                *done = 1;
                 check_rax();
 
             }
