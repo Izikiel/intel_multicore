@@ -134,7 +134,7 @@ void inner_fft_loop()
             }
         }
         *start = 0;
-        print_string("Hola", line++, 80);
+        print_string("Hola", line++, 0);
         unsigned int Match;
         unsigned int Pair;
 
