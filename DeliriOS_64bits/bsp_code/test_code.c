@@ -78,7 +78,6 @@ void generate_fft_array(uint32_t N)
 
 void test_1_core()
 {
-    // wait();
     clean_array(max_len);
     clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
@@ -315,7 +314,6 @@ bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
 #define MAX_FFT_LEN  (32*1024)
 void test_fft_mono()
 {
-    wait();
     clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
     Complex *Input = (Complex *) array_start_address;
