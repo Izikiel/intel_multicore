@@ -86,12 +86,16 @@ void test_1_core()
 
     uint8_t line = 0;
     uint8_t col = 0;
+    int iter;
     double *run_measures = (double *) run_measures_address;
+
+    for (int i = 0; i < TOP_RUN; ++i) {
+        run_measures[i] = 0;
+    }
 
     print_string("sort 1 core", line++, col);
     for (int run = 0; run < TOTAL_TESTS; ++run) {
-        int iter = 0;
-        for (*len = 2; *len < max_len; *len *= 2, iter++) {
+        for (iter = 0, *len = 2; *len < max_len; *len *= 2, iter++) {
             uint32_t seed = 13214;
             generate_global_array(seed, *len);
             MEDIR_TIEMPO_START(start);
@@ -119,21 +123,24 @@ void test_2_cores()
 {
     uint32_t *len = (uint32_t *) array_len_address;
     uint8_t *sleep = (uint8_t *) sleep_address;
-    double *run_measures = (double *) run_measures_address;
 
     uint8_t col  = 30;
     uint8_t line = 0;
+    int iter;
+    double *run_measures = (double *) run_measures_address;
+    for (int i = 0; i < TOP_RUN; ++i) {
+        run_measures[i] = 0;
+    }
     print_string("Test 2 cores", line++, col);
     for (int run = 0; run < TOTAL_TESTS; ++run) {
-        int iter = 0;
-        for (*len = 2; *len < max_len; *len *= 2) {
+        for (iter = 0, *len = 2; *len < max_len; *len *= 2, iter++) {
             uint32_t seed = 13214;
             generate_global_array(seed, *len);
             MEDIR_TIEMPO_START(start);
             sort_bsp();
             MEDIR_TIEMPO_STOP(stop);
             if (verfiy_sort()) {
-                run_measures[iter++] += stop - start;
+                run_measures[iter] += stop - start;
             } else {
                 print_string("bad_sort :(", line++, col);
             }
@@ -194,20 +201,24 @@ void test_ipi_cores()
 
     uint8_t col = 60;
     uint8_t line = 0;
+    int iter;
     double *run_measures = (double *) run_measures_address;
+
+    for (int i = 0; i < TOP_RUN; ++i) {
+        run_measures[i] = 0;
+    }
 
     print_string("Test Dual Ipis", line++, col);
 
     for (int run = 0; run < TOTAL_TESTS; ++run) {
-        int iter = 0;
-        for (*len = 2; *len < max_len; *len *= 2) {
+        for (iter = 0, *len = 2; *len < max_len; *len *= 2, iter++) {
             uint32_t seed = 13214;
             generate_global_array(seed, *len);
             MEDIR_TIEMPO_START(start);
             sort_bsp_ipi();
             MEDIR_TIEMPO_STOP(stop);
             if (verfiy_sort()) {
-                run_measures[iter++] += stop - start;
+                run_measures[iter] += stop - start;
             } else {
                 print_string("bad_sort :(", line++, col);
             }
@@ -302,6 +313,7 @@ bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
 }
 
 #define MAX_FFT_LEN  (32*1024)
+#define TOP_RUN_FFT  (14)
 void test_fft_mono()
 {
     wait();
@@ -312,20 +324,36 @@ void test_fft_mono()
 
     uint8_t line = 0;
     uint8_t col = 0;
+    int iter;
+    double *run_measures = (double *) run_measures_address;
+
+    for (int i = 0; i < TOP_RUN; ++i) {
+        run_measures[i] = 0;
+    }
 
     print_string("fft monocore", line++, col);
-    for (*len = 2; *len < MAX_FFT_LEN; *len *= 2) {
-        generate_fft_array(*len);
-        MEDIR_TIEMPO_START(start);
-        Inverse_IO(Input, Output, *len, TRUE);
-        MEDIR_TIEMPO_STOP(stop);
-        if (verifiy_fft(Input, Output, *len)) {
-            print_number_u64(stop - start, line++, col);
-        } else {
-            print_string("bad_fft :(", line++, col);
+    for (int run = 0; run < TOTAL_TESTS; ++run) {
+        for (iter = 0, *len = 2; *len < MAX_FFT_LEN; *len *= 2, iter++) {
+            generate_fft_array(*len);
+            MEDIR_TIEMPO_START(start);
+            Inverse_IO(Input, Output, *len, TRUE);
+            MEDIR_TIEMPO_STOP(stop);
+            if (verifiy_fft(Input, Output, *len)) {
+                run_measures[iter] += stop - start;
+            } else {
+                print_string("bad_fft :(", line++, col);
+            }
         }
     }
+
+    for (int i = 0; i < TOP_RUN_FFT; i++, line++) {
+        uint64_t res = run_measures[i] / ((double) TOTAL_TESTS);
+        print_number_u64(res, line, col);
+    }
+
     print_string("Done! :D", ++line, col);
+
+
 }
 
 void test_fft_dual_mem()
@@ -338,18 +366,33 @@ void test_fft_dual_mem()
     uint8_t line = 0;
     uint8_t col = 30;
 
+    int iter;
+    double *run_measures = (double *) run_measures_address;
+
+    for (int i = 0; i < TOP_RUN; ++i) {
+        run_measures[i] = 0;
+    }
+
     print_string("fft dualcore", line++, col);
-    for (*len = 2; *len < MAX_FFT_LEN; *len *= 2) {
-        generate_fft_array(*len);
-        MEDIR_TIEMPO_START(start);
-        Inverse_IO_Dual(Input, Output, *len, TRUE);
-        MEDIR_TIEMPO_STOP(stop);
-        if (verifiy_fft(Input, Output, *len)) {
-            print_number_u64(stop - start, line++, col);
-        } else {
-            print_string("bad_fft :(", line++, col);
+    for (int run = 0; run < TOTAL_TESTS; ++run) {
+        for (iter = 0, *len = 2; *len < MAX_FFT_LEN; *len *= 2, iter++) {
+            generate_fft_array(*len);
+            MEDIR_TIEMPO_START(start);
+            Inverse_IO_Dual(Input, Output, *len, TRUE);
+            MEDIR_TIEMPO_STOP(stop);
+            if (verifiy_fft(Input, Output, *len)) {
+                run_measures[iter] += stop - start;
+            } else {
+                print_string("bad_fft :(", line++, col);
+            }
         }
     }
+
+    for (int i = 0; i < TOP_RUN_FFT; i++, line++) {
+        uint64_t res = run_measures[i] / ((double) TOTAL_TESTS);
+        print_number_u64(res, line, col);
+    }
+
     print_string("Done! :D", ++line, col);
     *sleep = 1;
 }
@@ -363,18 +406,34 @@ void test_fft_dual_ipi()
     uint8_t line = 0;
     uint8_t col = 60;
 
+    int iter;
+    double *run_measures = (double *) run_measures_address;
+
+    for (int i = 0; i < TOP_RUN; ++i) {
+        run_measures[i] = 0;
+    }
+
     print_string("fft dualcore ipis", line++, col);
-    for (*len = 2; *len < MAX_FFT_LEN; *len *= 2) {
-        generate_fft_array(*len);
-        MEDIR_TIEMPO_START(start);
-        Inverse_IO_Ipi(Input, Output, *len, TRUE);
-        MEDIR_TIEMPO_STOP(stop);
-        if (verifiy_fft(Input, Output, *len)) {
-            print_number_u64(stop - start, line++, col);
-        } else {
-            print_string("bad_fft :(", line++, col);
+    for (int run = 0; run < TOTAL_TESTS; ++run) {
+        for (iter = 0, *len = 2; *len < MAX_FFT_LEN; *len *= 2, iter++) {
+            generate_fft_array(*len);
+            MEDIR_TIEMPO_START(start);
+            Inverse_IO_Ipi(Input, Output, *len, TRUE);
+            MEDIR_TIEMPO_STOP(stop);
+            if (verifiy_fft(Input, Output, *len)) {
+                run_measures[iter] += stop - start;
+            } else {
+                print_string("bad_fft :(", line++, col);
+            }
         }
     }
+
+    for (int i = 0; i < TOP_RUN_FFT; i++, line++) {
+        uint64_t res = run_measures[i] / ((double) TOTAL_TESTS);
+        print_number_u64(res, line, col);
+    }
+
+
     print_string("Done! :D", ++line, col);
 }
 
