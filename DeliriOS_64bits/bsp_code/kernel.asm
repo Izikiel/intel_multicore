@@ -38,6 +38,8 @@ extern test_2_cores
 extern test_ipi_cores
 extern test_sum_vector1
 extern test_sum_vector2
+extern test_mem_sync
+extern test_sync_ipi_cores
 ;test basico para ver q andan las ipis
 extern make_ap_jump
 
@@ -422,16 +424,20 @@ enable_sse: ;Taken from osdev
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
-
-    ;call test_1_core
-    ; call test_2_cores
-    ; call test_ipi_cores
-
+;%define SYNC
+;%define FFT
+%ifdef  SYNC
+    call test_mem_sync
+    call test_sync_ipi_cores
+%elifdef FFT
     call test_fft_mono
     call test_fft_dual_mem
     call test_fft_dual_ipi
-    ;call test_half_fft
-
+%else
+    call test_1_core
+    call test_2_cores
+    call test_ipi_cores
+%endif
     ;call test_sum_vector1
     ;call test_sum_vector2
 ;

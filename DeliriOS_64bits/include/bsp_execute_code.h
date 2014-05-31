@@ -11,6 +11,9 @@ void sum_vector_bsp();
 void sort_bsp_ipi();
 void make_ap_jump();
 
+void measure_sync_ipis();
+void measure_sync_mem();
+
 char Inverse_IO_Ipi(Complex *Input, Complex *Output, unsigned int N,
-                     char ifScale /* = true */);
+                    char ifScale /* = true */);
 void Perform_P_Int(Complex *Data, unsigned int N, char Inverse /* = false */);

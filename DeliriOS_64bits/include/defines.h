@@ -3,10 +3,10 @@
 
 /* Indices en la gdt */
 /* -------------------------------------------------------------------------- */
-#define GDT_IDX_NULL_DESC           	0
-#define GDT_IDX_SEGCODE_LEVEL0_DESC_32 	1
-#define GDT_IDX_SEGCODE_LEVEL0_DESC_64 	2
-#define GDT_IDX_SEGDATA_LEVEL0_DESC 	3
+#define GDT_IDX_NULL_DESC               0
+#define GDT_IDX_SEGCODE_LEVEL0_DESC_32  1
+#define GDT_IDX_SEGCODE_LEVEL0_DESC_64  2
+#define GDT_IDX_SEGDATA_LEVEL0_DESC     3
 
 /* Direcciones de memoria */
 /* -------------------------------------------------------------------------- */
@@ -31,9 +31,9 @@
 #define KERNEL_STACK_PTR_AP14 0x0000000001500000
 #define KERNEL_STACK_PTR_AP15 0x0000000001600000
 /*Paginacion IA32e -> estructuras arriba del primer mega*/
-#define KERNEL_PML4T_POINTER 	0x0000000000740000
-#define KERNEL_PDPT_POINTER		0x0000000000841000
-#define KERNEL_PDT_POINTER 		0x0000000000942000
+#define KERNEL_PML4T_POINTER    0x0000000000740000
+#define KERNEL_PDPT_POINTER     0x0000000000841000
+#define KERNEL_PDT_POINTER      0x0000000000942000
 /* -------------------------------------------------------------------------- */
 
 
@@ -44,30 +44,32 @@
 //flags alineadas a cache 64 bytes
 #define start_address       0x200000
 #define start_merge_address 0x200040
-#define sleep_address		0x200080
+#define sleep_address       0x200080
 #define start_copy_address  0x2000c0
 #define number_of_cores_address 0x200100
-#define seed_address 		0x200140
-#define array_len_address 	0x200180
+#define seed_address        0x200140
+#define array_len_address   0x200180
 
-#define done_address 		0x2001c0
+#define done_address        0x2001c0
 #define finish_copy_address 0x200200
 
-
+//variables measurements
 #define time_measures_address 0x200240
-
+#define run_measures_address    0x200400
+#define TOP_RUN 23
+#define TOTAL_TESTS 100
 //variables fft
-#define group_address 	0x200300
-#define step_address 	0x200340
-#define jump_address 	0x200380
+#define group_address   0x200300
+#define step_address    0x200340
+#define jump_address    0x200380
 #define factor_address  0x2003c0
-#define LIMIT			8
+#define LIMIT           8
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
 #define TEN_MEGA 0xa00000
 #define MAX_PROCESSOR   8
-#define temp_address	0x1e00000
+#define temp_address    0x1e00000
 #define array_start_address temp_address + MAX_PROCESSOR * TEN_MEGA
 
 #ifndef active_wait

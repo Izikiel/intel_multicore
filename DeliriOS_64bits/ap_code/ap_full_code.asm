@@ -15,7 +15,7 @@ extern core_stack_ptrs
 
 ;; Tests
 extern sort_ap
-
+extern ap_sync
 extern sum_vector_ap
 
 extern inner_fft_loop
@@ -122,11 +122,17 @@ enable_sse: ;Taken from osdev
     add rax, 10
     imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, rax, 0
 
-    ; do_sort:
-    ;     call sort_ap
+tests:
+;%define SYNC
+;%define FFT
 
-    do_fft:
-       call inner_fft_loop
+%ifdef  SYNC
+    call ap_sync
+%elifdef FFT
+   call inner_fft_loop
+%else
+    call sort_ap
+%endif
 
     ;do_sum:
         ;call sum_vector_ap

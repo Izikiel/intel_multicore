@@ -40,10 +40,66 @@ void sort_bsp()
     uint32_t *array = (uint32_t *) array_start_address;
 
     uint32_t *bsp_temp = (uint32_t *) temp_address;
+
+    //ready, set, go!
+    clean_flags();
+
+    *start = 1;
+
+    heapsort(array, *len / 2);
+    active_wait(*done);
+    *done = 0;
+
+    *start_merge = 1;
+    limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+    active_wait(*done);
+    *done = 0;
+
+    *start_copy = 1;
+    copy(array, 0, bsp_temp, 0, *len / 2);
+    active_wait(*finish_copy);
+
+    clean_flags();
+}
+
+void sort_bsp_ipi()
+{
+
+    //synchronization flags
+
+    uint32_t *len = (uint32_t *) array_len_address;
+    uint32_t *array = (uint32_t *) array_start_address;
+
+    uint32_t *bsp_temp = (uint32_t *) temp_address;
+
+    send_ipi_ap(sort_ap_ipi);
+    heapsort(array, *len / 2);
+    check_rax();
+
+    send_ipi_ap(merge_ap_ipi);
+    limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+    check_rax();
+
+    send_ipi_ap(copy_ap_ipi);
+    copy(array, 0, bsp_temp, 0, *len / 2);
+    check_rax();
+}
+
+void measure_sync_mem()
+{
+    uint8_t *start = (uint8_t *) start_address;
+    uint8_t *start_merge = (uint8_t *) start_merge_address;
+    uint8_t *done = (uint8_t *) done_address;
+    uint8_t *finish_copy = (uint8_t *) finish_copy_address;
+    uint8_t *start_copy = (uint8_t *) start_copy_address;
+
+    uint32_t *len = (uint32_t *) array_len_address;
+    uint32_t *array = (uint32_t *) array_start_address;
+
+    uint32_t *bsp_temp = (uint32_t *) temp_address;
     uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
 
     uint64_t *time_measures = (uint64_t *) time_measures_address;
-
     //ready, set, go!
     clean_flags();
 
@@ -89,9 +145,51 @@ void sort_bsp()
     active_wait(*finish_copy);
     MEDIR_TIEMPO_STOP(stop);
     time_measures[5] = stop - init;
-
     clean_flags();
 
+}
+
+void measure_sync_ipis()
+{
+    uint32_t *len = (uint32_t *) array_len_address;
+    uint32_t *array = (uint32_t *) array_start_address;
+
+    uint32_t *bsp_temp = (uint32_t *) temp_address;
+
+    uint64_t *time_measures = (uint64_t *) time_measures_address;
+
+    //ready, set, go!
+
+    uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
+    send_ipi_ap(finish_ipi);
+
+    heapsort(array, *len / 2);
+    heapsort(array + *len / 2, *len / 2);
+
+    MEDIR_TIEMPO_START(init);
+    check_rax();
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[1] = stop - init;
+
+    send_ipi_ap(finish_ipi);
+
+    limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+    limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+
+    MEDIR_TIEMPO_START(init);
+    check_rax();
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[3] = stop - init;
+
+    send_ipi_ap(finish_ipi);
+
+    copy(array, 0, bsp_temp, 0, *len / 2);
+    copy(array, *len / 2, ap_temp, 0, *len / 2);
+
+    MEDIR_TIEMPO_START(init);
+    check_rax();
+    MEDIR_TIEMPO_STOP(stop);
+    time_measures[5] = stop - init;
 }
 
 void sum_vector_bsp()
@@ -110,78 +208,6 @@ void sum_vector_bsp()
 
     active_wait(*finish);
     clean_flags();
-}
-
-void sort_bsp_ipi()
-{
-
-    //si empieza a reventar con GP por el AP,
-    //hay que cambiar el origen de linkeo pq este modulo
-    //cambio el lugar de origen por su tamaño
-
-    //synchronization flags
-
-    uint32_t *len = (uint32_t *) array_len_address;
-    uint32_t *array = (uint32_t *) array_start_address;
-
-    uint32_t *bsp_temp = (uint32_t *) temp_address;
-    uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
-
-    uint64_t *time_measures = (uint64_t *) time_measures_address;
-
-
-    //ready, set, go!
-    // breakpoint
-    // send_ipi_ap(sort_ap_ipi);
-    send_ipi_ap(finish_ipi);
-
-    // MEDIR_TIEMPO_START(init);
-    heapsort(array, *len / 2);
-    heapsort(array + *len / 2, *len / 2);
-
-
-
-    // MEDIR_TIEMPO_STOP(stop);
-    // time_measures[0] = stop - init;
-
-    MEDIR_TIEMPO_START(init);
-    check_rax();
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[1] = stop - init;
-
-
-    // breakpoint
-    // send_ipi_ap(merge_ap_ipi);
-    send_ipi_ap(finish_ipi);
-
-
-    // MEDIR_TIEMPO_START(init);
-    limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
-    limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
-    // MEDIR_TIEMPO_STOP(stop);
-    // time_measures[2] = stop - init;
-
-    MEDIR_TIEMPO_START(init);
-    check_rax();
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[3] = stop - init;
-
-    // breakpoint
-    // send_ipi_ap(copy_ap_ipi);
-    send_ipi_ap(finish_ipi);
-
-
-    // MEDIR_TIEMPO_START(init);
-    copy(array, 0, bsp_temp, 0, *len / 2);
-    copy(array, *len / 2, ap_temp, 0, *len / 2);
-    // MEDIR_TIEMPO_STOP(stop);
-    // time_measures[4] = stop - init;
-
-    MEDIR_TIEMPO_START(init);
-    check_rax();
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[5] = stop - init;
-
 }
 
 char Inverse_IO_Ipi(Complex *Input, Complex *Output, unsigned int N,
