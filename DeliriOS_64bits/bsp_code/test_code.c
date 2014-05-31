@@ -313,7 +313,6 @@ bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
 }
 
 #define MAX_FFT_LEN  (32*1024)
-#define TOP_RUN_FFT  (14)
 void test_fft_mono()
 {
     wait();

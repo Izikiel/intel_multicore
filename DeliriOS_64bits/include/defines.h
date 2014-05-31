@@ -57,6 +57,7 @@
 #define time_measures_address 0x200240
 #define run_measures_address    0x200400
 #define TOP_RUN 23
+#define TOP_RUN_FFT  14
 #define TOTAL_TESTS 100
 //variables fft
 #define group_address   0x200300
