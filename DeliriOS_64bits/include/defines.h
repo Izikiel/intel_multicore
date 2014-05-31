@@ -58,7 +58,7 @@
 #define run_measures_address    0x200400
 #define TOP_RUN 23
 #define TOP_RUN_FFT  14
-#define TOTAL_TESTS 100
+#define TOTAL_TESTS 5
 //variables fft
 #define group_address   0x200300
 #define step_address    0x200340
@@ -71,7 +71,7 @@
 #define TEN_MEGA 0xa00000
 #define MAX_PROCESSOR   8
 #define temp_address    0x1e00000
-#define array_start_address temp_address + MAX_PROCESSOR * TEN_MEGA
+#define array_start_address (temp_address + MAX_PROCESSOR * TEN_MEGA)
 
 #ifndef active_wait
 #define active_wait(switch) while(!(switch))
