@@ -75,89 +75,74 @@ void generate_fft_array(uint32_t N)
     }
 }
 
+#define TOP_RUN 23
+#define TOP_RUN_FFT  14
+#define TOTAL_TESTS  10
 
+#define test_suite_sort(function, col_val, line_val, header, error_msg, finish_msg)\
+    {                                                                   \
+        uint32_t *len = (uint32_t *) array_len_address;    \
+        uint8_t col  = col_val;\
+        uint8_t line = line_val;\
+        print_string(header, line++, col);\
+        int iter;                                                       \
+        double *run_measures = (double *) run_measures_address;          \
+        for (int i = 0; i < TOP_RUN; ++i) {                             \
+            run_measures[i] = 0;                                        \
+        }                                                               \
+        for (int run = 0; run < TOTAL_TESTS; ++run) {                   \
+            for (iter = 0, *len = 2; *len < max_len; *len *= 2, iter++) {\
+                uint32_t seed = 13214;                                  \
+                generate_global_array(seed, *len);                      \
+                MEDIR_TIEMPO_START(start);                              \
+                function;                                               \
+                MEDIR_TIEMPO_STOP(stop);                                \
+                if (verfiy_sort()) {                                    \
+                    run_measures[iter] += stop - start;                 \
+                } else {                                                \
+                    print_string(error_msg, line++, col);           \
+                }                                                       \
+            }                                                           \
+        }                                                               \
+        for (int i = 0; i < TOP_RUN; i++, line++) {                     \
+            uint64_t res = run_measures[i] / ((double) TOTAL_TESTS);    \
+            print_number_u64(res, line, col);                           \
+        }\
+        print_string(finish_msg, line, col);                            \
+    }                                                                   \
+     
 void test_1_core()
 {
     clean_array(max_len);
     clear_screen();
-    uint32_t *len = (uint32_t *) array_len_address;
-    uint32_t *array = (uint32_t *) array_start_address;
 
-    uint8_t line = 0;
-    uint8_t col = 0;
-    int iter;
-    double *run_measures = (double *) run_measures_address;
+    test_suite_sort(
+        heapsort(
+            (uint32_t *) array_start_address,
+            *((uint32_t *) array_len_address)
+        )/*{
+        uint32_t *len = (uint32_t *) array_len_address;
+        uint32_t *array = (uint32_t *) array_start_address;
+        heapsort(array, *len);
+    }*/
+        , 0, 0, "sort 1 core", "bad sort :(", "Done! :D");
 
-    for (int i = 0; i < TOP_RUN; ++i) {
-        run_measures[i] = 0;
-    }
-
-    print_string("sort 1 core", line++, col);
-    for (int run = 0; run < TOTAL_TESTS; ++run) {
-        for (iter = 0, *len = 2; *len < max_len; *len *= 2, iter++) {
-            uint32_t seed = 13214;
-            generate_global_array(seed, *len);
-            MEDIR_TIEMPO_START(start);
-            heapsort(array, *len);
-            MEDIR_TIEMPO_STOP(stop);
-            if (verfiy_sort()) {
-                run_measures[iter] += stop - start;
-            } else {
-                print_string("bad_sort :(", line++, col);
-            }
-        }
-    }
-
-    for (int i = 0; i < TOP_RUN; i++, line++) {
-        uint64_t res = run_measures[i] / ((double) TOTAL_TESTS);
-        print_number_u64(res, line, col);
-    }
-
-    print_string("Done! :D", line, col);
-
-    //breakpoint
 }
 
 void test_2_cores()
 {
-    uint32_t *len = (uint32_t *) array_len_address;
     uint8_t *sleep = (uint8_t *) sleep_address;
-
-    uint8_t col  = 30;
-    uint8_t line = 0;
-    int iter;
-    double *run_measures = (double *) run_measures_address;
-    for (int i = 0; i < TOP_RUN; ++i) {
-        run_measures[i] = 0;
-    }
-    print_string("Test 2 cores", line++, col);
-    for (int run = 0; run < TOTAL_TESTS; ++run) {
-        for (iter = 0, *len = 2; *len < max_len; *len *= 2, iter++) {
-            uint32_t seed = 13214;
-            generate_global_array(seed, *len);
-            MEDIR_TIEMPO_START(start);
-            sort_bsp();
-            MEDIR_TIEMPO_STOP(stop);
-            if (verfiy_sort()) {
-                run_measures[iter] += stop - start;
-            } else {
-                print_string("bad_sort :(", line++, col);
-            }
-        }
-    }
-
-    for (int i = 0; i < TOP_RUN; i++, line++) {
-        uint64_t res = run_measures[i] / ((double) TOTAL_TESTS);
-        print_number_u64(res, line, col);
-    }
-
-    print_string("Done!", line, col);
+    test_suite_sort(sort_bsp(), 30, 0, "Test 2 cores", "bad sort :(", "Done! :D");
     *sleep = 1;
+}
+
+void test_ipi_cores()
+{
+    test_suite_sort(sort_bsp_ipi(), 60, 0, "Test Dual Ipis", "bad_sort :(", "Done!");
 }
 
 void test_mem_sync()
 {
-    //PARA CORRER ESTA CONFIGURACION HAY QUE DEFINIR SYNC EN DEFINES.H !!! :D
     clear_screen();
     uint32_t *len = (uint32_t *) array_len_address;
     uint8_t *sleep = (uint8_t *) sleep_address;
@@ -194,43 +179,6 @@ void test_mem_sync()
     *sleep = 1;
 }
 
-void test_ipi_cores()
-{
-    uint32_t *len = (uint32_t *) array_len_address;
-
-    uint8_t col = 60;
-    uint8_t line = 0;
-    int iter;
-    double *run_measures = (double *) run_measures_address;
-
-    for (int i = 0; i < TOP_RUN; ++i) {
-        run_measures[i] = 0;
-    }
-
-    print_string("Test Dual Ipis", line++, col);
-
-    for (int run = 0; run < TOTAL_TESTS; ++run) {
-        for (iter = 0, *len = 2; *len < max_len; *len *= 2, iter++) {
-            uint32_t seed = 13214;
-            generate_global_array(seed, *len);
-            MEDIR_TIEMPO_START(start);
-            sort_bsp_ipi();
-            MEDIR_TIEMPO_STOP(stop);
-            if (verfiy_sort()) {
-                run_measures[iter] += stop - start;
-            } else {
-                print_string("bad_sort :(", line++, col);
-            }
-        }
-    }
-
-    for (int i = 0; i < TOP_RUN; i++, line++) {
-        uint64_t res = run_measures[i] / ((double) TOTAL_TESTS);
-        print_number_u64(res, line, col);
-    }
-
-    print_string("Done!", line, col);
-}
 
 void test_sync_ipi_cores()
 {
