@@ -25,8 +25,13 @@
         start = (((unsigned long long int) start_high) << 32) | \
                 (unsigned long long int) (start_low);               \
     }
-
-#define MEDIR_TIEMPO_STOP(end)                              \
+#define MEDIR_TIEMPO_STOP(end)\
+    {\
+        MET(end)\
+        MET(end)\
+        MET(end)\
+    }
+#define MET(end)                              \
     {                                                           \
         unsigned int end_high, end_low;                         \
         \
