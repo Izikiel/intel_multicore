@@ -77,7 +77,7 @@ void generate_fft_array(uint32_t N)
 
 #define TOP_RUN 23
 #define TOP_RUN_FFT  14
-#define TOTAL_TESTS  10
+#define TOTAL_TESTS  5
 
 #define test_suite_sort(function, col_val, line_val, header, error_msg, finish_msg)\
     {                                                                   \
@@ -120,11 +120,7 @@ void test_1_core()
         heapsort(
             (uint32_t *) array_start_address,
             *((uint32_t *) array_len_address)
-        )/*{
-        uint32_t *len = (uint32_t *) array_len_address;
-        uint32_t *array = (uint32_t *) array_start_address;
-        heapsort(array, *len);
-    }*/
+        )
         , 0, 0, "sort 1 core", "bad sort :(", "Done! :D");
 
 }

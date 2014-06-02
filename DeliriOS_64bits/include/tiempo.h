@@ -1,19 +1,12 @@
 #ifndef __TIEMPO_H__
 #define __TIEMPO_H__
 
-#define MEDIR_TIEMPO_START(start) \
-    {\
-        MST(start)\
-        MST(start)\
-        MST(start)\
-    }
-
-#define MST(start)                          \
+#define MEDIR_TIEMPO_START(start)                          \
     {                                                           \
         unsigned int start_high, start_low;                     \
         /* warn up ... */                                       \
         __asm__ __volatile__ (                                  \
-                                                                "cpuid\n\t"                                         \
+                                                                "mfence\n\t"                                         \
                                                                 "rdtsc\n\t"                                         \
                                                                 "mov %%edx, %0\n\t"                                 \
                                                                 "mov %%eax, %1\n\t"                                 \
@@ -31,7 +24,7 @@
         unsigned int end_high, end_low;                         \
         \
         __asm__ __volatile__ (                                  \
-                                                                "cpuid\n\t"                                         \
+                                                                "mfence\n\t"                                         \
                                                                 "rdtsc\n\t"                                         \
                                                                 "mov %%edx, %0\n\t"                                 \
                                                                 "mov %%eax, %1\n\t"                                 \
