@@ -360,7 +360,6 @@ pt_loop:
 
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 1, mensaje_inicio64_len
 
-xchg bx, bx
     imprimir_texto_mp mensaje_inicio64real_msg, mensaje_inicio64real_len, 0x0F, 2, 0
 
     ;estamos en modo ia32e compatibilidad con 32 bits
