@@ -34,6 +34,7 @@
 #define KERNEL_PML4T_POINTER    0x0000000000740000
 #define KERNEL_PDPT_POINTER     0x0000000000841000
 #define KERNEL_PDT_POINTER      0x0000000000942000
+#define KERNEL_PTT_POINTER      0x0000000002040000
 /* -------------------------------------------------------------------------- */
 
 
