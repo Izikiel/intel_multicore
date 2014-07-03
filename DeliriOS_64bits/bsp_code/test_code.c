@@ -255,7 +255,8 @@ bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
     return cmp_complex_arrays(Input, Output2, N, error);
 }
 
-#define MAX_FFT_LEN  (32*1024)
+#define MAX_FFT_LEN  (64*1024)
+#define FFT_START   (16)
 void test_fft_mono()
 {
     clear_screen();
@@ -274,7 +275,7 @@ void test_fft_mono()
 
     print_string("fft monocore", line++, col);
     for (int run = 0; run < TOTAL_TESTS; ++run) {
-        for (iter = 0, *len = 2; *len < MAX_FFT_LEN; *len *= 2, iter++) {
+        for (iter = 0, *len = FFT_START; *len < MAX_FFT_LEN; *len *= 2, iter++) {
             generate_fft_array(*len);
             MEDIR_TIEMPO_START(start);
             Inverse_IO(Input, Output, *len, TRUE);
@@ -293,7 +294,6 @@ void test_fft_mono()
     }
 
     print_string("Done! :D", ++line, col);
-
 
 }
 
@@ -316,7 +316,7 @@ void test_fft_dual_mem()
 
     print_string("fft dualcore", line++, col);
     for (int run = 0; run < TOTAL_TESTS; ++run) {
-        for (iter = 0, *len = 2; *len < MAX_FFT_LEN; *len *= 2, iter++) {
+        for (iter = 0, *len = FFT_START; *len < MAX_FFT_LEN; *len *= 2, iter++) {
             generate_fft_array(*len);
             MEDIR_TIEMPO_START(start);
             Inverse_IO_Dual(Input, Output, *len, TRUE);
@@ -356,7 +356,7 @@ void test_fft_dual_ipi()
 
     print_string("fft dualcore ipis", line++, col);
     for (int run = 0; run < TOTAL_TESTS; ++run) {
-        for (iter = 0, *len = 2; *len < MAX_FFT_LEN; *len *= 2, iter++) {
+        for (iter = 0, *len = FFT_START; *len < MAX_FFT_LEN; *len *= 2, iter++) {
             generate_fft_array(*len);
             MEDIR_TIEMPO_START(start);
             Inverse_IO_Ipi(Input, Output, *len, TRUE);

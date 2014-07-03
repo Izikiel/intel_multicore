@@ -425,7 +425,7 @@ enable_sse: ;Taken from osdev
     ;arrancan las pruebas!
 tests:
 ;%define SYNC
-;%define FFT
+%define FFT
 %ifdef  SYNC
     call test_mem_sync
     call test_sync_ipi_cores

@@ -124,7 +124,7 @@ enable_sse: ;Taken from osdev
 
 tests:
 ;%define SYNC
-;%define FFT
+%define FFT
 
 %ifdef  SYNC
     call ap_sync

@@ -9,7 +9,6 @@ void send_ipi_ap(uint32_t interrupt);
 #define sort_ap_ipi 40
 #define merge_ap_ipi 41
 #define copy_ap_ipi 42
-#define fft_int 43
 
 
 uint64_t init, stop;
@@ -209,9 +208,11 @@ void sum_vector_bsp()
     active_wait(*finish);
     clean_flags();
 }
+/*
+#define fft_int 43
 
 char Inverse_IO_Ipi(Complex *Input, Complex *Output, unsigned int N,
-                    char ifScale /* = true */)
+                    char ifScale)
 {
     //   Check input parameters
     if (!Input || !Output || N < 1 || N & (N - 1)) {
@@ -229,7 +230,7 @@ char Inverse_IO_Ipi(Complex *Input, Complex *Output, unsigned int N,
     return TRUE;
 }
 
-void Perform_P_Int(Complex *Data, unsigned int N, char Inverse /* = false */)
+void Perform_P_Int(Complex *Data, unsigned int N, char Inverse)
 {
     const double pi = Inverse ? 3.14159265358979323846 : -3.14159265358979323846;
     unsigned int Pair, Match;
@@ -301,7 +302,7 @@ void Perform_P_Int(Complex *Data, unsigned int N, char Inverse /* = false */)
         }
     }
 }
-
+*/
 
 void make_ap_jump()
 {
@@ -313,6 +314,7 @@ void make_ap_jump()
     print_string("Jumpeo?", 1, 0);
 }
 
+/*
 void send_ipi_ap(uint32_t interrupt)
 {
     intr_command_register icr;
@@ -321,4 +323,4 @@ void send_ipi_ap(uint32_t interrupt)
     send_ipi(&icr);
     wait_for_ipi_reception();
 }
-
+*/

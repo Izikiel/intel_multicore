@@ -5,7 +5,7 @@ KERNEL_OBJ=ap_full_code.o
 OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/mmu.o ../common_code/ports.o \
 	 idt.o isr.o ../common_code/contextManager.o ../common_code/multicore_common.o \
 	../common_code/i386.o ../common_code/timer.o ap_execute_code.o ../common_code/sort_code.o \
-	../bsp_code/kmain64.o ../common_code/screen_utils.o \
+	../bsp_code/kmain64.o ../common_code/screen_utils.o ../common_code/check_rax.o\
 	../fft/fft.o ../fft/sin.o ../fft/complex.o
 
 LD=ld
