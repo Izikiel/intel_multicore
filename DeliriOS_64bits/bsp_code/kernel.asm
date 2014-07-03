@@ -22,6 +22,7 @@ extern habilitar_pic
 extern krnPML4T
 extern krnPDPT
 extern krnPDT
+extern krnPTT
 
 ;; consola
 extern console_setYCursor
@@ -201,17 +202,79 @@ protected_mode:
 
     ;aca tenemos certeza de que tenemos modo de 64 bits disponible
 
-;inicializo paginacion
+;;inicializo paginacion 2mb
+;    imprimir_texto_mp mensaje_paging4g_msg, mensaje_paging4g_len, 0x0F, 0, 0
+;
+;;    Estoy usando paginacion IA-32e => bits CR0.PG=1 + CR4.PAE=1 + EFER.LME=1
+;;    paginas de 2mb
+;
+;;symbol containing krnPML4T pointer is krnPML4T
+;;symbol containing krnPDPT pointer is krnPDPT
+;;symbol containing krnPDT pointer is krnPDT
+;
+;; Mapeo 4GB con paginas de 2MB
+;; la estructura PML4 esta en krnPML4T, creamos la primer entrada aca
+;    cld                     ;limpia el direction flag -> http://en.wikipedia.org/wiki/Direction_flag
+;    mov edi, [krnPML4T]
+;    mov eax, [krnPDPT]
+;    or eax, 0x7; attributes nibble
+;    stosd
+;    xor eax, eax
+;    stosd
+;
+;    ;Nota http://en.wikipedia.org/wiki/X86_instruction_listings
+;    ;stosd es equivalente a *ES:EDI = EAX; => store string double word
+;
+;; creo las entradas en PDP
+;; la estructura PDP esta en krnPDPT, creamos las entradas desde este lugar
+;    mov ecx, 64             ; hago 64 PDPE entries cada una mapea 1gb de memoria -> mas abajo las mapeo en x64 mode
+;    mov edi, [krnPDPT]
+;    mov eax, [krnPDT]
+;    or eax, 0x7; attributes nibble
+;crear_pdpentry:
+;    stosd
+;    push eax
+;    xor eax, eax
+;    stosd
+;    pop eax
+;    add eax, 0x00001000     ;avanzo 4k
+;    dec ecx
+;    cmp ecx, 0
+;    jne crear_pdpentry
+;
+;; Crear las entradas en PD
+;    mov edi, [krnPDT]
+;    mov eax, 0x0000008F     ; para activar paginas de 2MB seteamos el bit 7
+;    xor ecx, ecx
+;pd_loop:
+;    stosd
+;    push eax
+;    xor eax, eax
+;    stosd
+;    pop eax
+;    add eax, 0x00200000     ;incremento 2 MB
+;    inc ecx
+;    cmp ecx, 2048
+;    jne pd_loop            ; Create 2048 2 MiB page maps.
+;
+;    ; apunto cr3 al PML4
+;    mov eax, [krnPML4T]
+;    mov cr3, eax
+;
+;    imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 0, mensaje_paging4g_len
+
+;inicializo paginacion 4k
     imprimir_texto_mp mensaje_paging4g_msg, mensaje_paging4g_len, 0x0F, 0, 0
 
 ;    Estoy usando paginacion IA-32e => bits CR0.PG=1 + CR4.PAE=1 + EFER.LME=1
-;    paginas de 2mb
+;    paginas de 4kb
 
 ;symbol containing krnPML4T pointer is krnPML4T
 ;symbol containing krnPDPT pointer is krnPDPT
 ;symbol containing krnPDT pointer is krnPDT
+;symbol containing krnPTT pointer is krnPTT
 
-; Mapeo 4GB con paginas de 2MB
+; Mapeo 4GB con paginas de 4kb
 ; la estructura PML4 esta en krnPML4T, creamos la primer entrada aca
     cld                     ;limpia el direction flag -> http://en.wikipedia.org/wiki/Direction_flag
     mov edi, [krnPML4T]
@@ -241,9 +304,10 @@ crear_pdpentry:
     cmp ecx, 0
     jne crear_pdpentry
 
-; Crear las entradas en PD
+; Crear las entradas en PD que apuntan a PTTs
     mov edi, [krnPDT]
-    mov eax, 0x0000008F     ; para activar paginas de 2MB seteamos el bit 7
+    mov eax, [krnPTT]
+    or eax, 0x7; attributes nibble
     xor ecx, ecx
 pd_loop:
     stosd
@@ -251,17 +315,32 @@ pd_loop:
     xor eax, eax
     stosd
     pop eax
-    add eax, 0x00200000     ;incremento 2 MB
+    add eax, 0x00001000    ;incremento 4kb
     inc ecx
     cmp ecx, 2048
-    jne pd_loop            ; Create 2048 2 MiB page maps.
+    jne pd_loop            ; Create 2048 4 kb ptt entries.
+
+; Crear las entradas en PT que apuntan a paginas de 4k
+    mov edi, [krnPTT]
+    mov eax, 0x7; attributes nibble
+    xor ecx, ecx
+pt_loop:
+    stosd
+    push eax
+    xor eax, eax
+    stosd
+    pop eax
+    add eax, 0x00001000    ;incremento 4kb
+    inc ecx
+    cmp ecx, 512*2048    ;512 entries por ptt(2048 PTTEs)
+    jne pt_loop
+
 
     ; apunto cr3 al PML4
     mov eax, [krnPML4T]
     mov cr3, eax
 
     imprimir_texto_mp mensaje_ok_msg, mensaje_ok_len, 0x02, 0, mensaje_paging4g_len
-
     ;comienzo a inicializar 64 bits
     imprimir_texto_mp mensaje_inicio64_msg, mensaje_inicio64_len, 0x0F, 1, 0
 
@@ -352,22 +431,22 @@ long_mode:
     lidt [IDT_DESC]
     call idt_inicializar
 
-    imprimir_texto_ml mensaje_paging64g_msg, mensaje_paging64g_len, 0x0F, 3, 0
+;    imprimir_texto_ml mensaje_paging64g_msg, mensaje_paging64g_len, 0x0F, 3, 0
 
-    ;genero el resto de las estructuras de paginacion para mapear 64 gb
-    ;lo tengo que hacer aca porque la direccion es de 64 bits, en modo protegido de 32 no podia
-    mov rcx, 0x0000000000000000
-    mov rax, 0x000000010000008F
-    mov rdi, [krnPDT]
-    add rdi, 0x4000;los primeros 4gb ya los tengo bien mapeados
-loop_64g_structure:
-    stosq
-    add rax, 0x0000000000200000
-    add rcx, 1
-    cmp rcx, 30720         ; 32768 - 2048 (ya mapeamos 2048*2mb)
-    jne loop_64g_structure
-
-    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging64g_len
+;    ;genero el resto de las estructuras de paginacion para mapear 64 gb
+;    ;lo tengo que hacer aca porque la direccion es de 64 bits, en modo protegido de 32 no podia
+;    mov rcx, 0x0000000000000000
+;    mov rax, 0x000000010000008F
+;    mov rdi, [krnPDT]
+;    add rdi, 0x4000;los primeros 4gb ya los tengo bien mapeados
+;loop_64g_structure:
+;    stosq
+;    add rax, 0x0000000000200000
+;    add rcx, 1
+;    cmp rcx, 30720         ; 32768 - 2048 (ya mapeamos 2048*2mb)
+;    jne loop_64g_structure
+;
+;    imprimir_texto_ml mensaje_ok_msg, mensaje_ok_len, 0x02, 3, mensaje_paging64g_len
 
     imprimir_texto_ml mensaje_interrupt_msg, mensaje_interrupt_len, 0x0F, 4, 0
 
