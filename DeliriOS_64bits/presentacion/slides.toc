@@ -1,0 +1,2 @@
+\beamer@endinputifotherversion {3.24pt}
+\beamer@subsubsectionintoc {0}{0}{1}{Booteo por niveles: Modo real a modo protegido y modo protegido en memoria alta}{21}{0}{0}
