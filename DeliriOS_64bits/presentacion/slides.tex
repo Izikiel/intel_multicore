@@ -243,11 +243,11 @@ Para lograr esto, primero es necesario que encontrar una estructura de datos lla
 
 \begin{frame}
   \frametitle{Desarrollo: \small Inicialización de los AP's (cont)}
-  Luego de tener listos los \texttt{icr}, se procede a mandar las \textt{ipi's} de INIT e INIT\_DASSERT, luego se espera unos 10 milisegundos, verificando previamente que las \textt{ipis} se hayan enviado correctamente. \\
+  Luego de tener listos los \texttt{icr}, se procede a mandar las \texttt{ipi's} de INIT e INIT\_DASSERT, luego se espera unos 10 milisegundos, verificando previamente que las \texttt{ipis} se hayan enviado correctamente. \\
   \vspace{10pt}
   Luego de la espera, se procede a enviar la \texttt{ipi} de STARTUP, se espera 10 ms, se verifica que se haya enviado correctamente, se la vuelve a enviar, se realiza otra espera de 10 ms, y se vuelve a verificar.\\
   \vspace{10pt}
-  Una vez terminado este proceso, se puede asumir que el AP fue encendido, y se continúa el encendido el resto de los AP's encontrados en la \textt{MP Configuration Table}\\
+  Una vez terminado este proceso, se puede asumir que el AP fue encendido, y se continúa el encendido el resto de los AP's encontrados en la \texttt{MP Configuration Table}
 \end{frame}
 
 % \begin{frame} % TODO: comentenlo hablando
@@ -257,91 +257,120 @@ Para lograr esto, primero es necesario que encontrar una estructura de datos lla
 %   \textbf{Nota 3: } Los identificadores de núcleo no necesariamente son valores numéricos consecutivos.
 % \end{frame}
 
-	\begin{frame}
-		\frametitle{Multicore: inicialización de modo real a modo nativo x64 de los AP's}
-	    Como vimos en la sección anterior, los Application Processors comienzan su ejecución en una posición otra por debajo del primer mega en modo real, nosotros necesitamos hacer saltar la ejecución a una posición conocida por encima del mega que no se solape con estructuras del kernel ni otros módulos, la solución que propusimos es un booteo por etapas.
-	    
-	    \subsubsection{Booteo por niveles: Modo real a modo protegido y modo protegido en memoria alta}
-	    En este primer nivel el núcleo se encuentra en modo real, se inicializa una GDT básica en el mismo código y se salta a modo protegido, esto es necesario para poder direccionar posiciones de memoria por encima del primer mega.\\
+\begin{frame}
+  \frametitle{Desarrollo: \small Inicialización de modo real a modo nativo x64 de los AP's}
+%   Como vimos en la sección anterior, los Application Processors comienzan su ejecución en una posición otra por debajo del primer mega en modo real, nosotros necesitamos hacer saltar la ejecución a una posición conocida por encima del mega que no se solape con estructuras del kernel ni otros módulos, la solución que propusimos es un booteo por etapas.
+  booteo por etapas,\\
+%   \subsubsection{Booteo por niveles: Modo real a modo protegido y modo protegido en memoria alta}
+\vspace{10pt}
+  \begin{enumerate}
+    \setlength{\itemsep}{10pt}
+   \item Se inicializa una GDT básica y se salta a modo protegido
+   \item Salto al segundo bootloader (dirección inyectada)
+   \item Pasamos a modo nativo de 64 bits
+   \item Se asignan estructuras comunes, la GDT y la estructura de paginación
+   \item Se inicializa una IDT para los AP y se habilitan los local-apic de cada AP
+   \item Se obtiene el codigo de identificación del procesador (variable y distinto)
+  \end{enumerate}
 
-	    Recordando secciones anteriores, cuando el BSP iniciaba el primer nivel de booteo preparaba el contexto de los APS para inicializar en niveles, en este proceso se inyecta en el código del primer nivel de booteo del AP la posicion de memoria donde esta el segundo nivel de booteo por encima del mega.\\
+%   En este primer nivel el núcleo se encuentra en modo real, se inicializa una GDT básica en el mismo código y se salta a modo protegido, esto es necesario para poder direccionar posiciones de memoria por encima del primer mega.\\
+%   Recordando secciones anteriores, cuando el BSP iniciaba el primer nivel de booteo preparaba el contexto de los APS para inicializar en niveles, en este proceso se inyecta en el código del primer nivel de booteo del AP la posicion de memoria donde esta el segundo nivel de booteo por encima del mega.\\
+%   Luego resta únicamente realizar el salto al segundo bootloader con un jump para continuar el booteo del AP, de manera similar al BSP pasamos luego a modo nativo de 64 bits.\\
+%   Notemos que por ejemplo la línea A20 ya esta habilitada, y algunas estructuras del kernel que fueron inicializadas por el BSP son comúnes a todos los núcleos, como por ejemplo la GDT y la estructura jerárquica de paginación, que son directamente asignadas a los registros del núcleo correspondiente con punteros a ellas.\\
+%   Para el manejo de interrupciones y excepciones, se inicializa una IDT para los Application Processors, además es necesario habilitar los local-apic de cada AP, en caso contrario, no podríamos utilizar interrupciones inter-procesador(IPIS).\\
+%   Como el número de application processors puede ser variable a priori, cuando un núcleo comienza su ejecución, es obtenido su código de identificación dentro del procesador y luego se obtiene una posición de memoria única para cada núcleo con el fin de poder asignar los punteros de la pila $RSP$ y $RBP$, de ser necesaria la reserva de memoria para alguna otra estructura única por núcleo se puede utilizar este recurso.
+\end{frame}
 
-	    Luego resta únicamente realizar el salto al segundo bootloader con un jump para continuar el booteo del AP, de manera similar al BSP pasamos luego a modo nativo de 64 bits.\\
-	    Notemos que por ejemplo la línea A20 ya esta habilitada, y algunas estructuras del kernel que fueron inicializadas por el BSP son comúnes a todos los núcleos, como por ejemplo la GDT y la estructura jerárquica de paginación,
-	    que son directamente asignadas a los registros del núcleo correspondiente con punteros a ellas.
-	    \\
-	    Para el manejo de interrupciones y excepciones, se inicializa una IDT para los Application Processors, además es necesario habilitar los local-apic de cada AP, en caso contrario, no podríamos utilizar interrupciones inter-procesador(IPIS).
-	    \\
+\section{Experimentos}
 
-	    Como el número de application processors puede ser variable a priori, cuando un núcleo comienza su ejecución, es obtenido su código de identificación dentro del procesador y luego se obtiene una posición de memoria única para cada núcleo con el fin de poder asignar los punteros de la pila $RSP$ y $RBP$, de ser necesaria la reserva de memoria para alguna otra estructura única por núcleo se puede utilizar este recurso.
-	\end{frame}
+\begin{frame}
+  \frametitle{Experimentos: Sorting Paralelo}
+  Combinando \emph{merge sort} con \emph{heap sort} se construyo un algoritmo de ordenamiento en paralelo\\
+%   Se optó en este caso por un algoritmo propio que combinara varios ordenamientos conocidos con el objetivo de hacer mas fácil la paralelización del experimento. En particular lo que se realiza es partir el arreglo en 2 mitades, donde cada core realiza heapsort sobre su mitad asignada y luego una intercalación de los resultados con un algoritmo también paralelo en el cual un core realiza el merge de los máximos y el otro el merge de los mínimos, luego resta copiar los resultados y concluimos.
+  \vspace{10pt}
+  El algoritmo tiene 3 subprocesos,\\
+  \vspace{10pt}
+  \begin{itemize}
+  \item Sort: Ordenamiento de mitades por cada core
+  \item Merge: Merge paralelizado de las mitades ordenadas
+  \item Copy: Copia del resultado a un buffer de destino
+  \end{itemize}
+  \vspace{10pt}
+  Dos mecanismos de sincronización,\\
+  \vspace{10pt}
+  \begin{itemize}
+  \item Memoria: \emph{Polling} sobre memoria
+  \item Ipis: interrupciones entre procesadores
+  \end{itemize}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Sorting Paralelo}
-		Se optó en este caso por un algoritmo propio que combinara varios ordenamientos conocidos con el objetivo de hacer mas fácil la paralelización del experimento. En particular lo que se realiza es partir el arreglo en 2 mitades, donde cada core realiza heapsort sobre su mitad asignada y luego una intercalación de los resultados con un algoritmo también paralelo en el cual un core realiza el merge de los máximos y el otro el merge de los mínimos, luego resta copiar los resultados y concluimos.
-		El algoritmo tiene 3 subprocesos
-		\begin{itemize}
-			\item Sort: Ordenamiento de mitades por cada core
-			\item Merge: Merge paralelizado de las mitades ordenadas
-			\item Copy: Copia del resultado a un buffer de destino
-		\end{itemize}
-	\end{frame}
+\begin{frame}
+  \frametitle{Experimentos: Memoria}
+  \begin{center}
+  \includegraphics[scale=0.28]{images/sync-sorting-seq.png}
+  \end{center}   
+  \end{figure}
+\end{frame}
 
-	\begin{frame}
-		\begin{center}
-	        \includegraphics[scale=0.28]{images/sync-sorting-seq.png}
-	    \end{center}
-	\end{frame}
+\begin{frame}
+  \frametitle{Experimentos: Ipis}
+  \begin{center}
+  \includegraphics[height=4.5cm]{images/ipis-sorting-seq.png}
+  \end{center}
+\end{frame}
 
-	\begin{frame}
-	    \begin{center}
-	        \includegraphics[height=4.5cm]{images/ipis-sorting-seq.png}
-	    \end{center}
-	\end{frame}
+% \begin{frame}
+%   \frametitle{Resultados}
+%   \framesubtitle{Intel® Pentium® Processor G2030 - Sorting}
+%   \begin{center}
+%   \begin{tabular}{|c|c|c|c|c|c|c|}
+%   \hline	
+%   Elementos & Ratio Mem/Ipi & Single/DMem & Single/DIpi\\
+%   \hline
+%   2 & 0.213 & 0.705 &  0.150\\
+%   \hline
+%   4 & 0.291 & 0.929 &  0.270\\
+%   \hline
+%   8 & 0.375 & 1.422 &  0.534\\
+%   \hline
+%   16 & 0.564 & 1.634 &  0.923\\
+%   \hline
+%   32 & 0.682 & 1.879 &  1.283\\
+%   \hline
+%   64 & 0.833 & 1.944 &  1.619\\
+%   \hline
+%   128 & 0.923 & 1.96 &  1.810\\
+%   \hline
+%   512 & 0.967 & 2.037 &  1.971\\
+%   \hline
+%   131072 & 0.987 & 2.024 &  1.999\\
+%   \hline
+%   262144 & 0.991 & 2.095 &  2.077\\
+%   \hline
+%   524288 & 0.989 & 2.029 &  2.008\\
+%   \hline
+%   1048576 & 0.992 & 2.018 &  2.003\\
+%   \hline
+%   2097152 & 0.989 & 2.034 &  2.013\\
+%   \hline
+%   4194304 & 0.994 & 2.023 &  2.012\\
+%   \hline
+%   \end{tabular}
+%   \end{center}
+% \end{frame}
 
-	\begin{frame}
-		\frametitle{Resultados}
-		\framesubtitle{Intel® Pentium® Processor G2030 - Sorting}
-		\begin{center}
-			\begin{tabular}{|c|c|c|c|c|c|c|}
-				\hline	
-					Elementos & Ratio Mem/Ipi & Single/DMem & Single/DIpi\\
-				\hline
-					2 & 0.213 & 0.705 &  0.150\\
-				\hline
-					4 & 0.291 & 0.929 &  0.270\\
-				\hline
-					8 & 0.375 & 1.422 &  0.534\\
-				\hline
-					16 & 0.564 & 1.634 &  0.923\\
-				\hline
-					32 & 0.682 & 1.879 &  1.283\\
-				\hline
-					64 & 0.833 & 1.944 &  1.619\\
-				\hline
-					128 & 0.923 & 1.96 &  1.810\\
-				\hline
-					512 & 0.967 & 2.037 &  1.971\\
-				\hline
-					131072 & 0.987 & 2.024 &  1.999\\
-				\hline
-					262144 & 0.991 & 2.095 &  2.077\\
-				\hline
-					524288 & 0.989 & 2.029 &  2.008\\
-				\hline
-					1048576 & 0.992 & 2.018 &  2.003\\
-				\hline
-					2097152 & 0.989 & 2.034 &  2.013\\
-				\hline
-					4194304 & 0.994 & 2.023 &  2.012\\
-				\hline
-			\end{tabular}
-			\end{center}
-		\end{frame}
-		\begin{frame}
-		\begin{center}
-		    \includegraphics[height=4.8cm]{images/sort_ipis_g2030.png}
-		\end{center}
-	\end{frame}
+\begin{frame}
+  \begin{center} % TODO: ARMAR UNA NUEVA IMAGEN CON EL DATOS EN EL EJE X
+  \includegraphics[height=4.8cm]{images/sort_ipis_g2030.png}
+  \end{center}
+  En el grafico se puede ver como para instancias grandes del 
+  
+\end{frame}
+
+\begin{frame}
+  \begin{center}
+  \huge GRACIAS
+  \end{center}
+\end{frame}
 
 \end{document}

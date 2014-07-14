@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.5.16)  14 JUL 2014 16:35
+This is pdfTeX, Version 3.1415926-2.5-1.40.14 (TeX Live 2013/Debian) (format=pdflatex 2014.5.16)  14 JUL 2014 19:24
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -1090,26 +1090,45 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 ] [5
 
 ]
-<images/modules-map.pdf, id=86, 597.50786pt x 845.04686pt>
+<images/modules-map.pdf, id=97, 597.50786pt x 845.04686pt>
 File: images/modules-map.pdf Graphic file (type pdf)
 
 <use images/modules-map.pdf>
 Package pdftex.def Info: images/modules-map.pdf used on input line 81.
 (pdftex.def)             Requested size: 137.4239pt x 194.35669pt.
- [6
+
+Overfull \vbox (6.08081pt too high) detected at line 81
+ []
+
+[6
 
  <./images/modules-map.pdf>] [7
 
-] [8
+]
+Overfull \vbox (1.72412pt too high) detected at line 114
+ []
 
-] [9
+[8
 
 ]
+Overfull \vbox (1.72412pt too high) detected at line 114
+ []
+
+[9
+
+]
+Overfull \vbox (1.72412pt too high) detected at line 114
+ []
+
 [10
 
-] [11
+]
+Overfull \vbox (1.72412pt too high) detected at line 114
+ []
 
-] <images/bsp-stages-diagram.pdf, id=145, 845.04686pt x 597.50786pt>
+[11
+
+] <images/bsp-stages-diagram.pdf, id=163, 845.04686pt x 597.50786pt>
 File: images/bsp-stages-diagram.pdf Graphic file (type pdf)
 
 <use images/bsp-stages-diagram.pdf>
@@ -1121,13 +1140,13 @@ Overfull \hbox (74.98923pt too wide) in paragraph at lines 122--122
  []
 
 
-Overfull \vbox (89.12534pt too high) detected at line 122
+Overfull \vbox (95.6253pt too high) detected at line 122
  []
 
 [12
 
  <./images/bsp-stages-diagram.pdf>]
-<images/ap-stages-diagram.pdf, id=163, 712.97409pt x 347.00157pt>
+<images/ap-stages-diagram.pdf, id=181, 712.97409pt x 347.00157pt>
 File: images/ap-stages-diagram.pdf Graphic file (type pdf)
 
 <use images/ap-stages-diagram.pdf>
@@ -1138,7 +1157,7 @@ Package pdftex.def Info: images/ap-stages-diagram.pdf used on input line 130.
  <./images/ap-stages-diagram.pdf>]
 [14
 
-] <images/ia32-paging-overview.png, id=190, 216.81pt x 125.268pt>
+] <images/ia32-paging-overview.png, id=210, 216.81pt x 125.268pt>
 File: images/ia32-paging-overview.png Graphic file (type png)
 
 <use images/ia32-paging-overview.png>
@@ -1146,7 +1165,7 @@ Package pdftex.def Info: images/ia32-paging-overview.png used on input line 165
 .
 (pdftex.def)             Requested size: 295.47302pt x 170.71652pt.
 
-Overfull \vbox (53.17479pt too high) detected at line 165
+Overfull \vbox (59.67476pt too high) detected at line 165
  []
 
 [15
@@ -1158,14 +1177,14 @@ Overfull \vbox (53.17479pt too high) detected at line 165
 ] [18
 
 ]
-<images/interrupts.png, id=225, 460.72125pt x 420.82219pt>
+<images/interrupts.png, id=249, 460.72125pt x 420.82219pt>
 File: images/interrupts.png Graphic file (type png)
 
 <use images/interrupts.png>
 Package pdftex.def Info: images/interrupts.png used on input line 197.
 (pdftex.def)             Requested size: 249.20757pt x 227.62204pt.
 
-Overfull \vbox (50.84273pt too high) detected at line 197
+Overfull \vbox (57.3427pt too high) detected at line 197
  []
 
 [19
@@ -1176,106 +1195,52 @@ Overfull \vbox (50.84273pt too high) detected at line 197
 
 ] [22
 
-]
-! Undefined control sequence.
-\beamer@doifinframe ...rocede a mandar las \textt 
-                                                  {ipi's} de INIT e INIT\_DA...
-l.251 \end{frame}
-                 
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
+] [23
 
-! Undefined control sequence.
-\beamer@doifinframe ...previamente que las \textt 
-                                                  {ipis} se hayan enviado co...
-l.251 \end{frame}
-                 
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-! Undefined control sequence.
-\beamer@doifinframe ...s encontrados en la \textt 
-                                                  {MP Configuration Table}\\...
-l.251 \end{frame}
-                 
-The control sequence at the end of the top line
-of your error message was never \def'ed. If you have
-misspelled it (e.g., `\hobx'), type `I' and the correct
-spelling (e.g., `I\hbox'). Otherwise just continue,
-and I'll forget about whatever was undefined.
-
-[23
-
-]
-Overfull \vbox (279.45355pt too high) detected at line 277
- []
-
-[24
+] [24
 
 ] [25
 
-] <images/sync-sorting-seq.png, id=286, 1205.50375pt x 389.455pt>
+]
+<images/sync-sorting-seq.png, id=315, 1205.50375pt x 389.455pt>
 File: images/sync-sorting-seq.png Graphic file (type png)
 
 <use images/sync-sorting-seq.png>
-Package pdftex.def Info: images/sync-sorting-seq.png used on input line 294.
+Package pdftex.def Info: images/sync-sorting-seq.png used on input line 316.
 (pdftex.def)             Requested size: 337.53876pt x 109.04665pt.
-
-Overfull \hbox (30.24889pt too wide) in paragraph at lines 294--294
- [] 
- []
-
-[26
+ [26
 
  <./images/sync-sorting-seq.png>]
-<images/ipis-sorting-seq.png, id=295, 807.015pt x 333.245pt>
+<images/ipis-sorting-seq.png, id=325, 807.015pt x 333.245pt>
 File: images/ipis-sorting-seq.png Graphic file (type png)
 
 <use images/ipis-sorting-seq.png>
-Package pdftex.def Info: images/ipis-sorting-seq.png used on input line 300.
+Package pdftex.def Info: images/ipis-sorting-seq.png used on input line 323.
 (pdftex.def)             Requested size: 310.06757pt x 128.0374pt.
 
-Overfull \hbox (2.7777pt too wide) in paragraph at lines 300--300
+Overfull \hbox (2.7777pt too wide) in paragraph at lines 323--323
  [] 
  []
 
 [27
 
  <./images/ipis-sorting-seq.png>]
-LaTeX Font Info:    Try loading font information for OMS+cmss on input line 340
-.
-LaTeX Font Info:    No file OMScmss.fd. on input line 340.
+<images/sort_ipis_g2030.png, id=335, 926.46124pt x 372.39125pt>
+File: images/sort_ipis_g2030.png Graphic file (type png)
 
+<use images/sort_ipis_g2030.png>
+Package pdftex.def Info: images/sort_ipis_g2030.png used on input line 371.
+(pdftex.def)             Requested size: 339.78831pt x 136.5733pt.
 
-LaTeX Font Warning: Font shape `OMS/cmss/m/n' undefined
-(Font)              using `OMS/cmsy/m/n' instead on input line 340.
-
-
-Overfull \vbox (15.62392pt too high) detected at line 340
+Overfull \hbox (32.49844pt too wide) in paragraph at lines 371--371
+ [] 
  []
 
 [28
 
-] <images/sort_ipis_g2030.png, id=313, 926.46124pt x 372.39125pt>
-File: images/sort_ipis_g2030.png Graphic file (type png)
+ <./images/sort_ipis_g2030.png>] [29
 
-<use images/sort_ipis_g2030.png>
-Package pdftex.def Info: images/sort_ipis_g2030.png used on input line 345.
-(pdftex.def)             Requested size: 339.78831pt x 136.5733pt.
-
-Overfull \hbox (32.49844pt too wide) in paragraph at lines 345--345
- [] 
- []
-
-[29
-
- <./images/sort_ipis_g2030.png>]
+]
 \tf@nav=\write6
 \openout6 = `slides.nav'.
 
@@ -1285,49 +1250,42 @@ Overfull \hbox (32.49844pt too wide) in paragraph at lines 345--345
 \tf@snm=\write8
 \openout8 = `slides.snm'.
 
-Package atveryend Info: Empty hook `BeforeClearDocument' on input line 347.
-Package atveryend Info: Empty hook `AfterLastShipout' on input line 347.
+Package atveryend Info: Empty hook `BeforeClearDocument' on input line 379.
+Package atveryend Info: Empty hook `AfterLastShipout' on input line 379.
  (./slides.aux)
-Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 347.
-Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 347.
+Package atveryend Info: Executing hook `AtVeryEndDocument' on input line 379.
+Package atveryend Info: Executing hook `AtEndAfterFileList' on input line 379.
 Package rerunfilecheck Info: File `slides.out' has not changed.
-(rerunfilecheck)             Checksum: CDACE4D7DA6E18E24F386144CA29449F;95.
+(rerunfilecheck)             Checksum: 87E1FD814E7F5533AAF82F6CEEAF7883;142.
 
 
 LaTeX Font Warning: Size substitutions with differences
 (Font)              up to 1.0pt have occurred.
 
-
-LaTeX Font Warning: Some font shapes were not available, defaults substituted.
-
-Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 347.
+Package atveryend Info: Empty hook `AtVeryVeryEnd' on input line 379.
  ) 
 Here is how much of TeX's memory you used:
- 16101 strings out of 493304
- 297790 string characters out of 6139871
- 381734 words of memory out of 5000000
- 19081 multiletter control sequences out of 15000+600000
- 17220 words of font info for 65 fonts, out of 8000000 for 9000
+ 16081 strings out of 493304
+ 297571 string characters out of 6139871
+ 376535 words of memory out of 5000000
+ 19068 multiletter control sequences out of 15000+600000
+ 15617 words of font info for 59 fonts, out of 8000000 for 9000
  957 hyphenation exceptions out of 8191
  49i,20n,59p,822b,593s stack positions out of 5000i,500n,10000p,200000b,80000s
-pdfTeX warning (dest): name{Navigation30} has been referenced but does not ex
-ist, replaced by a fixed one
-
-</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></usr/
-share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/share/
-texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></usr/share/texliv
-e/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/texmf
--dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist/f
-onts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fonts
-/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/type
-1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/publ
-ic/amsfonts/cm/cmsy9.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsf
-onts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/c
-m/cmtt9.pfb>
-Output written on slides.pdf (29 pages, 371760 bytes).
+</usr/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss10.pfb></us
+r/share/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss12.pfb></usr/shar
+e/texlive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss17.pfb></usr/share/texl
+ive/texmf-dist/fonts/type1/public/amsfonts/cm/cmss8.pfb></usr/share/texlive/tex
+mf-dist/fonts/type1/public/amsfonts/cm/cmss9.pfb></usr/share/texlive/texmf-dist
+/fonts/type1/public/amsfonts/cm/cmssbx10.pfb></usr/share/texlive/texmf-dist/fon
+ts/type1/public/amsfonts/cm/cmssi10.pfb></usr/share/texlive/texmf-dist/fonts/ty
+pe1/public/amsfonts/cm/cmsy10.pfb></usr/share/texlive/texmf-dist/fonts/type1/pu
+blic/amsfonts/cm/cmtt10.pfb></usr/share/texlive/texmf-dist/fonts/type1/public/a
+msfonts/cm/cmtt9.pfb>
+Output written on slides.pdf (29 pages, 363421 bytes).
 PDF statistics:
- 375 PDF objects out of 1000 (max. 8388607)
- 299 compressed objects within 3 object streams
- 63 named destinations out of 1000 (max. 500000)
- 135 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 404 PDF objects out of 1000 (max. 8388607)
+ 327 compressed objects within 4 object streams
+ 62 named destinations out of 1000 (max. 500000)
+ 143 words of extra memory for PDF output out of 10000 (max. 10000000)
 
