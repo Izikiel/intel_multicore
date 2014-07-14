@@ -2,187 +2,260 @@
 \usepackage{graphicx}
 \usepackage[utf8]{inputenc}
 \usetheme{Warsaw}
+
+\beamertemplatenavigationsymbolsempty 
+
+\title{DeliriOS: Exokernel Multicore en 64bits}
+\author{Silvio Vilariño, Ezequiel Gambacini}
+\date{15 de julio de 2014}
+
 \begin{document}
 
-  \begin{frame}
-    \frametitle{Delirios: Exokernel 64 bits Multicore}    
-    \framesubtitle{Motivacion del trabajo final}
-    El objetivo de este trabajo práctico fue inicialmente experimentar con la arquitectura intel, realizando un microkernel de 64 bits inicializando multinúcleo. Más tarde en el desarrollo del proyecto se decidió extender el alcance del mismo, realizando algunos experimentos para analizar las posibles mejoras de rendimiento de algoritmos que se pueden paralelizar en varios núcleos, asimismo se realizaron varios enfoques diferentes en la sincronización entre núcleos: espera activa haciendo polling a memoria versus sincronización con interrupciones inter-núcleo que evitan los accesos al bus de memoria. La ganancia que esperamos obtener, es una reducción considerable en el overhead que genera el manejo de varios hilos sobre sistemas operativos utilizando librerías como por ejemplo pthreads.
-  \end{frame}
+\begin{frame}
+  \maketitle
+\end{frame}
 
-  \begin{frame}
-  	Utilizamos grub en el nivel mas bajo del booteo para lograr un contexto inicial estable y que posibilitara la ejecución del trabajo practico desde un pendrive usb.\\
+\section{Introducción}
+  
+\begin{frame}
+  \frametitle{Delirios: Exokernel 64 bits Multicore}    
+  \framesubtitle{Motivación del trabajo final}
+  \begin{itemize}
+    \setlength{\itemsep}{20pt}
+    \item La \textbf{idea} directora del proyecto era experimentar con la arquitectura Intel
+    \item Para esto se desarollo un exokernel de 64 bits \textbf{multinúcleo}
+    \item El objetivo inicial fue con \textbf{fines didácticos}, posteriormente se implementaron experimentos sobre la plataforma
+  \end{itemize}
+  % El objetivo de este trabajo práctico fue inicialmente experimentar con la arquitectura intel, realizando un microkernel de 64 bits inicializando multinúcleo. Más tarde en el desarrollo del proyecto se decidió extender el alcance del mismo, realizando algunos experimentos para analizar las posibles mejoras de rendimiento de algoritmos que se pueden paralelizar en varios núcleos, asimismo se realizaron varios enfoques diferentes en la sincronización entre núcleos: espera activa haciendo polling a memoria versus sincronización con interrupciones inter-núcleo que evitan los accesos al bus de memoria. La ganancia que esperamos obtener, es una reducción considerable en el overhead que genera el manejo de varios hilos sobre sistemas operativos utilizando librerías como por ejemplo pthreads.
+\end{frame}
+  
+\begin{frame}
+  \frametitle{Delirios: Exokernel 64 bits Multicore}
+  \framesubtitle{Características}
+  Se desarrollo un exokernel en 64 bits,
+  \vspace{15pt}
+  \begin{itemize}
+    \setlength{\itemsep}{15pt}
+    \item El sistema permite ejecutar una única tarea en varios procesadores
+    \item El \emph{overhead} del OS es mímimo
+    \item No hay soporte de protección, todo corre en nivel $0$
+    \item No hay soporte de entrada-salida
+  \end{itemize}
+\end{frame}
 
-	Grub permite iniciar un kernel por medio de una especificación publicada en la web, en la que se detalla un contrato que debe cumplir tanto el kernel a iniciar como grub, entre ellas, un header que debe contener el ejecutable del kernel para ser identificado por grub como un sistema operativo, y por otro lado, las obligaciones que debe cumplir grub al entregarle el control a dicho kernel, es decir, un contexto determinado: selectores de código y datos válidos, registros de propósito general con valores específicos, etc.\\
-	(\url{http://www.gnu.org/software/grub/manual/multiboot/multiboot.html})\\
-	
-  \end{frame}
+\section{Desarrollo}
+  
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{It's working!}
+  \begin{itemize}
+    \setlength{\itemsep}{20pt}
+    \item El desarrolo consistio en estudiar todo el proceso de inicio en 64bits e implementarlo
+    \item Además se utilizo \texttt{grub} como bootloader para poder iniciar desde un pendrive y sobre una máquina física
+    \item Por ultimo se implemento sobre dos procesadores un algoritmo para ordenar elementos
+  \end{itemize}
+% Utilizamos grub en el nivel mas bajo del booteo para lograr un contexto inicial estable y que posibilitara la ejecución del trabajo practico desde un pendrive usb.\\
+% Grub permite iniciar un kernel por medio de una especificación publicada en la web, en la que se detalla un contrato que debe cumplir tanto el kernel a iniciar como grub, entre ellas, un header que debe contener el ejecutable del kernel para ser identificado por grub como un sistema operativo, y por otro lado, las obligaciones que debe cumplir grub al entregarle el control a dicho kernel, es decir, un contexto determinado: selectores de código y datos válidos, registros de propósito general con valores específicos, etc.\\
+% (\url{http://www.gnu.org/software/grub/manual/multiboot/multiboot.html})\\
+\end{frame}
 
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{Inicialización de \texttt{grub}}
+  \begin{itemize}
+    \setlength{\itemsep}{20pt}
+   \item La revisión de \texttt{grub} no permite ejecutables en 64bits
+   \item Por lo que se utilizo la carga de módulos
+   \item Consiste en cargar partes del sistema sobre el primer megabyte
+   \item \texttt{Grub} permite determinar las posiciones de los módulos
+  \end{itemize}
+%   Esta revisión de grub no permite cargar ejecutables compilados en 64 bits de manera sencilla, por este motivo decidimos que lo mejor era utilizar a una herramienta provista por grub, llamada carga de módulos, que nos permitió cargar distintas partes no críticas del sistema por encima del primer mega de memoria y tener en un mapa de memoria provisto por grub, las posiciones exactas en la RAM de dichos módulos.\\ 
+\end{frame}
 
-	\begin{frame}
-	Esta revisión de grub no permite cargar ejecutables compilados en 64 bits de manera sencilla, por este motivo decidimos que lo mejor era utilizar a una herramienta provista por grub, llamada carga de módulos, que nos permitió cargar distintas partes no críticas del sistema por encima del primer mega de memoria y tener en un mapa de memoria provisto por grub, las posiciones exactas en la RAM de dichos módulos.\\ 
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{Mapa de memoria: Memoria baja y módulos en memoria alta} % Booteo e integración con grub: 
+  \begin{center}
+  \includegraphics[scale=0.23]{images/modules-map.pdf} 
+  \end{center}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Booteo e integración con grub: Mapa de memoria: Memoria baja y módulos en memoria alta}
-		\begin{center}
-			\includegraphics[height=7cm]{images/modules-map.pdf} 
-		\end{center}
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{Niveles de booteo del BSP y preparación del entorno de inicio de los AP}
+  \small Grub inicializa la máquina a un estado conocido y otorga el control al loader de nivel 1 del BSP pasándole por parámetros estructuras de grub con información del sistema.
+  \begin{enumerate}
+  \item Se realizan \textbf{validaciones} requeridas por la especificación multiboot, verificación de firmas, etc.
+  \item Se obtienen de la metadata provista por \texttt{grub} las posiciones de memoria \textbf{donde están cargados} los módulos, ellos son:
+  \vspace{0.1cm}
+  \begin{description} \scriptsize
+  \item [kernel64.bin64:] \hfill \\ segundo nivel de \textbf{booteo del BSP}\\ (binario plano de 64 bits)
+  \item [ap\_full\_code.bin64:] \hfill \\ segundo nivel de \textbf{booteo de los Application Processors}\\ (binario plano de 64 bits)
+  \item [ap\_startup\_code:] \hfill \\ código de inicio del \textbf{AP en modo real y el primer stage} de booteo a modo protegido (binario de 32 bits)
+  \end{description}
+  \end{enumerate}
+\end{frame}
 
-	\begin{frame}
-			\begin{itemize}
-		\item \textbf{Niveles de booteo del BSP y preparación del entorno de inicio de los AP:} 
-			\begin{enumerate}
-				\item Grub inicializa la máquina a un estado conocido y otorga el control al loader de nivel 1 del BSP pasándole por parámetros estructuras de grub con información del sistema.
-				\begin{enumerate}
-					\item Se realizan validaciones requeridas por la especificación multiboot, verificación de firmas, etc.
-					
-					\item Se obtienen de la metadata provista por grub las posiciones de memoria donde están cargados los módulos, ellos son:
-					\vspace{0.1cm}
-					\begin{description}
-						\item [kernel64.bin64:] \hfill \\
-							Módulo compilado en formato binario plano de 64 bits que contiene el segundo nivel de booteo del BSP.
-						\item [ap\_full\_code.bin64:] \hfill \\
-							Módulo compilado en formato binario plano de 64 bits que contiene el código del segundo nivel de booteo de los Application Processors.
-						\item [ap\_startup\_code:] \hfill \\
-							Módulo compilado en formato binario de 32 bits que contiene el código de inicio del AP en modo real y el primer stage de booteo a modo protegido.
-					\end{description}
-					\vspace{0.5cm}
-					
-					\item Los Application Processors inician en modo real, es por esto que deben comenzar su ejecución por debajo del primer mega de memoria principal. Por este motivo se copia el módulo ap\_startup\_code a una dirección arbitraria alineada a página 0x2000.
-					\vspace{0.1cm}
-					\item Como los AP comienzan su ejecución por debajo del primer mega, esto hace posible la superposición de código con grub y otras estructuras del kernel, para evitarlo, minimizamos el tamaño del startup de modo real del ap, haciendo lo antes posible un salto a un loader de nivel 2 por encima del mega, este loader de nivel 2 es ap\_full\_code.bin64.
-					\vspace{0.1cm}
-					\item Al tener el Application Processor que hacer un salto entre los dos niveles de booteo, se le inyecta al primer módulo la dirección donde esta cargado el segundo nivel de booteo.
-					\vspace{0.1cm}
-					\item Finalmente, se realiza un salto en la ejecución a donde comienza el modulo kernel64.bin64 donde el BSP finaliza la inicializacion del contexto hasta modo largo de 64 bits y enciende a los demás núcleos del sistema.
-				\end{enumerate}
-			\end{enumerate}
-	\end{itemize}
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{Niveles de booteo del BSP y preparación del entorno de inicio de los AP (cont...)}
+  \begin{enumerate}
+    \setlength{\itemsep}{10pt}
+   \small
+  \item Los AP inician en modo real $\rightarrow$ deben comenzar su ejecución por debajo del primer mega de memoria principal $\rightarrow$
+  se copia el módulo \texttt{ap\_startup\_code} a una dirección arbitraria alineada a página \texttt{0x2000}. (se superpone código con \texttt{grub})
+  \pause  
+  \item Para evitarlo, minimizamos el tamaño del startup de modo real del AP, haciendo lo antes posible un salto a un loader de nivel 2 por encima del mega (\texttt{ap\_full\_code.bin64})
+  \pause
+  \item El AP debe saltar entre los dos niveles de booteo $\rightarrow$ se le inyecta al primer módulo la dirección donde esta cargado el segundo nivel de booteo
+  \pause
+  \item Finalmente, se realiza un salto en la ejecución a donde comienza el modulo \texttt{kernel64.bin64} donde el BSP finaliza la inicializacion del contexto hasta modo largo de 64 bits y enciende a los demás núcleos del sistema
+  \end{enumerate}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Inicializacion por niveles BSP}
-		\begin{center}
-			\includegraphics[height=9.5cm]{images/bsp-stages-diagram.pdf} 
-		\end{center}
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{Inicializacion por niveles BSP}
+  \begin{center}
+  \includegraphics[height=9.5cm]{images/bsp-stages-diagram.pdf} 
+  \end{center}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Inicializacion por niveles AP}
-		\begin{center}
-			\includegraphics[height=5cm]{images/ap-stages-diagram.pdf} 
-		\end{center}
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{Inicializacion por niveles AP}
+  \begin{center}
+  \includegraphics[height=5cm]{images/ap-stages-diagram.pdf} 
+  \end{center}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Inicialización del Bootstrap Processor: Pasaje desde modo protegido hacia modo legacy x64}
-	    \framesubtitle{Modo Legacy x64: Modelo de segmentación}    
-	    La especificación multiboot nos asegura que estamos en modo protegido, pero no tenemos la certeza de tener asignada una GDT válida, es por esto que asignamos una GDT con 
-	    3 descriptores de nivel 0, una para datos y otras dos de código, esta diferenciación de descriptores de código es necesaria para realizar los jump far para pasar de modo real hacia modo protegido y de modo protegido-compatibilidad x64 hacia modo largo x64.
+\begin{frame}
+  \frametitle{Desarrollo: Inicialización del Bootstrap Processor} % Pasaje desde modo protegido hacia modo legacy x64
+  \framesubtitle{Modo Legacy x64: Modelo de segmentación}
+  \huge \textcolor{red}{QUIEN ASEGURA ??? explicar mejor o detallar en pasos} \\ % TODO
+  \small
+  La especificación \emph{multiboot} nos asegura que estamos en modo protegido, pero no tenemos la certeza de tener asignada una GDT válida, es por esto que asignamos una GDT con 3 descriptores de nivel 0, una para datos y otras dos de código, esta diferenciación de descriptores de código es necesaria para realizar los jump far para pasar de modo real hacia modo protegido y de modo protegido-compatibilidad x64 hacia modo largo x64.
+%   \vspace{0.5cm}
+  \begin{center}
+  \begin{tabular}{|c|c|}
+  \hline
+  Índice & Descriptor\\
+  \hline
+  0 & Descriptor nulo\\
+  \hline
+  1 & Código nivel 0 para 32 bits\\
+  \hline
+  2 & Código nivel 0 para 64 bits\\
+  \hline
+  3 & Datos nivel 0 para 32 y 64 bits\\
+  \hline
+  \end{tabular}
+  \end{center}
+\end{frame}
 
-		\vspace{0.5cm}
-		\begin{center}
-		    \begin{tabular}{|c|c|}
-		        \hline
-		        Índice & Descriptor\\
-		        \hline
-		        0 & Descriptor nulo\\
-		        \hline
-		        1 & Código nivel 0 para 32 bits\\
-		        \hline
-		        2 & Código nivel 0 para 64 bits\\
-		        \hline
-		        3 & Datos nivel 0 para 32 y 64 bits\\
-		        \hline
-		    \end{tabular}
-		\end{center}
-		\vspace{0.5cm}
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo: Paginación en 64 bits}
+  \framesubtitle{x64 requiere habilitar PAE}
+%   Como se puede apreciar, tiene mas niveles que la paginacion comun en modo protegido de 32 bits.
+  Se realizo un mapeo identity mapping de los primeros 4gb usando paginas de 4kb.
+  \begin{center}
+  \huge \textcolor{red}{este dibujo es un espanto!!! buscar otro que tenga mas de 4pixeles!}
+  \includegraphics[height=6cm]{images/ia32-paging-overview.png} 
+  \end{center}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Paginacion en 64 bits}
-		\framesubtitle{x64 requiere habilitar PAE}
-		Como se puede apreciar, tiene mas niveles que la paginacion comun en modo protegido de 32 bits.
-		Se realizo un mapeo identity mapping de los primeros 4gb usando paginas de 4kb.
-		\begin{center}
-	        \includegraphics[height=6cm]{images/ia32-paging-overview.png}
-	    \end{center}
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo: Verificacion de disponibilidad de x64}
+  \framesubtitle{Consulta via \texttt{cpuid}}
+  Luego de establecer estas estructuras, realizamos una comprobación vía \texttt{cpuid} para saber si está disponible modo x64, \\ 
+  \vspace{20pt}
+  de verificarse esta comprobación, encendemos los bits del procesador correspondientes para habilitar dicho modo en el registro CR0.
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Verificacion de disponibilidad de x64}
-		\framesubtitle{Consulta via cpuid}
-		Luego de establecer estas estructuras, realizamos una comprobación vía $cpuid$ para saber si está disponible modo x64, de verificarse esta comprobación, encendemos los bits del procesador correspondientes para habilitar dicho modo en el registro CR0.
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo: Pasaje a modo largo x64 nativo}
+  Para pasar de modo compatibilidad a modo nativo de 64 bits, es necesario realizar un salto largo en la ejecución a un descriptor de la GDT de código de 64 bits.\\
+  \vspace{20pt}
+  Luego de realizar el salto al segmento de código de x64 de la GDT establecemos un contexto seguro con los registros en cero, seteamos los selectores correspondientes de la GDT y establecemos los punteros a una pila asignada al BSP.
+\end{frame}
 
-	\begin{frame}
-	    \frametitle{Pasaje a modo largo x64 nativo}
+\begin{frame}
+  \frametitle{Desarrollo: Inicialización del PIC}
+  \framesubtitle{Captura de excepciones e interrupciones}
+  Enviamos señales al PIC para reprogramarlo de forma tal en la que atienda las interrupciones enmascarables.\\
+  \vspace{20pt}
+  Luego, asignamos una IDT que captura todas las excepciones e interrupciones y de ser necesario, realiza las acciones correspondientes con su ISR asociada.\\
+  \vspace{20pt}
+  Particularmente las excepciones son capturadas y mostradas en pantalla y se utiliza la interrupción de reloj para sincronización y esperas, las demás interrupciones son ignoradas. \huge \textcolor{red}{esta frase no tiene sentido. o si?}
+\end{frame}
 
-	    Para pasar de modo compatibilidad a modo nativo de 64 bits, es necesario realizar un salto largo en la ejecución a un descriptor de la GDT de código de 64 bits.\\
-	    Luego de realizar el salto al segmento de código de x64 de la GDT establecemos un contexto seguro con los registros en cero, seteamos los selectores correspondientes de la GDT y establecemos los punteros a una pila asignada al BSP.
-	\end{frame}
+\begin{frame}
+\huge \textcolor{red}{que onda este dibujo? porque esta, que explicacion tiene?}
+  \begin{center}
+  \includegraphics[height=8cm]{images/interrupts.png}
+  \end{center}
+\end{frame}
 
-	\begin{frame}
-	    \frametitle{Inicialización del PIC - Captura de excepciones e interrupciones}
-		
-	    Enviamos señales al PIC para reprogramarlo de forma tal en la que atienda las interrupciones enmascarables.
-	    Luego, asignamos una IDT que captura todas las excepciones e interrupciones y de ser necesario, realiza las acciones correspondientes con su ISR asociada. Particularmente las excepciones son capturadas y mostradas en pantalla y se utiliza la interrupción de reloj para sincronización y esperas, las demás interrupciones son ignoradas.
-	\end{frame}
+\begin{frame}
+\frametitle{Desarrollo: Multicore - encendido de los AP's}
+Una vez inicializado el bsp, se procede a inicializar el resto de los procesadores del sistema.\\
+\vspace{20pt}
+Para lograr esto, primero es necesario que encontrar una estructura de datos llamada \texttt{MP Floating Pointer Structure}, que contiene:
 
-	\begin{frame}
-	    \begin{center}
-	        \includegraphics[height=8cm]{images/interrupts.png}
-	    \end{center}
-	\end{frame}
+\begin{itemize} \scriptsize
+ \item información sobre los demás procesadores
+ \item apic (advanced programable interrupt controller)
+ \item el I/O apic (análogo al apic, pero se encarga además de rutear interrupciones de input/output a los lapic's)
+\end{itemize}
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Multicore: encendido de los AP's}
+\begin{frame}
+  \frametitle{Desarrollo: \small Búsqueda de la estructura \texttt{MP Floating Pointer}}
+  Esta estructura puede estar en diferentes lugares de memoria, inicialmente se debe realizar la búsqueda dentro del \textbf{primer kilobyte de la ebda} (extended bios data area), \\
+  de no encontrarse allí, se procede a buscar entre los \textbf{639K-640K} de memoria.\\
+  \vspace{20pt}
+  \begin{itemize}
+   \item Para encontrar la tabla se busca dentro de esas áreas de memoria la firma de la \texttt{MP Floating Pointer Structure}, la cual es "\texttt{\_MP\_}"
+  \item Para comprobar la validez de la estructura se realiza un checksum
+  \item Si no se encuentra la tabla, el sistema no soporta multicore
+  \end{itemize}
+\end{frame}
 
-		Una vez inicializado el bsp, se procede a inicializar el resto de los procesadores del sistema.\\
-		Para lograr esto, primero es necesario que encontrar una estructura de datos llamada MP Floating Pointer Structure, que contiene la información sobre: los demás procesadores; apic (advanced programable interrupt controller); y el I/O apic (análogo al apic, pero se encarga además de rutear interrupciones de input/output a los lapic's).
-	\end{frame}
+% \begin{frame} % TODO esto lo saco y lo pongo arriba
+%   \frametitle{Desarrollo: \small Comprobación de checksum de la estructura}
+%   Una vez encontrada una estructura con esa firma, es necesario realizar una comprobación de checksum para verificar que la misma sea válida.
+%   De no ser válida la estructura encontrada, se continúa buscando dentro de las áreas de memoria previamente mencionadas, al agotarse las áreas mencionadas sin éxito en la búsqueda, se concluye que el sistema no soporta multicore.
+% \end{frame}
 
-	\begin{frame}
-		\frametitle{Búsqueda de la estructura MP Floating Pointer}
-		Esta estructura puede estar en diferentes lugares de memoria, inicialmente se debe realizar la búsqueda dentro del primer kilobyte de la ebda (extended bios data area), de no encontrarse allí, se procede a buscar entre los 639K-640K de memoria.
-		Para encontrar la tabla se busca dentro de esas áreas de memoria la firma de la MP Floating Pointer Structure, la cual es "\_MP\_".
-	\end{frame}
+% \begin{frame} % TODO esto lo saco, mucho detalle.
+%   \frametitle{Desarrollo: \small Habilitación de ICMR y Local APIC}
+%   El sistema luego es configurado usando la MP Configuration Table, extraída de la MP Floating Pointer Structure, que contiene en diferentes entradas la información acerca de los diferentes dispositivos utilizados en multicore.
+%   Una vez parseadas estas entradas, si la maquina tiene ICMR, se habilita ese registro, y luego se procede a inicializar el apic local del bsp, seteando el vector de interrupciones espurias (interrupciones por ruido de hardware, etc) y habilitando el bit de enable dentro de los registros del local apic. (Registros del local apic especificados en Table 10-1 Local APIC Register Address Map, manual 3 de intel capitulo 10).
+% \end{frame}
 
-	\begin{frame}
-		\frametitle{Comprobación de checksum de la estructura}
-		Una vez encontrada una estructura con esa firma, es necesario realizar una comprobación de checksum para verificar que la misma sea válida.
-		De no ser válida la estructura encontrada, se continúa buscando dentro de las áreas de memoria previamente mencionadas, al agotarse las áreas mencionadas sin éxito en la búsqueda, se concluye que el sistema no soporta multicore.
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo: \small Inicialización de los AP's}
+  Una vez finalizada la inicialización del \texttt{local apic}, se debe pedir a la BIOS que setee el \texttt{warm reset vector} a la dirección donde esta localizado el inicio de modo real de los aps$(0x2000)$.\\
+  \vspace{10pt}
+  Luego de este paso, se procede a encender los AP's usando la información obtenida por la \texttt{MP Configuration Table}.
+%   El proceso de encendido los aps consiste en preparar 3 estructuras de interrupt command register (registro del apic usado para ipis) para luego enviar las ipis especificas de inicio. El primer icr se setea con el delivery mode de INIT, que sea una interrupción por nivel y con la dirección del ap a iniciar. El segundo icr se setea con el delivery mode de INIT\_DASSERT, que sea una interrupción por flanco, y que sea enviado a todos los procesadores. El tercer icr se setea con el delivery mode STARTUP, la dirección física de la página de inicio de ejecución del ap shifteado 12 a derecha, y la dirección del ap.
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Habilitación de ICMR y Local APIC}
-		El sistema luego es configurado usando la MP Configuration Table, extraída de la MP Floating Pointer Structure, que contiene en diferentes entradas la información acerca de los diferentes dispositivos utilizados en multicore.
-		Una vez parseadas estas entradas, si la maquina tiene ICMR, se habilita ese registro, y luego se procede a inicializar el apic local del bsp, seteando el vector de interrupciones espurias (interrupciones por ruido de hardware, etc) y habilitando el bit de enable dentro de los registros del local apic. (Registros del local apic especificados en Table 10-1 Local APIC Register Address Map, manual 3 de intel capitulo 10).
-	\end{frame}
+\begin{frame}
+  \frametitle{Desarrollo: \small Inicialización de los AP's (cont)}
+  Luego de tener listos los \texttt{icr}, se procede a mandar las \textt{ipi's} de INIT e INIT\_DASSERT, luego se espera unos 10 milisegundos, verificando previamente que las \textt{ipis} se hayan enviado correctamente. \\
+  \vspace{10pt}
+  Luego de la espera, se procede a enviar la \texttt{ipi} de STARTUP, se espera 10 ms, se verifica que se haya enviado correctamente, se la vuelve a enviar, se realiza otra espera de 10 ms, y se vuelve a verificar.\\
+  \vspace{10pt}
+  Una vez terminado este proceso, se puede asumir que el AP fue encendido, y se continúa el encendido el resto de los AP's encontrados en la \textt{MP Configuration Table}\\
+\end{frame}
 
-	\begin{frame}
-		\frametitle{Inicialización de los AP's}
-
-		Una vez finalizada la inicialización del local apic, se debe pedir a la BIOS que setee el warm reset vector a la dirección donde esta localizado el inicio de modo real de los aps$(0x2000)$. Luego de este paso, se procede a encender los aps usando la información obtenida por la MP Configuration Table.
-
-		El proceso de encendido los aps consiste en preparar 3 estructuras de interrupt command register (registro del apic usado para ipis) para luego enviar las ipis especificas de inicio. El primer icr se setea con el delivery mode de INIT, que sea una interrupción por nivel y con la dirección del ap a iniciar. El segundo icr se setea con el delivery mode de INIT\_DASSERT, que sea una interrupción por flanco, y que sea enviado a todos los procesadores. El tercer icr se setea con el delivery mode STARTUP, la dirección física de la página de inicio de ejecución del ap shifteado 12 a derecha, y la dirección del ap.
-	\end{frame}
-
-	\begin{frame}
-		\frametitle{Inicialización de los AP's(cont)}
-		Luego de tener listos los icr, se procede a mandar las ipis de INIT e INIT\_DASSERT, luego se espera unos 10 milisegundos, verificando previamente que las ipis se hayan enviado correctamente. Luego de la espera, se procede a enviar la ipi de STARTUP, se espera 10 ms, se verifica que se haya enviado correctamente, se la vuelve a enviar, se realiza otra espera de 10 ms, y se vuelve a verificar.
-
-		Una vez terminado este proceso, se puede asumir que el ap fue encendido, y se continúa el encendido el resto de los aps encontrados en la MP Configuration Table.\\
-	\end{frame}
-
-	\begin{frame}
-		\frametitle{Notas}
-		\textbf{Nota 1: } El proceso de inicialización de los aps se encuentra especificado en detalle en el manual de intel volumen 3, capitulo 8, subsección 4, MULTIPLE-PROCESSOR (MP) INITIALIZATION.
-
-		\textbf{Nota 3: } Los identificadores de núcleo no necesariamente son valores numéricos consecutivos.
-	\end{frame}
+% \begin{frame} % TODO: comentenlo hablando
+%   \frametitle{Notas}
+%   \textbf{Nota 1: } El proceso de inicialización de los aps se encuentra especificado en detalle en el manual de intel volumen 3, capitulo 8, subsección 4, MULTIPLE-PROCESSOR (MP) INITIALIZATION.
+% 
+%   \textbf{Nota 3: } Los identificadores de núcleo no necesariamente son valores numéricos consecutivos.
+% \end{frame}
 
 	\begin{frame}
 		\frametitle{Multicore: inicialización de modo real a modo nativo x64 de los AP's}
