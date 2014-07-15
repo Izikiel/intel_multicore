@@ -6,7 +6,7 @@
 \beamertemplatenavigationsymbolsempty 
 
 \title{DeliriOS: Exokernel Multicore en 64bits}
-\author{Silvio Vilariño, Ezequiel Gambacini}
+\author{Silvio Vileriño, Ezequiel Gambaccini}
 \date{15 de julio de 2014}
 
 \begin{document}
@@ -84,8 +84,10 @@
   \frametitle{Desarrollo}
   \framesubtitle{Niveles de booteo del BSP y preparación del entorno de inicio de los AP}
   \small Grub inicializa la máquina a un estado conocido y otorga el control al loader de nivel 1 del BSP pasándole por parámetros estructuras de grub con información del sistema.
+  \pause
   \begin{enumerate}
   \item Se realizan \textbf{validaciones} requeridas por la especificación multiboot, verificación de firmas, etc.
+  \pause
   \item Se obtienen de la metadata provista por \texttt{grub} las posiciones de memoria \textbf{donde están cargados} los módulos, ellos son:
   \vspace{0.1cm}
   \begin{description} \scriptsize
@@ -132,10 +134,16 @@
 \begin{frame}
   \frametitle{Desarrollo: Inicialización del Bootstrap Processor} % Pasaje desde modo protegido hacia modo legacy x64
   \framesubtitle{Modo Legacy x64: Modelo de segmentación}
-  \huge \textcolor{red}{QUIEN ASEGURA ??? explicar mejor o detallar en pasos} \\ % TODO
+%   \huge \textcolor{red}{QUIEN ASEGURA ??? explicar mejor o detallar en pasos} \\ % TODO
+%   \small
+%   La especificación \emph{multiboot} nos asegura que estamos en modo protegido, pero no tenemos la certeza de tener asignada una GDT válida, es por esto que asignamos una GDT con 3 descriptores de nivel 0, una para datos y otras dos de código, esta diferenciación de descriptores de código es necesaria para realizar los jump far para pasar de modo real hacia modo protegido y de modo protegido-compatibilidad x64 hacia modo largo x64.
   \small
-  La especificación \emph{multiboot} nos asegura que estamos en modo protegido, pero no tenemos la certeza de tener asignada una GDT válida, es por esto que asignamos una GDT con 3 descriptores de nivel 0, una para datos y otras dos de código, esta diferenciación de descriptores de código es necesaria para realizar los jump far para pasar de modo real hacia modo protegido y de modo protegido-compatibilidad x64 hacia modo largo x64.
-%   \vspace{0.5cm}
+  La especificación de \emph{multiboot} de \texttt{grub} asegura que estamos en modo protegido\\
+  \vspace{0.5cm}
+  Pero podemos no tener asignada una GDT válida\\
+  \vspace{0.5cm}
+  Necesitamos las siguientes entradas en la GDT,
+  \vspace{0.5cm}
   \begin{center}
   \begin{tabular}{|c|c|}
   \hline
@@ -159,8 +167,7 @@
 %   Como se puede apreciar, tiene mas niveles que la paginacion comun en modo protegido de 32 bits.
   Se realizo un mapeo identity mapping de los primeros 4gb usando paginas de 4kb.
   \begin{center}
-  \huge \textcolor{red}{este dibujo es un espanto!!! buscar otro que tenga mas de 4pixeles!}
-  \includegraphics[height=6cm]{images/ia32-paging-overview.png} 
+  \includegraphics[height=6cm]{images/ia32-paging-overview_INTEL.png} 
   \end{center}
 \end{frame}
 
@@ -184,17 +191,18 @@
   \framesubtitle{Captura de excepciones e interrupciones}
   Enviamos señales al PIC para reprogramarlo de forma tal en la que atienda las interrupciones enmascarables.\\
   \vspace{20pt}
-  Luego, asignamos una IDT que captura todas las excepciones e interrupciones y de ser necesario, realiza las acciones correspondientes con su ISR asociada.\\
-  \vspace{20pt}
-  Particularmente las excepciones son capturadas y mostradas en pantalla y se utiliza la interrupción de reloj para sincronización y esperas, las demás interrupciones son ignoradas. \huge \textcolor{red}{esta frase no tiene sentido. o si?}
+  Luego, asignamos una IDT que captura todas las excepciones e interrupciones y de ser necesario, realiza las acciones correspondientes con su ISR asociada.
+%   \\
+%   \vspace{20pt}
+%   Particularmente las excepciones son capturadas y mostradas en pantalla y se utiliza la interrupción de reloj para sincronización y esperas, las demás interrupciones son ignoradas. \huge \textcolor{red}{esta frase no tiene sentido. o si?}
 \end{frame}
 
-\begin{frame}
-\huge \textcolor{red}{que onda este dibujo? porque esta, que explicacion tiene?}
-  \begin{center}
-  \includegraphics[height=8cm]{images/interrupts.png}
-  \end{center}
-\end{frame}
+% \begin{frame}
+% \huge \textcolor{red}{que onda este dibujo? porque esta, que explicacion tiene?}
+%   \begin{center}
+%   \includegraphics[height=8cm]{images/interrupts.png}
+%   \end{center}
+% \end{frame}
 
 \begin{frame}
 \frametitle{Desarrollo: Multicore - encendido de los AP's}
@@ -213,7 +221,7 @@ Para lograr esto, primero es necesario que encontrar una estructura de datos lla
   \frametitle{Desarrollo: \small Búsqueda de la estructura \texttt{MP Floating Pointer}}
   Esta estructura puede estar en diferentes lugares de memoria, inicialmente se debe realizar la búsqueda dentro del \textbf{primer kilobyte de la ebda} (extended bios data area), \\
   de no encontrarse allí, se procede a buscar entre los \textbf{639K-640K} de memoria.\\
-  \vspace{20pt}
+  \vspace{10pt}
   \begin{itemize}
    \item Para encontrar la tabla se busca dentro de esas áreas de memoria la firma de la \texttt{MP Floating Pointer Structure}, la cual es "\texttt{\_MP\_}"
   \item Para comprobar la validez de la estructura se realiza un checksum
@@ -304,20 +312,19 @@ Para lograr esto, primero es necesario que encontrar una estructura de datos lla
   \end{itemize}
 \end{frame}
 
-\begin{frame}
-  \frametitle{Experimentos: Memoria}
-  \begin{center}
-  \includegraphics[scale=0.28]{images/sync-sorting-seq.png}
-  \end{center}   
-  \end{figure}
-\end{frame}
-
-\begin{frame}
-  \frametitle{Experimentos: Ipis}
-  \begin{center}
-  \includegraphics[height=4.5cm]{images/ipis-sorting-seq.png}
-  \end{center}
-\end{frame}
+% \begin{frame}
+%   \frametitle{Experimentos: Memoria}
+%   \begin{center}
+%   \includegraphics[scale=0.28]{images/sync-sorting-seq.png}
+%   \end{center}
+% \end{frame}
+% 
+% \begin{frame}
+%   \frametitle{Experimentos: Ipis}
+%   \begin{center}
+%   \includegraphics[height=4.5cm]{images/ipis-sorting-seq.png}
+%   \end{center}
+% \end{frame}
 
 % \begin{frame}
 %   \frametitle{Resultados}
@@ -360,11 +367,11 @@ Para lograr esto, primero es necesario que encontrar una estructura de datos lla
 % \end{frame}
 
 \begin{frame}
-  \begin{center} % TODO: ARMAR UNA NUEVA IMAGEN CON EL DATOS EN EL EJE X
-  \includegraphics[height=4.8cm]{images/sort_ipis_g2030.png}
+  \frametitle{Experimentos: Sorting Paralelo}
+  \framesubtitle{Resultados en un procesador G2030}
+  \begin{center}
+  \includegraphics[scale=0.3]{images/grafico.png}
   \end{center}
-  En el grafico se puede ver como para instancias grandes del 
-  
 \end{frame}
 
 \begin{frame}
