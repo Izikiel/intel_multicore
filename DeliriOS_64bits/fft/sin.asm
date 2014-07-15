@@ -9,3 +9,4 @@ sin:
 	fsin
 	fst qword [local]
 	movq xmm0, [local]
+	ret

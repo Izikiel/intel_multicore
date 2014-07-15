@@ -1,9 +1,9 @@
 CC=gcc
-CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 \
+CFLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O0 -fpic \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include \
   -mno-sse -mno-sse2 -mno-sse3 -mno-sse4.1 -mno-sse4.2
 
-SORT_FLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O3 \
+SORT_FLAGS=-std=c99 -m64 -g -ggdb -Wall -Werror -O3 -fpic \
   -fno-zero-initialized-in-bss -fno-stack-protector -ffreestanding -I../include \
   -mno-sse -mno-sse2 -mno-sse3 -mno-sse4.1 -mno-sse4.2
 NASM=nasm

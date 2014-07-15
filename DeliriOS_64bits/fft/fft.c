@@ -1,7 +1,6 @@
 #include "fft.h"
 #include "complex.h"
 
-#define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
 extern void check_rax();
 extern double sin(double);
@@ -100,10 +99,8 @@ char Inverse(Complex *Data, unsigned int N, char ifScale /* = true */)
         return FALSE;
     }
     //   Rearrange
-    breakpoint
     Rearrange(Data, N);
     //   Call FFT implementation
-    breakpoint
     Perform(Data, N, TRUE);
     //   Scale if necessary
     if (ifScale) {
@@ -180,6 +177,7 @@ void Perform(Complex *Data, unsigned int N, char Inverse /* = false */)
         //   Angle increment
         delta = pi / ((double)Step);
         //   Auxiliary sin(delta / 2)
+
         Sine = sin(delta * .5);
         //   Multiplier for trigonometric recurrence
         Multiplier = complex(-2. * Sine * Sine, sin(delta));
@@ -283,7 +281,7 @@ void Perform_P_Mem(Complex *Data, unsigned int N, char Inverse /* = false */)
 
                 }
 
-               active_wait(*done);
+                active_wait(*done);
             }
 
             //   Successive transform factor via trigonometric recurrence
