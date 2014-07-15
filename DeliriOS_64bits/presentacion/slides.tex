@@ -22,7 +22,7 @@
   \framesubtitle{Motivación del trabajo final}
   \begin{itemize}
     \setlength{\itemsep}{20pt}
-    \item La \textbf{idea} directora del proyecto era experimentar con la arquitectura Intel
+    \item La \textbf{idea} del proyecto era experimentar con la arquitectura Intel
     \item Para esto se desarollo un exokernel de 64 bits \textbf{multinúcleo}
     \item El objetivo inicial fue con \textbf{fines didácticos}, posteriormente se implementaron experimentos sobre la plataforma
   \end{itemize}
@@ -36,10 +36,11 @@
   \vspace{15pt}
   \begin{itemize}
     \setlength{\itemsep}{15pt}
-    \item El sistema permite ejecutar una única tarea en varios procesadores
-    \item El \emph{overhead} del OS es mímimo
+    \item El sistema permite ejecutar una única tarea en varios procesadores de forma paralela
+    \item El \emph{overhead} del OS es mínimo
     \item No hay soporte de protección, todo corre en nivel $0$
     \item No hay soporte de entrada-salida
+    \item No hay soporte de sistema de archivos
   \end{itemize}
 \end{frame}
 
@@ -65,9 +66,9 @@
   \begin{itemize}
     \setlength{\itemsep}{20pt}
    \item La revisión de \texttt{grub} no permite ejecutables en 64bits
-   \item Por lo que se utilizo la carga de módulos
+   \item Por lo que se utilizo la carga de módulos como alternativa
    \item Consiste en cargar partes del sistema sobre el primer megabyte
-   \item \texttt{Grub} permite determinar las posiciones de los módulos
+   \item \texttt{Grub} permite determinar las posiciones de los módulos una vez iniciado el sistema
   \end{itemize}
 %   Esta revisión de grub no permite cargar ejecutables compilados en 64 bits de manera sencilla, por este motivo decidimos que lo mejor era utilizar a una herramienta provista por grub, llamada carga de módulos, que nos permitió cargar distintas partes no críticas del sistema por encima del primer mega de memoria y tener en un mapa de memoria provisto por grub, las posiciones exactas en la RAM de dichos módulos.\\ 
 \end{frame}
@@ -105,14 +106,24 @@
     \setlength{\itemsep}{10pt}
    \small
   \item Los AP inician en modo real $\rightarrow$ deben comenzar su ejecución por debajo del primer mega de memoria principal $\rightarrow$
-  se copia el módulo \texttt{ap\_startup\_code} a una dirección arbitraria alineada a página \texttt{0x2000}. (se superpone código con \texttt{grub})
+  se copia el módulo \texttt{ap\_startup\_code} a una dirección arbitraria alineada a página \texttt{0x2000}. (Notar que se superpone código con \texttt{grub})
   \pause  
-  \item Para evitarlo, minimizamos el tamaño del startup de modo real del AP, haciendo lo antes posible un salto a un loader de nivel 2 por encima del mega (\texttt{ap\_full\_code.bin64})
+  \item Para evitar posibles problemas, minimizamos el tamaño del startup de modo real del AP, haciendo lo antes posible un salto a un loader de nivel 2 por encima del mega (\texttt{ap\_full\_code.bin64})
   \pause
-  \item El AP debe saltar entre los dos niveles de booteo $\rightarrow$ se le inyecta al primer módulo la dirección donde esta cargado el segundo nivel de booteo
+  \item Notemos que para acceder por encima del primer mega es necesario estar en modo protegido. Para esto se genero una GDT temporal en ASM y se salto a modo protegido de forma provisoria.
   \pause
-  \item Finalmente, se realiza un salto en la ejecución a donde comienza el modulo \texttt{kernel64.bin64} donde el BSP finaliza la inicializacion del contexto hasta modo largo de 64 bits y enciende a los demás núcleos del sistema
+  \item El AP debe saltar entre los dos niveles de booteo $\rightarrow$ se le inyecta al primer módulo la dirección donde esta cargado el segundo nivel de booteo y se realiza un \texttt{JMP} al nuevo nivel.
   \end{enumerate}
+\end{frame} 
+
+\begin{frame}
+  \frametitle{Desarrollo}
+  \framesubtitle{Inicializacion por niveles BSP}
+    \begin{enumerate}
+      \item En este punto ya tenemos preparado el entorno de inicializacion de los AP.
+      \pause
+      \item Para finalizar la inicializacion del BSP y los demas cores, se realiza un salto en la ejecución a donde comienza el modulo \texttt{kernel64.bin64} donde el BSP finaliza la inicializacion del contexto hasta modo largo de 64 bits y enciende a los demás núcleos del sistema.
+    \end{enumerate}
 \end{frame}
 
 \begin{frame}
@@ -138,9 +149,7 @@
 %   \small
 %   La especificación \emph{multiboot} nos asegura que estamos en modo protegido, pero no tenemos la certeza de tener asignada una GDT válida, es por esto que asignamos una GDT con 3 descriptores de nivel 0, una para datos y otras dos de código, esta diferenciación de descriptores de código es necesaria para realizar los jump far para pasar de modo real hacia modo protegido y de modo protegido-compatibilidad x64 hacia modo largo x64.
   \small
-  La especificación de \emph{multiboot} de \texttt{grub} asegura que estamos en modo protegido\\
-  \vspace{0.5cm}
-  Pero podemos no tener asignada una GDT válida\\
+  La especificación de \emph{multiboot} de \texttt{grub} asegura que al otorgarnos control estamos en modo protegido pero podemos no tener asignada una GDT válida, por lo cual asignamos una propia.\\
   \vspace{0.5cm}
   Necesitamos las siguientes entradas en la GDT,
   \vspace{0.5cm}
@@ -174,9 +183,9 @@
 \begin{frame}
   \frametitle{Desarrollo: Verificacion de disponibilidad de x64}
   \framesubtitle{Consulta via \texttt{cpuid}}
-  Luego de establecer estas estructuras, realizamos una comprobación vía \texttt{cpuid} para saber si está disponible modo x64, \\ 
+  Luego de establecer estas estructuras, realizamos una comprobación vía \texttt{cpuid} para saber si está disponible modo x64 en la plataforma en la que se esta corriendo. \\ 
   \vspace{20pt}
-  de verificarse esta comprobación, encendemos los bits del procesador correspondientes para habilitar dicho modo en el registro CR0.
+  De ser correcto el resultado, encendemos los bits del procesador correspondientes para habilitar dicho modo en el registro CR0. Esto nos deja en modo de compatibilidad de 64 bits.
 \end{frame}
 
 \begin{frame}
@@ -206,7 +215,7 @@
 
 \begin{frame}
 \frametitle{Desarrollo: Multicore - encendido de los AP's}
-Una vez inicializado el bsp, se procede a inicializar el resto de los procesadores del sistema.\\
+Una vez inicializado el BSP, se procede a inicializar el resto de los procesadores del sistema.\\
 \vspace{20pt}
 Para lograr esto, primero es necesario que encontrar una estructura de datos llamada \texttt{MP Floating Pointer Structure}, que contiene:
 
