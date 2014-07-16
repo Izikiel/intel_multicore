@@ -63,14 +63,14 @@
 #define step_address    0x200340
 #define jump_address    0x200380
 #define factor_address  0x2003c0
-#define LIMIT           8
+#define LIMIT           64
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
 #define TEN_MEGA 0xa00000
 #define MAX_PROCESSOR   8
 #define temp_address    0x1e00000
-#define array_start_address (temp_address + MAX_PROCESSOR * TEN_MEGA)
+#define array_start_address (0x1e00000 + 8 * 0xa00000)
 
 #ifndef active_wait
 #define active_wait(switch) while(!(switch))
