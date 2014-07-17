@@ -510,8 +510,8 @@ tests:
     call test_sync_ipi_cores
 %elifdef FFT
     call test_fft_mono
-   ; call test_fft_dual_mem
-    ;call test_fft_dual_ipi
+    call test_fft_dual_mem
+    call test_fft_dual_ipi
 %else
     call test_1_core
     call test_2_cores

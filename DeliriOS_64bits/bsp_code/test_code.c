@@ -20,8 +20,7 @@ void wait()
     MEDIR_TIEMPO_START(start);
     do {
         MEDIR_TIEMPO_STOP(stop);
-    }
-    while ((stop - start) < limit);
+    } while ((stop - start) < limit);
     return;
 }
 
@@ -85,8 +84,7 @@ void test_suite_sort(sort_test function, uint8_t col, uint8_t line, const char *
             MEDIR_TIEMPO_STOP(stop);
             if (verfiy_sort()) {
                 run_measures[iter] += stop - start;
-            }
-            else {
+            } else {
                 print_string("bad sort :(", line++, col);
             }
         }
@@ -149,8 +147,7 @@ void test_mem_sync()
             for (uint8_t i = 1; i < 6; i += 2) {
                 print_number_u64(time_measures[i], line, col[i]);
             }
-        }
-        else {
+        } else {
             for (uint8_t i = 1; i < 6; i += 2) {
                 print_string("bad_sort :(", line++, col[i]);
             }
@@ -191,8 +188,7 @@ void test_sync_ipi_cores()
             for (i = 1; i < 6; i += 2) {
                 print_number_u64(time_measures[i], line, col[i]);
             }
-        }
-        else {
+        } else {
             for (uint8_t i = 1; i < 5; i += 2) {
                 print_string("bad_sort :(", line++, col[i]);
             }
@@ -301,7 +297,7 @@ bool cmp_complex_arrays(Complex *a, Complex *b, uint32_t N, double error)
 
 bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
 {
-    Complex *Output2 = (Complex *) (temp_address + TEN_MEGA);
+    Complex *Output2 = (Complex *) (array_start_address + 32 * TEN_MEGA);
     Forward_IO(Output, Output2, N);
     double error = 0.01;
     return cmp_complex_arrays(Input, Output2, N, error);
@@ -313,6 +309,7 @@ bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
 void test_suite_fft(fft_test test_to_run, uint8_t line, uint8_t col, const char *msg)
 {
     uint32_t *len = (uint32_t *) array_len_address;
+    breakpoint
     Complex *Input = (Complex *) array_start_address;
     Complex *Output = (Complex *) temp_address;
     bool bad_fft = false;
@@ -332,14 +329,10 @@ void test_suite_fft(fft_test test_to_run, uint8_t line, uint8_t col, const char 
             MEDIR_TIEMPO_STOP(stop);
             if (verifiy_fft(Input, Output, *len)) {
                 measure += stop - start;
-            }
-            else {
+            } else {
                 print_string("bad_fft :(", line, col);
                 bad_fft = true;
             }
-
-            print_number_u64(run + 1, line, col + 24);
-            print_number_u64(*len, line, col + 34);
         }
 
         uint64_t res = measure / ((double) TOTAL_TESTS);
@@ -368,6 +361,7 @@ void test_fft_dual_mem()
 
 void test_fft_dual_ipi()
 {
+    clear_screen();
     test_suite_fft(Inverse_IO_Ipi, 0, 60, "fft dualcore ipis");
 }
 
