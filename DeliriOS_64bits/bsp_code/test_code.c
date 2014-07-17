@@ -361,7 +361,6 @@ void test_fft_dual_mem()
 
 void test_fft_dual_ipi()
 {
-    clear_screen();
     test_suite_fft(Inverse_IO_Ipi, 0, 60, "fft dualcore ipis");
 }
 
