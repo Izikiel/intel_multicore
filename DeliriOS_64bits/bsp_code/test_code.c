@@ -303,7 +303,7 @@ bool verifiy_fft(Complex *Input, Complex *Output, uint32_t N)
 {
     Complex *Output2 = (Complex *) (temp_address + TEN_MEGA);
     Forward_IO(Output, Output2, N);
-    double error = 1;
+    double error = 0.01;
     return cmp_complex_arrays(Input, Output2, N, error);
 }
 
@@ -315,7 +315,7 @@ void test_suite_fft(fft_test test_to_run, uint8_t line, uint8_t col, const char 
     uint32_t *len = (uint32_t *) array_len_address;
     Complex *Input = (Complex *) array_start_address;
     Complex *Output = (Complex *) temp_address;
-
+    bool bad_fft = false;
     print_string(msg, line++, col);
 
     int iter;
@@ -324,7 +324,8 @@ void test_suite_fft(fft_test test_to_run, uint8_t line, uint8_t col, const char 
     for (iter = 0, *len = LIMIT, measure = 0;
             *len <= MAX_FFT_LEN;
             *len <<= 1, iter++, measure = 0) {
-        for (int run = 0; run < TOTAL_TESTS; ++run) {
+
+        for (int run = 0; run < TOTAL_TESTS && !bad_fft; ++run) {
             generate_fft_array(*len);
             MEDIR_TIEMPO_START(start);
             test_to_run(Input, Output, *len, TRUE);
@@ -333,11 +334,20 @@ void test_suite_fft(fft_test test_to_run, uint8_t line, uint8_t col, const char 
                 measure += stop - start;
             }
             else {
-                print_string("bad_fft :(", line++, col);
+                print_string("bad_fft :(", line, col);
+                bad_fft = true;
             }
+
+            print_number_u64(run + 1, line, col + 24);
+            print_number_u64(*len, line, col + 34);
         }
+
         uint64_t res = measure / ((double) TOTAL_TESTS);
-        print_number_u64(res, line++, col);
+        if (!bad_fft) {
+            print_number_u64(res, line, col);
+        }
+        line++;
+        bad_fft = false;
     }
 
     print_string("Done! :D", ++line, col);
