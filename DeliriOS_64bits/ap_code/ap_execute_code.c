@@ -89,18 +89,6 @@ void sum_vector_ap()
 }
 
 
-void signal_finished()
-{
-    uint8_t *done = (uint8_t *) done_address;
-    while (!(*done));
-    *done = 0;
-
-    intr_command_register icr;
-    initialize_ipi_options(&icr, FIXED, 34, 0);
-    send_ipi(&icr);
-    wait_for_ipi_reception();
-}
-
 void sort_ap_int()
 {
     uint32_t *len = (uint32_t *) array_len_address;
@@ -135,77 +123,5 @@ void ap_jump()  //prueba para ipis
 {
     // clear_screen();
     // print_string("Soy un ap que salta", 0, 0);
-    signal_finished();
-}
-
-void inner_fft_loop()
-{
-
-    unsigned int Step;
-    unsigned int Jump;
-    unsigned int Group;
-
-    uint8_t *start = (uint8_t *) start_address;
-    uint8_t *done = (uint8_t *) done_address;
-    uint8_t *sleep = (uint8_t *) sleep_address;
-    Complex *Data = (Complex *) temp_address;
-
-    *start = 0;
-    *sleep = 0;
-    active_wait(*sleep) {
-        active_wait(*start) {
-            if (*sleep) {
-                return;
-            }
-        }
-        *start = 0;
-        unsigned int Match;
-        unsigned int Pair;
-
-        Step = *((unsigned int *) step_address);
-        Jump = *((unsigned int *) jump_address);
-        Group = *((unsigned int *) group_address);
-        Complex Factor = *((Complex *) factor_address);
-        uint32_t N = *((uint32_t *) array_len_address);
-
-        for (Pair = (Group + N / 2); Pair < N; Pair += Jump) {
-            //   Match position
-            Match = Pair + Step;
-            //   Second term of two-point transform
-            Complex Product = operatorMUL(&Factor, &(Data[Match]));
-            //   Transform for fi + pi
-            Data[Match] = operatorSUB(&(Data[Pair]), &Product);
-            //   Transform for fi
-            Data[Pair] = operatorADD(&Product, &(Data[Pair]));
-        }
-        *done = 1;
-    }
-}
-
-
-void inner_fft_loop_int()
-{
-    Complex *Data = (Complex *) temp_address;
-
-    unsigned int Match;
-    unsigned int Pair;
-
-    unsigned int Step = *((unsigned int *) step_address);
-    unsigned int Jump = *((unsigned int *) jump_address);
-    unsigned int Group = *((unsigned int *) group_address);
-    Complex Factor = *((Complex *) factor_address);
-    uint32_t N = *((uint32_t *) array_len_address);
-
-    for (Pair = Group + N / 2; Pair < N; Pair += Jump) {
-        //   Match position
-        Match = Pair + Step;
-        //   Second term of two-point transform
-        Complex Product = operatorMUL(&Factor, &(Data[Match]));
-        //   Transform for fi + pi
-        Data[Match] = operatorSUB(&(Data[Pair]), &Product);
-        //   Transform for fi
-        Data[Pair] = operatorADD(&Product, &(Data[Pair]));
-
-    }
     signal_finished();
 }

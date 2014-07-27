@@ -27,13 +27,14 @@
 #define KERNEL_STACK_PTR_AP10 0x0000000001100000
 #define KERNEL_STACK_PTR_AP11 0x0000000001200000
 #define KERNEL_STACK_PTR_AP12 0x0000000001300000
-#define KERNEL_STACK_PTR_AP13 0x0000000001400000
+#define KERNEL_STACK_PTR_AP13 0x0000000100400000
 #define KERNEL_STACK_PTR_AP14 0x0000000001500000
 #define KERNEL_STACK_PTR_AP15 0x0000000001600000
 /*Paginacion IA32e -> estructuras arriba del primer mega*/
 #define KERNEL_PML4T_POINTER    0x0000000000740000
 #define KERNEL_PDPT_POINTER     0x0000000000841000
 #define KERNEL_PDT_POINTER      0x0000000000942000
+#define KERNEL_PTT_POINTER      0x0000000001400000
 /* -------------------------------------------------------------------------- */
 
 
@@ -56,22 +57,20 @@
 //variables measurements
 #define time_measures_address 0x200240
 #define run_measures_address    0x200400
-#define TOP_RUN 23
-#define TOP_RUN_FFT  14
-#define TOTAL_TESTS 100
+
 //variables fft
 #define group_address   0x200300
 #define step_address    0x200340
 #define jump_address    0x200380
 #define factor_address  0x2003c0
-#define LIMIT           8
+#define LIMIT           (64)
 
 #define breakpoint __asm __volatile("xchg %%bx, %%bx" : :);
 
 #define TEN_MEGA 0xa00000
 #define MAX_PROCESSOR   8
 #define temp_address    0x1e00000
-#define array_start_address temp_address + MAX_PROCESSOR * TEN_MEGA
+#define array_start_address (0x1e00000 + 32 * 0xa00000)
 
 #ifndef active_wait
 #define active_wait(switch) while(!(switch))

@@ -1,5 +1,5 @@
 OBJ=$(KERNEL_OBJ) ../common_code/gdt.o ../common_code/ports.o ../common_code/mmu.o \
-	idt.o isr.o bsp.o ../common_code/contextManager.o \
+	idt.o isr.o ../common_code/check_rax.o ../common_code/contextManager.o \
 	../common_code/multicore_common.o \
 	utils.o kmain64.o ../common_code/i386.o ../common_code/timer.o multicore_boot.o \
 	cmos.o console.o ../common_code/sort_code.o bsp_execute_code.o test_code.o \
