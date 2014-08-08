@@ -123,8 +123,8 @@ enable_sse: ;Taken from osdev
     imprimir_texto_ml mensaje_ap_started_msg, mensaje_ap_started_len, 0x0F, rax, 0
 
 tests:
-;%define SYNC
-%define FFT
+%define SYNC
+;%define FFT
 
 %ifdef  SYNC
     call ap_sync
