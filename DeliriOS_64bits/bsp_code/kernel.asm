@@ -503,14 +503,14 @@ enable_sse: ;Taken from osdev
     ;fin inicio kernel para BSP en 64 bits!
     ;arrancan las pruebas!
 tests:
-;%define SYNC
-%define FFT
+%define SYNC
+;%define FFT
 %ifdef  SYNC
     call test_mem_sync
     call test_sync_ipi_cores
 %elifdef FFT
-    call test_fft_mono
     call test_fft_dual_mem
+    call test_fft_mono
     call test_fft_dual_ipi
 %else
     call test_1_core

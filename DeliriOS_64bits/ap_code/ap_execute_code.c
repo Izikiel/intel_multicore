@@ -3,12 +3,12 @@ void signal_finished();
 
 void sort_ap()
 {
-    uint8_t *start = (uint8_t *) start_address;
-    uint8_t *start_merge = (uint8_t *) start_merge_address;
-    uint8_t *done = (uint8_t *) done_address;
-    uint8_t *finish_copy = (uint8_t *) finish_copy_address;
-    uint8_t *sleep = (uint8_t *) sleep_address;
-    uint8_t *start_copy = (uint8_t *) start_copy_address;
+    uint64_t *start = (uint64_t *) start_address;
+    uint64_t *start_merge = (uint64_t *) start_merge_address;
+    uint64_t *done = (uint64_t *) done_address;
+    uint64_t *finish_copy = (uint64_t *) finish_copy_address;
+    uint64_t *sleep = (uint64_t *) sleep_address;
+    uint64_t *start_copy = (uint64_t *) start_copy_address;
     *sleep = 0;
     //waiting for go!
     active_wait(*sleep) {
@@ -41,12 +41,12 @@ void sort_ap()
 
 void ap_sync()
 {
-    uint8_t *start = (uint8_t *) start_address;
-    uint8_t *start_merge = (uint8_t *) start_merge_address;
-    uint8_t *done = (uint8_t *) done_address;
-    uint8_t *finish_copy = (uint8_t *) finish_copy_address;
-    uint8_t *sleep = (uint8_t *) sleep_address;
-    uint8_t *start_copy = (uint8_t *) start_copy_address;
+    uint64_t *start = (uint64_t *) start_address;
+    uint64_t *start_merge = (uint64_t *) start_merge_address;
+    uint64_t *done = (uint64_t *) done_address;
+    uint64_t *finish_copy = (uint64_t *) finish_copy_address;
+    uint64_t *sleep = (uint64_t *) sleep_address;
+    uint64_t *start_copy = (uint64_t *) start_copy_address;
     *sleep = 0;
     //waiting for go!
     active_wait(*sleep) {
@@ -69,10 +69,10 @@ void ap_sync()
 
 void sum_vector_ap()
 {
-    uint8_t *start = (uint8_t *) start_address;
+    uint64_t *start = (uint64_t *) start_address;
     uint32_t *array = (uint32_t *) array_start_address;
     uint32_t *len = (uint32_t *) array_len_address;
-    uint8_t *sleep = (uint8_t *) sleep_address;
+    uint64_t *sleep = (uint64_t *) sleep_address;
 
 
     active_wait(*start) {
@@ -85,7 +85,7 @@ void sum_vector_ap()
         array[i]++;
     }
 
-    *((uint8_t *) finish_copy_address) = 1;
+    *((uint64_t *) finish_copy_address) = 1;
 }
 
 

@@ -15,11 +15,11 @@ uint64_t init, stop;
 
 static void clean_flags()
 {
-    *((uint8_t *) start_address) = 0;
-    *((uint8_t *) start_merge_address) = 0;
-    *((uint8_t *) done_address) = 0;
-    *((uint8_t *) finish_copy_address) = 0;
-    *((uint8_t *) start_copy_address) = 0;
+    *((uint64_t *) start_address) = 0;
+    *((uint64_t *) start_merge_address) = 0;
+    *((uint64_t *) done_address) = 0;
+    *((uint64_t *) finish_copy_address) = 0;
+    *((uint64_t *) start_copy_address) = 0;
 }
 
 void sort_bsp()
@@ -29,11 +29,11 @@ void sort_bsp()
     //cambio el lugar de origen por su tamaño
 
     //synchronization flags
-    uint8_t *start = (uint8_t *) start_address;
-    uint8_t *start_merge = (uint8_t *) start_merge_address;
-    uint8_t *done = (uint8_t *) done_address;
-    uint8_t *finish_copy = (uint8_t *) finish_copy_address;
-    uint8_t *start_copy = (uint8_t *) start_copy_address;
+    uint64_t *start = (uint64_t *) start_address;
+    uint64_t *start_merge = (uint64_t *) start_merge_address;
+    uint64_t *done = (uint64_t *) done_address;
+    uint64_t *finish_copy = (uint64_t *) finish_copy_address;
+    uint64_t *start_copy = (uint64_t *) start_copy_address;
 
     uint32_t *len = (uint32_t *) array_len_address;
     uint32_t *array = (uint32_t *) array_start_address;
@@ -86,11 +86,11 @@ void sort_bsp_ipi()
 
 void measure_sync_mem()
 {
-    uint8_t *start = (uint8_t *) start_address;
-    uint8_t *start_merge = (uint8_t *) start_merge_address;
-    uint8_t *done = (uint8_t *) done_address;
-    uint8_t *finish_copy = (uint8_t *) finish_copy_address;
-    uint8_t *start_copy = (uint8_t *) start_copy_address;
+    uint64_t *start = (uint64_t *) start_address;
+    uint64_t *start_merge = (uint64_t *) start_merge_address;
+    uint64_t *done = (uint64_t *) done_address;
+    uint64_t *finish_copy = (uint64_t *) finish_copy_address;
+    uint64_t *start_copy = (uint64_t *) start_copy_address;
 
     uint32_t *len = (uint32_t *) array_len_address;
     uint32_t *array = (uint32_t *) array_start_address;
@@ -193,10 +193,10 @@ void measure_sync_ipis()
 
 void sum_vector_bsp()
 {
-    uint8_t *start = (uint8_t *) start_address;
+    uint64_t *start = (uint64_t *) start_address;
     uint32_t *array = (uint32_t *) array_start_address;
     uint32_t *len = (uint32_t *) array_len_address;
-    uint8_t *finish = (uint8_t *) finish_copy_address;
+    uint64_t *finish = (uint64_t *) finish_copy_address;
 
     clean_flags();
     *start = 1;
@@ -240,7 +240,7 @@ void Perform_P_Int(Complex *Data, unsigned int N, char Inverse)
     unsigned int *Group_G = (unsigned int *) group_address;
     unsigned int *Step_G = (unsigned int *) step_address;
     unsigned int *Jump_G = (unsigned int *) jump_address;
-    uint8_t *done = (uint8_t *) done_address;
+    uint64_t *done = (uint64_t *) done_address;
     Complex *Factor_G = (Complex *) factor_address;
 
     unsigned int Group, Step, Jump;

@@ -318,7 +318,7 @@ void test_suite_fft(fft_test test_to_run, uint8_t line, uint8_t col, const char 
     int iter;
     double measure;
 
-    for (iter = 0, *len = LIMIT, measure = 0;
+    for (iter = 0, *len = 64, measure = 0;
             *len <= MAX_FFT_LEN;
             *len <<= 1, iter++, measure = 0) {
 
@@ -349,12 +349,13 @@ void test_suite_fft(fft_test test_to_run, uint8_t line, uint8_t col, const char 
 
 void test_fft_mono()
 {
-    clear_screen();
+    // clear_screen();
     test_suite_fft(Inverse_IO, 0, 0, "fft monocore");
 }
 
 void test_fft_dual_mem()
 {
+    clear_screen();
     test_suite_fft(Inverse_IO_Dual, 0, 30, "fft dualcore");
     *((uint8_t *) sleep_address) = 1;
 }

@@ -2,7 +2,7 @@ OUTPUT_FORMAT("binary")
 ENTRY(go64)
 SECTIONS
 {
-    . = 0x12a000; /*kernel_entry_point = 0x117000, ap_start = kernel_entry_point+kernel_size+0x2000-kernel_size %% 0x1000*/
+    . = 0x12b000; /*kernel_entry_point = 0x117000, ap_start = kernel_entry_point+kernel_size+0x2000-kernel_size %% 0x1000*/
 
     .text :
     {
