@@ -1,6 +1,6 @@
 global check_rax
 
-%define done_address 		0x2001c0
+%define done_address 		0x200700
 
 check_rax:
 	xor rax, rax

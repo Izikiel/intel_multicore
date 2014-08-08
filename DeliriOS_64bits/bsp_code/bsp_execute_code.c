@@ -101,7 +101,6 @@ void measure_sync_mem()
     uint64_t *time_measures = (uint64_t *) time_measures_address;
     //ready, set, go!
     clean_flags();
-
     *start = 1;
     MEDIR_TIEMPO_START(init);
     heapsort(array, *len / 2);

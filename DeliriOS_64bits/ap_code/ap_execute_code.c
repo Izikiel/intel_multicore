@@ -47,7 +47,9 @@ void ap_sync()
     uint64_t *finish_copy = (uint64_t *) finish_copy_address;
     uint64_t *sleep = (uint64_t *) sleep_address;
     uint64_t *start_copy = (uint64_t *) start_copy_address;
+
     *sleep = 0;
+    *start = 0;
     //waiting for go!
     active_wait(*sleep) {
         active_wait(*start) {
