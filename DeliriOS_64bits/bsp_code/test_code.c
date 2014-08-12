@@ -140,7 +140,7 @@ void test_mem_sync()
     int iters = 10;
     uint64_t avgs;
 
-    for (*len = 2; *len < (1024 * 1024); *len *= 2) {
+    for (*len = 2; *len < (8 * 1024 * 1024); *len *= 2) {
         // uint32_t seed = 13214;
         // generate_global_array(seed, *len);
         avgs = 0;
