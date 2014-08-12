@@ -84,67 +84,125 @@ void sort_bsp_ipi()
     check_rax();
 }
 
+// void measure_sync_mem()
+// {
+//     uint64_t *start = (uint64_t *) start_address;
+//     uint64_t *start_merge = (uint64_t *) start_merge_address;
+//     uint64_t *done = (uint64_t *) done_address;
+//     uint64_t *finish_copy = (uint64_t *) finish_copy_address;
+//     uint64_t *start_copy = (uint64_t *) start_copy_address;
+
+//     uint32_t *len = (uint32_t *) array_len_address;
+//     uint32_t *array = (uint32_t *) array_start_address;
+
+//     uint32_t *bsp_temp = (uint32_t *) temp_address;
+//     uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
+
+//     uint64_t *time_measures = (uint64_t *) time_measures_address;
+//     //ready, set, go!
+//     clean_flags();
+//     *start = 1;
+//     MEDIR_TIEMPO_START(init);
+//     heapsort(array, *len / 2);
+//     heapsort(array + *len / 2, *len / 2);
+
+//     MEDIR_TIEMPO_STOP(stop);
+//     time_measures[0] = stop - init;
+
+//     MEDIR_TIEMPO_START(init);
+//     active_wait(*done);
+//     MEDIR_TIEMPO_STOP(stop);
+//     time_measures[1] = stop - init;
+
+//     *done = 0;
+
+//     *start_merge = 1;
+//     MEDIR_TIEMPO_START(init);
+//     limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+//     limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
+
+//     MEDIR_TIEMPO_STOP(stop);
+//     time_measures[2] = stop - init;
+
+//     MEDIR_TIEMPO_START(init);
+//     active_wait(*done);
+//     MEDIR_TIEMPO_STOP(stop);
+//     time_measures[3] = stop - init;
+
+//     *done = 0;
+
+//     *start_copy = 1;
+//     MEDIR_TIEMPO_START(init);
+//     copy(array, 0, bsp_temp, 0, *len / 2);
+//     copy(array, *len / 2, ap_temp, 0, *len / 2);
+
+//     MEDIR_TIEMPO_STOP(stop);
+//     time_measures[4] = stop - init;
+
+//     MEDIR_TIEMPO_START(init);
+//     active_wait(*finish_copy);
+//     MEDIR_TIEMPO_STOP(stop);
+//     time_measures[5] = stop - init;
+//     clean_flags();
+
+// }
+
+uint64_t global_seed;
+
+uint32_t custom_rand()
+{
+    global_seed = global_seed * 1103515245 + 12345;
+    return (uint32_t) (global_seed / 65536) % 32768;
+}
+
+void generate_random_array(int *array, uint64_t seed, uint32_t len)
+{
+    global_seed = seed;
+    for (uint32_t i = 0; i < len; ++i) {
+        array[i] = custom_rand();
+    }
+}
+
+void bubble_sort(int *array,  uint32_t len)
+{
+    for (int j = 0; j < len; ++j) {
+        for (int i = 0; i < len - 1 - j; ++i) {
+            if (array[i] > array[i + 1]) {
+                int aux = array[i];
+                array[i] = array[i + 1];
+                array[i + 1] = aux;
+            }
+        }
+    }
+}
+
 void measure_sync_mem()
 {
+    int my_len = 10;
+    int my_array[my_len];
     uint64_t *start = (uint64_t *) start_address;
-    uint64_t *start_merge = (uint64_t *) start_merge_address;
     uint64_t *done = (uint64_t *) done_address;
-    uint64_t *finish_copy = (uint64_t *) finish_copy_address;
-    uint64_t *start_copy = (uint64_t *) start_copy_address;
 
-    uint32_t *len = (uint32_t *) array_len_address;
-    uint32_t *array = (uint32_t *) array_start_address;
-
-    uint32_t *bsp_temp = (uint32_t *) temp_address;
-    uint32_t *ap_temp = (uint32_t *) (temp_address + TEN_MEGA);
-
+    uint32_t len = *((uint32_t *) array_len_address);
     uint64_t *time_measures = (uint64_t *) time_measures_address;
-    //ready, set, go!
-    clean_flags();
-    *start = 1;
-    MEDIR_TIEMPO_START(init);
-    heapsort(array, *len / 2);
-    heapsort(array + *len / 2, *len / 2);
 
+    *start = 1;
+
+    for (int i = 0; i < len; ++i) {
+        generate_random_array(my_array, 13214, my_len);
+        bubble_sort(my_array, my_len);
+        for (int j = 1; j < my_len ; ++j) {
+            if (my_array[j - 1] > my_array[j]) {
+                // printf("Bad SORT :(\n");
+                break;
+            }
+        }
+    }
+
+    MEDIR_TIEMPO_START(init);
+    active_wait(*done);
     MEDIR_TIEMPO_STOP(stop);
     time_measures[0] = stop - init;
-
-    MEDIR_TIEMPO_START(init);
-    active_wait(*done);
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[1] = stop - init;
-
-    *done = 0;
-
-    *start_merge = 1;
-    MEDIR_TIEMPO_START(init);
-    limit_merge(array, bsp_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
-    limit_merge_reverse(array, ap_temp, 0, (*len / 2) - 1, *len - 1, *len / 2);
-
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[2] = stop - init;
-
-    MEDIR_TIEMPO_START(init);
-    active_wait(*done);
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[3] = stop - init;
-
-    *done = 0;
-
-    *start_copy = 1;
-    MEDIR_TIEMPO_START(init);
-    copy(array, 0, bsp_temp, 0, *len / 2);
-    copy(array, *len / 2, ap_temp, 0, *len / 2);
-
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[4] = stop - init;
-
-    MEDIR_TIEMPO_START(init);
-    active_wait(*finish_copy);
-    MEDIR_TIEMPO_STOP(stop);
-    time_measures[5] = stop - init;
-    clean_flags();
-
 }
 
 void measure_sync_ipis()

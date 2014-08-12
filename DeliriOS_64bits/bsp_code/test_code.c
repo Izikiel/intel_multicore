@@ -135,27 +135,35 @@ void test_mem_sync()
     uint8_t line = 0;
     print_string("Test 2 cores", line++, col[0]);
     print_string("Sync", line, col[1]);
-    print_string("Sync", line, col[3]);
-    print_string("Sync", line, col[5]);
+    // print_string("Sync", line, col[3]);
+    // print_string("Sync", line, col[5]);
+    int iters = 10;
+    uint64_t avgs;
 
-    for (*len = 2; *len < max_len; *len *= 2) {
-        uint32_t seed = 13214;
-        generate_global_array(seed, *len);
-        measure_sync_mem();
-        if (verfiy_sort()) {
-            line++;
-            for (uint8_t i = 1; i < 6; i += 2) {
-                print_number_u64(time_measures[i], line, col[i]);
-            }
-        } else {
-            for (uint8_t i = 1; i < 6; i += 2) {
-                print_string("bad_sort :(", line++, col[i]);
-            }
+    for (*len = 2; *len < (1024 * 1024); *len *= 2) {
+        // uint32_t seed = 13214;
+        // generate_global_array(seed, *len);
+        avgs = 0;
+        for (int i = 0; i < iters; ++i) {
+            time_measures[0] = 0;
+            measure_sync_mem();
+            avgs += time_measures[0];
+            /* code */
+            // if (verfiy_sort()) {
+            // for (uint8_t i = 1; i < 2; i += 2) {
         }
+        line++;
+        print_number_u64(avgs / iters, line, col[1]);
+        // }
+        // } else {
+        //     for (uint8_t i = 1; i < 2; i += 2) {
+        //         print_string("bad_sort :(", line++, col[i]);
+        //     }
+        // }
     }
 
     line++;
-    for (uint8_t i = 0; i < 6; ++i) {
+    for (uint8_t i = 0; i < 1; ++i) {
         print_string("Done!", line, col[i]);
     }
     *sleep = 1;

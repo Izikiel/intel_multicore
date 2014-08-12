@@ -42,11 +42,11 @@ void sort_ap()
 void ap_sync()
 {
     uint64_t *start = (uint64_t *) start_address;
-    uint64_t *start_merge = (uint64_t *) start_merge_address;
     uint64_t *done = (uint64_t *) done_address;
-    uint64_t *finish_copy = (uint64_t *) finish_copy_address;
     uint64_t *sleep = (uint64_t *) sleep_address;
-    uint64_t *start_copy = (uint64_t *) start_copy_address;
+    // uint64_t *start_merge = (uint64_t *) start_merge_address;
+    // uint64_t *finish_copy = (uint64_t *) finish_copy_address;
+    // uint64_t *start_copy = (uint64_t *) start_copy_address;
 
     *sleep = 0;
     *start = 0;
@@ -59,12 +59,12 @@ void ap_sync()
         }
         *start = 0;
         *done = 1;
-        active_wait(*start_merge);
-        *done = 1;
-        active_wait(*start_copy);
-        *finish_copy = 1;
+        // active_wait(*start_merge);
+        // *done = 1;
+        // active_wait(*start_copy);
+        // *finish_copy = 1;
     }
-    *sleep = 0;
+    // *sleep = 0;
 }
 
 
