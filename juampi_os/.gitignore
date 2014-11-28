@@ -1,8 +1,0 @@
-bochs/
-floppy.img
-*.o
-*.a
-*.bin
-*.swp
-*.d
-tags
